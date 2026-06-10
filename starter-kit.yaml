@@ -54,6 +54,9 @@ export_paths:
   - resources/addons/statamic-resrv.yaml
   - lang/vendor/statamic-resrv
   - STRIPE.md
+  - IMAGES.md
+  - DEMO-DATA.md
+  - CALENDAR-THEMING.md
 dependencies:
   reachweb/statamic-resrv: dev-main
 modules:
