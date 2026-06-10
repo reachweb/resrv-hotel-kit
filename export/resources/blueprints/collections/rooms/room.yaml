@@ -1,0 +1,134 @@
+title: Room
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: 'Room name'
+              localizable: true
+              validate: [required]
+          -
+            handle: slug
+            field:
+              type: slug
+              display: Slug
+              localizable: true
+              generate: true
+              validate: [required]
+          -
+            handle: from_price_label
+            field:
+              type: text
+              display: '"From" price label'
+              instructions: 'Display-only marketing price (e.g. "180"). The real, bookable price comes from Resrv availability/rates.'
+              width: 50
+          -
+            handle: intro
+            field:
+              type: markdown
+              display: Introduction
+              localizable: true
+          -
+            handle: featured
+            field:
+              type: toggle
+              display: 'Featured on home'
+              default: false
+  media:
+    display: Media
+    sections:
+      -
+        fields:
+          -
+            handle: hero_image
+            field:
+              type: assets
+              display: 'Hero image'
+              container: assets
+              folder: rooms
+              max_files: 1
+              mode: grid
+              instructions: 'Slot: `rooms/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+          -
+            handle: gallery
+            field:
+              type: assets
+              display: Gallery
+              container: assets
+              folder: rooms
+              mode: grid
+              instructions: 'Slots: `rooms/<slug>-gallery-*.jpg · 3:2`.'
+  details:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: size_sqm
+            field: { type: integer, display: 'Size (m²)', width: 33 }
+          -
+            handle: max_occupancy
+            field: { type: integer, display: 'Max occupancy', width: 33 }
+          -
+            handle: floor
+            field: { type: text, display: Floor, width: 33 }
+          -
+            handle: bed_configuration
+            field: { type: text, display: 'Bed configuration', width: 50 }
+          -
+            handle: view_type
+            field: { type: text, display: View, width: 50 }
+          -
+            handle: amenities
+            field:
+              type: terms
+              display: Amenities
+              taxonomies: [amenities]
+              mode: select
+              create: false
+          -
+            handle: room_features
+            field:
+              type: terms
+              display: 'Room features'
+              taxonomies: [room_features]
+              mode: select
+              create: false
+  booking:
+    display: Booking
+    sections:
+      -
+        display: Resrv
+        instructions: 'Availability & pricing for this room. Rates, extras, dynamic pricing & affiliates are managed in Resrv → CP (not here).'
+        fields:
+          -
+            handle: availability
+            field: { type: resrv_availability, display: Availability }
+          -
+            handle: fixed_pricing
+            field: { type: resrv_fixed_pricing, display: 'Fixed pricing' }
+          -
+            handle: options
+            field: { type: resrv_options, display: Options }
+          -
+            handle: extras
+            field: { type: resrv_extras, display: Extras }
+          -
+            handle: cutoff
+            field: { type: resrv_cutoff, display: Cutoff }
+  seo:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true }

@@ -1,0 +1,5 @@
+title: Rooms
+route: '/rooms/{slug}'
+template: rooms/show
+sort_by: title
+sort_dir: asc

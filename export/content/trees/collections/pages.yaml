@@ -1,0 +1,33 @@
+tree:
+  -
+    entry: home
+  -
+    entry: rooms
+  -
+    entry: about
+  -
+    entry: dining
+  -
+    entry: spa
+  -
+    entry: experiences
+  -
+    entry: gallery
+  -
+    entry: offers
+  -
+    entry: contact
+  -
+    entry: faq
+  -
+    entry: journal
+  -
+    entry: privacy
+  -
+    entry: terms
+  -
+    entry: cancellation-policy
+  -
+    entry: checkout
+  -
+    entry: checkout-complete

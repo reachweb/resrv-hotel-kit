@@ -1,0 +1,82 @@
+title: Experience
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field: { type: text, display: Title, localizable: true, validate: [required] }
+          -
+            handle: slug
+            field: { type: slug, display: Slug, localizable: true, generate: true, validate: [required] }
+          -
+            handle: category
+            field:
+              type: terms
+              display: Category
+              taxonomies: [experience_categories]
+              mode: select
+              max_items: 1
+              create: false
+          -
+            handle: hero_image
+            field:
+              type: assets
+              display: 'Hero image'
+              container: assets
+              folder: experiences
+              max_files: 1
+              mode: grid
+              instructions: 'Slot: `experiences/<slug>.jpg · 3:2`.'
+          -
+            handle: body
+            field:
+              type: bard
+              display: Body
+              localizable: true
+              buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+          -
+            handle: highlights
+            field:
+              type: list
+              display: Highlights
+              instructions: 'Short bullet highlights.'
+              add_button: 'Add highlight'
+  media:
+    display: Media
+    sections:
+      -
+        fields:
+          -
+            handle: gallery
+            field:
+              type: assets
+              display: Gallery
+              container: assets
+              folder: experiences
+              mode: grid
+              instructions: 'Slots: `experiences/<slug>-*.jpg · 3:2`.'
+  details:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: hours
+            field: { type: text, display: Hours, instructions: 'e.g. Daily 12:00–23:00.', width: 50 }
+          -
+            handle: cta_label
+            field: { type: text, display: 'CTA label', default: Enquire, width: 50 }
+  seo:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true }

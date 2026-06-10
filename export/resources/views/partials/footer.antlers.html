@@ -1,0 +1,61 @@
+{{#
+    Site footer — design `partials/footer`.
+    Links come from {{ nav:footer }} + {{ nav:legal }}; brand/contact from the `site` global.
+    Never hardcode nav items.
+#}}
+<footer class="bg-teal text-white">
+    <div class="container-rsv py-16 lg:py-20">
+        <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr_1fr]">
+
+            {{# Brand · blurb · social #}}
+            <div>
+                <a href="/" class="font-display text-3xl font-medium tracking-tight">{{ site:brand_name }}<span class="text-terracotta">.</span></a>
+                <p class="text-base leading-relaxed text-sage-light/90 mt-4 max-w-[34ch]">{{ site:footer_blurb }}</p>
+                <div class="flex gap-3 mt-6">
+                    {{ if site:social_instagram }}
+                        <a href="{{ site:social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram" class="w-10 h-10 rounded-full border border-sage/40 grid place-items-center text-sage-light hover:bg-white/10 transition-colors">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+                        </a>
+                    {{ /if }}
+                    {{ if site:social_facebook }}
+                        <a href="{{ site:social_facebook }}" target="_blank" rel="noopener" aria-label="Facebook" class="w-10 h-10 rounded-full border border-sage/40 grid place-items-center text-sage-light hover:bg-white/10 transition-colors">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </a>
+                    {{ /if }}
+                </div>
+            </div>
+
+            {{# Explore — nav:footer #}}
+            <div>
+                <h4 class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">Explore</h4>
+                <ul class="space-y-2.5">
+                    {{ nav:footer }}
+                        <li><a href="{{ url }}" class="text-sm text-sage-light/90 hover:text-white transition-colors">{{ title }}</a></li>
+                    {{ /nav:footer }}
+                </ul>
+            </div>
+
+            {{# Contact — site global #}}
+            <div>
+                <h4 class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">Contact</h4>
+                <ul class="space-y-2.5 text-sm text-sage-light/90">
+                    <li><a href="/contact" class="hover:text-white transition-colors">Location &amp; Contact</a></li>
+                    {{ if site:phone }}<li><a href="tel:{{ site:phone }}" class="hover:text-white transition-colors">{{ site:phone }}</a></li>{{ /if }}
+                    {{ if site:email }}<li><a href="mailto:{{ site:email }}" class="hover:text-white transition-colors">{{ site:email }}</a></li>{{ /if }}
+                    {{ if site:address }}<li class="text-sage-light/70 not-italic">{{ site:address }}</li>{{ /if }}
+                </ul>
+            </div>
+        </div>
+
+        <hr class="h-px border-0 bg-sage/25 my-10">
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center text-sage-light/70 text-sm">
+            <p>&copy; {{ now format="Y" }} {{ site:brand_name }}</p>
+            <div class="flex flex-wrap gap-5">
+                {{ nav:legal }}
+                    <a href="{{ url }}" class="hover:text-white transition-colors">{{ title }}</a>
+                {{ /nav:legal }}
+            </div>
+        </div>
+    </div>
+</footer>

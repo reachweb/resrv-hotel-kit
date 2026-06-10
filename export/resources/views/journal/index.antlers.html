@@ -1,0 +1,20 @@
+{{#
+    Journal index — backed by the `journal` pages entry (route /journal).
+    Ships with the optional journal module; no design-bundle reference, so it
+    follows the kit's card grid language.
+#}}
+<header class="container-rsv pt-12 lg:pt-16 pb-10">
+    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3 reveal">The Journal</p>
+    <div class="flex flex-wrap items-end justify-between gap-4 reveal">
+        <h1 class="t-h1 max-w-[18ch]">Notes from the coast</h1>
+        <p class="text-base leading-relaxed text-muted max-w-[40ch]">Slow guides, kitchen stories and the occasional tide chart — written from the cliff.</p>
+    </div>
+</header>
+
+<div class="container-rsv pb-16 lg:pb-24">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {{ collection:journal sort="date:desc" }}
+            <div class="reveal h-full">{{ partial:journal-card }}</div>
+        {{ /collection:journal }}
+    </div>
+</div>

@@ -1,0 +1,108 @@
+{{#
+    Checkout complete — resrv_checkout_redirect resolves the gateway return into
+    success / pending / failed. Offline payments land on `pending` with
+    bank-transfer instructions (the kit's default gateway).
+#}}
+<section class="container-rsv py-10 lg:py-16">
+    <div class="max-w-[720px] mx-auto">
+        {{ resrv_checkout_redirect }}
+
+            {{# Icon + headline #}}
+            <div class="text-center mb-10">
+                {{ if status == 'success' }}
+                    <div class="w-20 h-20 rounded-full grid place-items-center mx-auto mb-6 bg-success/10 text-success">
+                        <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-success mb-3">Booking confirmed</p>
+                {{ elseif status == 'pending' }}
+                    <div class="w-20 h-20 rounded-full grid place-items-center mx-auto mb-6 bg-warning/10 text-warning">
+                        <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    </div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-warning mb-3">Reservation held</p>
+                {{ else }}
+                    <div class="w-20 h-20 rounded-full grid place-items-center mx-auto mb-6 bg-error/10 text-error">
+                        <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-error mb-3">Something went wrong</p>
+                {{ /if }}
+                <h1 class="t-h1 mb-3">{{ title }}</h1>
+                <p class="text-lg leading-relaxed text-muted max-w-[52ch] mx-auto">{{ message }}</p>
+            </div>
+
+            {{# Reservation card #}}
+            {{ if reservation:reference }}
+                <div class="bg-white rounded-lg shadow-card overflow-hidden mb-8">
+                    <div class="p-6 lg:p-8">
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-1.5">Reservation</p>
+                                {{ get_content :id="reservation:item_id" }}<h2 class="t-h3">{{ title }}</h2>{{ /get_content }}
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-muted mb-1">Reference</p>
+                                <p class="font-display text-[22px] tabular-nums">{{ reservation:reference }}</p>
+                            </div>
+                        </div>
+                        {{# Rooms get check-in/out cards; single-date products (spa, restaurant) a single date #}}
+                        {{ get_content :id="reservation:item_id" }}
+                            {{ if collection:handle == 'rooms' }}
+                            <div class="grid sm:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-shell rounded-md p-4">
+                                    <p class="text-sm text-muted">Check-in</p>
+                                    <p class="font-medium">{{ reservation:date_start | format('D d M Y') }}</p>
+                                    {{ if booking:check_in_time }}<p class="text-sm text-muted">from {{ booking:check_in_time }}</p>{{ /if }}
+                                </div>
+                                <div class="bg-shell rounded-md p-4">
+                                    <p class="text-sm text-muted">Check-out</p>
+                                    <p class="font-medium">{{ reservation:date_end | format('D d M Y') }}</p>
+                                    {{ if booking:check_out_time }}<p class="text-sm text-muted">by {{ booking:check_out_time }}</p>{{ /if }}
+                                </div>
+                                <div class="bg-shell rounded-md p-4">
+                                    <p class="text-sm text-muted">Quantity</p>
+                                    <p class="font-medium">× {{ reservation:quantity }}</p>
+                                </div>
+                            </div>
+                            {{ else }}
+                            <div class="grid sm:grid-cols-2 gap-4 mb-6">
+                                <div class="bg-shell rounded-md p-4">
+                                    <p class="text-sm text-muted">Date</p>
+                                    <p class="font-medium">{{ reservation:date_start | format('D d M Y') }}</p>
+                                </div>
+                                <div class="bg-shell rounded-md p-4">
+                                    <p class="text-sm text-muted">Guests</p>
+                                    <p class="font-medium">× {{ reservation:quantity }}</p>
+                                </div>
+                            </div>
+                            {{ /if }}
+                        {{ /get_content }}
+                        <div class="flex items-baseline justify-between pt-4 border-t border-line">
+                            <span class="font-medium">{{ if status == 'success' }}Total paid{{ else }}Total due{{ /if }}</span>
+                            <span class="font-display text-[26px] tabular-nums">{{ booking:currency_symbol }}{{ reservation:total }}</span>
+                        </div>
+                    </div>
+                </div>
+            {{ /if }}
+
+            {{# Offline / bank-transfer instructions #}}
+            {{ if status == 'pending' }}
+                <div class="rounded-lg border border-line bg-sand/60 p-6 lg:p-8 mb-8">
+                    <h3 class="t-h4 mb-3">How to complete your booking</h3>
+                    <p class="text-base leading-relaxed text-muted mb-4">Your reservation is held while we await payment. Settle by bank transfer{{ if reservation:reference }} quoting your reference <span class="font-medium text-ink">{{ reservation:reference }}</span>{{ /if }}, or pay on arrival — whichever suits you. Full details are in your confirmation email.</p>
+                    <p class="text-sm text-muted">Questions? Write to <a href="mailto:{{ site:email }}" class="text-teal underline underline-offset-2">{{ site:email }}</a> or call <a href="tel:{{ site:phone }}" class="text-teal underline underline-offset-2">{{ site:phone }}</a>.</p>
+                </div>
+            {{ /if }}
+
+            {{# Actions #}}
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                {{ if status == 'failed' }}
+                    <a href="/rooms" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">Try booking again</a>
+                    <a href="/contact" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white">Contact us</a>
+                {{ else }}
+                    <a href="/" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white">Back to the hotel</a>
+                    <a href="/experiences" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">Plan your days</a>
+                {{ /if }}
+            </div>
+
+        {{ /resrv_checkout_redirect }}
+    </div>
+</section>

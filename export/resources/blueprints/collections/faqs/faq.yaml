@@ -1,0 +1,31 @@
+title: FAQ
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field: { type: text, display: Question, localizable: true, validate: [required] }
+          -
+            handle: category
+            field:
+              type: select
+              display: Category
+              options:
+                booking: Booking
+                payment: Payment
+                cancellation: Cancellation
+                amenities: Amenities
+                getting_here: 'Getting here'
+              default: booking
+              validate: [required]
+          -
+            handle: answer
+            field:
+              type: bard
+              display: Answer
+              localizable: true
+              buttons: [bold, italic, unorderedlist, orderedlist, anchor, removeformat]
+              validate: [required]

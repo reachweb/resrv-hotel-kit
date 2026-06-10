@@ -1,0 +1,23 @@
+{{#
+    FAQ block — accordion. If specific `faqs` are chosen, render a flat list;
+    otherwise group by category (the fixed select options).
+#}}
+<section class="section-sm">
+    <div class="container-rsv max-w-[820px] mx-auto">
+        {{ partial:section-header :overline="overline" :heading="heading" :intro="intro" align="center" }}
+
+        {{ if faqs }}
+            <div class="space-y-3" x-data="{ open: null }">
+                {{ faqs }}{{ partial:faq-item }}{{ /faqs }}
+            </div>
+        {{ else }}
+            <div class="space-y-10">
+                {{ partial:blocks/faq-group category="booking" label="Booking" }}
+                {{ partial:blocks/faq-group category="payment" label="Payment" }}
+                {{ partial:blocks/faq-group category="cancellation" label="Cancellation" }}
+                {{ partial:blocks/faq-group category="amenities" label="Amenities" }}
+                {{ partial:blocks/faq-group category="getting_here" label="Getting here" }}
+            </div>
+        {{ /if }}
+    </div>
+</section>

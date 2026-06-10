@@ -1,0 +1,34 @@
+{{#
+    SEO meta — basic free meta + JSON-LD (Phase 5 Layout). No paid SEO addon.
+    Page-level `title` / `meta_description` / `og_image` win, falling back to the `seo` global.
+#}}
+<title>{{ if title }}{{ title | sanitize }}{{ seo:title_suffix | sanitize }}{{ else }}{{ site:brand_name | sanitize }} — {{ site:tagline | sanitize }}{{ /if }}</title>
+<meta name="description" content="{{ (meta_description ?? seo:meta_description) | sanitize }}">
+<link rel="canonical" href="{{ current_url }}">
+
+{{# Open Graph / Twitter #}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site:brand_name | sanitize }}">
+<meta property="og:title" content="{{ (title ?? site:brand_name) | sanitize }}">
+<meta property="og:description" content="{{ (meta_description ?? seo:meta_description) | sanitize }}">
+<meta property="og:url" content="{{ current_url }}">
+{{ if og_image }}
+    {{ og_image }}<meta property="og:image" content="{{ url }}">{{ /og_image }}
+{{ elseif seo:og_image }}
+    {{ seo:og_image }}<meta property="og:image" content="{{ url }}">{{ /seo:og_image }}
+{{ /if }}
+<meta name="twitter:card" content="summary_large_image">
+
+{{# JSON-LD — Hotel (basic, free) #}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Hotel",
+    "name": "{{ site:brand_name | sanitize }}",
+    "description": "{{ seo:meta_description | sanitize }}",
+    "url": "{{ config:app:url }}",
+    "address": "{{ site:address | sanitize }}",
+    "telephone": "{{ site:phone | sanitize }}",
+    "email": "{{ site:email | sanitize }}"
+}
+</script>

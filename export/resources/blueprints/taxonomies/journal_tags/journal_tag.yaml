@@ -1,0 +1,16 @@
+title: 'Journal Tag'
+fields:
+  -
+    handle: title
+    field:
+      type: text
+      display: Title
+      validate: [required]
+  -
+    handle: slug
+    field:
+      type: slug
+      display: Slug
+      localizable: true
+      width: 50
+      generate: true

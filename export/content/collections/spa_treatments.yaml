@@ -1,0 +1,5 @@
+title: 'Spa Treatments'
+route: '/spa/{slug}'
+template: spa-treatments/show
+sort_by: title
+sort_dir: asc

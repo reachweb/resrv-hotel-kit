@@ -1,0 +1,125 @@
+export_paths:
+  - content/collections/pages.yaml
+  - content/collections/rooms.yaml
+  - content/collections/spa_treatments.yaml
+  - content/collections/restaurant.yaml
+  - content/collections/offers.yaml
+  - content/collections/experiences.yaml
+  - content/collections/faqs.yaml
+  - content/collections/reviews.yaml
+  - content/taxonomies/amenities.yaml
+  - content/taxonomies/experience_categories.yaml
+  - content/taxonomies/room_features.yaml
+  - content/globals
+  - content/navigation
+  - content/trees/navigation
+  - content/assets
+  - resources/blueprints/assets
+  - resources/blueprints/collections/experiences
+  - resources/blueprints/collections/faqs
+  - resources/blueprints/collections/offers
+  - resources/blueprints/collections/pages
+  - resources/blueprints/collections/restaurant
+  - resources/blueprints/collections/reviews
+  - resources/blueprints/collections/rooms
+  - resources/blueprints/collections/spa_treatments
+  - resources/blueprints/forms
+  - resources/blueprints/globals
+  - resources/blueprints/taxonomies/amenities
+  - resources/blueprints/taxonomies/experience_categories
+  - resources/blueprints/taxonomies/room_features
+  - resources/forms
+  - resources/views/layout.antlers.html
+  - resources/views/home.antlers.html
+  - resources/views/default.antlers.html
+  - resources/views/checkout.antlers.html
+  - resources/views/checkout-complete.antlers.html
+  - resources/views/errors
+  - resources/views/experiences
+  - resources/views/offers
+  - resources/views/pages
+  - resources/views/partials
+  - resources/views/rooms
+  - resources/views/spa-treatments
+  - resources/views/vendor
+  - resources/css/site.css
+  - resources/js
+  - package.json
+  - vite.config.js
+  - public/build
+  - public/assets
+  - config/resrv-config.php
+  - config/cache.php
+  - config/session.php
+  - resources/addons/statamic-resrv.yaml
+  - lang/vendor/statamic-resrv
+dependencies:
+  reachweb/statamic-resrv: dev-main
+modules:
+  demo_content:
+    prompt: 'Install demo content (pages, rooms, spa & restaurant, offers, FAQs) and seed availability/rates/extras?'
+    default: true
+    export_paths:
+      - content/collections/pages/home.md
+      - content/collections/pages/rooms.md
+      - content/collections/pages/about.md
+      - content/collections/pages/dining.md
+      - content/collections/pages/spa.md
+      - content/collections/pages/experiences.md
+      - content/collections/pages/gallery.md
+      - content/collections/pages/offers.md
+      - content/collections/pages/contact.md
+      - content/collections/pages/faq.md
+      - content/collections/pages/privacy.md
+      - content/collections/pages/terms.md
+      - content/collections/pages/cancellation-policy.md
+      - content/collections/pages/checkout.md
+      - content/collections/pages/checkout-complete.md
+      - content/trees/collections/pages.yaml
+      - content/collections/rooms
+      - content/collections/spa_treatments
+      - content/collections/restaurant
+      - content/collections/offers
+      - content/collections/experiences
+      - content/collections/faqs
+      - content/taxonomies/amenities
+      - content/taxonomies/experience_categories
+      - content/taxonomies/room_features
+      - database/seeders/ResrvDemoSeeder.php
+  payments:
+    prompt: 'Which payment gateway should be enabled?'
+    skip_option: false
+    default: offline
+    options:
+      offline:
+        label: 'Offline — bank transfer / pay at property (no API keys, instant demo)'
+        export_paths:
+          - resources/starter-kit/payments/offline.yaml
+      stripe:
+        label: 'Stripe (requires test/live API keys)'
+        export_paths:
+          - resources/starter-kit/payments/stripe.yaml
+      both:
+        label: 'Both — guests choose at checkout (gateway picker)'
+        export_paths:
+          - resources/starter-kit/payments/both.yaml
+  reviews:
+    prompt: 'Include the demo guest reviews / testimonials?'
+    default: true
+    export_paths:
+      - content/collections/reviews
+  journal:
+    prompt: 'Include a journal / blog?'
+    default: false
+    export_paths:
+      - content/collections/journal.yaml
+      - content/collections/journal
+      - content/collections/pages/journal.md
+      - content/taxonomies/journal_categories.yaml
+      - content/taxonomies/journal_categories
+      - content/taxonomies/journal_tags.yaml
+      - content/taxonomies/journal_tags
+      - resources/blueprints/collections/journal
+      - resources/blueprints/taxonomies/journal_categories
+      - resources/blueprints/taxonomies/journal_tags
+      - resources/views/journal

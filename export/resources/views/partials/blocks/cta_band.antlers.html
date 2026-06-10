@@ -1,0 +1,10 @@
+{{# CTA band — teal / terracotta / sand background variants. #}}
+<section class="section-sm">
+    <div class="container-rsv">
+        <div class="rounded-xl px-7 py-12 lg:px-16 lg:py-16 text-center reveal {{ if background == 'sand' }}bg-sand{{ elseif background == 'terracotta' }}bg-terracotta text-white{{ else }}bg-teal text-white{{ /if }}">
+            {{ if heading }}<h2 class="t-h2 max-w-[22ch] mx-auto">{{ heading | widont }}</h2>{{ /if }}
+            {{ if text }}<p class="text-base leading-relaxed mt-4 max-w-[52ch] mx-auto {{ if background == 'sand' }}text-muted{{ else }}text-white/85{{ /if }}">{{ text }}</p>{{ /if }}
+            {{ if cta_label }}<a href="{{ cta_url ?? '#' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition mt-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta {{ if background == 'sand' }}bg-terracotta text-white hover:bg-terracotta-dark{{ else }}bg-white text-ink hover:bg-sand{{ /if }}">{{ cta_label }}</a>{{ /if }}
+        </div>
+    </div>
+</section>

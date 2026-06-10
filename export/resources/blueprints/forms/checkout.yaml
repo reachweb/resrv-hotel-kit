@@ -1,0 +1,101 @@
+tabs:
+  main:
+    display: Main
+    sections:
+      -
+        fields:
+          -
+            handle: first_name
+            field:
+              input_type: text
+              antlers: false
+              display: 'First name'
+              type: text
+              listable: hidden
+              validate:
+                - required
+              width: 50
+              localizable: false
+          -
+            handle: last_name
+            field:
+              input_type: text
+              antlers: false
+              display: 'Last name'
+              type: text
+              listable: hidden
+              validate:
+                - required
+              width: 50
+              localizable: false
+          -
+            handle: email
+            field:
+              input_type: text
+              antlers: false
+              display: Email
+              type: text
+              listable: hidden
+              validate:
+                - required
+                - email
+              width: 50
+              localizable: false
+          -
+            handle: repeat_email
+            field:
+              input_type: text
+              antlers: false
+              display: 'Repeat email'
+              type: text
+              listable: hidden
+              validate:
+                - required
+                - email
+              width: 50
+              localizable: false
+          -
+            handle: phone
+            field:
+              input_type: text
+              prepend: (optional)
+              antlers: false
+              display: Phone
+              type: text
+              listable: hidden
+              localizable: false
+          -
+            handle: notes
+            field:
+              antlers: false
+              display: Notes
+              type: textarea
+              listable: hidden
+              localizable: false
+          -
+            handle: adults
+            field:
+              input_type: hidden
+              antlers: false
+              display: Adults
+              type: text
+              listable: hidden
+              localizable: false
+          -
+            handle: children
+            field:
+              input_type: hidden
+              antlers: false
+              display: Children
+              type: text
+              listable: hidden
+              localizable: false
+          -
+            handle: infants
+            field:
+              input_type: hidden
+              antlers: false
+              display: Infants
+              type: text
+              listable: hidden
+              localizable: false

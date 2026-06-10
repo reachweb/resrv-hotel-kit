@@ -1,0 +1,11 @@
+{{#
+    A FAQ category group with its own accordion. Params: category (handle), label.
+    Renders nothing if the category has no FAQs.
+#}}
+<div x-data="{ open: null }">
+    {{ collection:faqs category:is="{category}" sort="title" }}
+        {{ if first }}<h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">{{ label }}</h3><div class="space-y-3">{{ /if }}
+            {{ partial:faq-item }}
+        {{ if last }}</div>{{ /if }}
+    {{ /collection:faqs }}
+</div>

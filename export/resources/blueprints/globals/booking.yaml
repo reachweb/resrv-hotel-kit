@@ -1,0 +1,26 @@
+title: Booking
+fields:
+  -
+    handle: currency_symbol
+    field: { type: text, display: 'Currency symbol', width: 33, default: '€', instructions: 'Display only — Resrv owns the authoritative currency (Resrv → Settings → Currency).' }
+  -
+    handle: currency_display
+    field: { type: select, display: 'Currency position', width: 33, options: { before: 'Before (€180)', after: 'After (180€)' }, default: before }
+  -
+    handle: check_in_time
+    field: { type: text, display: 'Check-in time', width: 33, default: '15:00' }
+  -
+    handle: check_out_time
+    field: { type: text, display: 'Check-out time', width: 50, default: '11:00' }
+  -
+    handle: default_cutoff
+    field: { type: text, display: 'Default cutoff note', width: 50, default: 'Same-day bookings close at 16:00 local time.' }
+  -
+    handle: cancellation_summary
+    field: { type: textarea, display: 'Cancellation summary', default: 'Most rates include free cancellation up to 7 days before arrival. Non-refundable rates are clearly marked.' }
+  -
+    handle: booking_terms
+    field:
+      type: bard
+      display: 'Booking terms'
+      buttons: [bold, italic, unorderedlist, orderedlist, removeformat, quote, anchor]

@@ -1,0 +1,71 @@
+{{#
+    Offer detail (design offer-detail.html) — hero band, summary + body, linked
+    rooms, and a sticky CTA card with the coupon code (copied to clipboard via a
+    tiny Alpine handler). Prices stay live in Resrv; offers are editorial.
+#}}
+
+{{# Hero #}}
+<section class="relative flex items-end min-h-[420px] lg:min-h-[52vh]">
+    <div class="img-slot has-img absolute inset-0 rounded-none">
+        {{ if image }}
+            {{ image }}<img src="{{ glide:url width='2000' }}" alt="{{ alt ?? title }}" class="absolute inset-0 w-full h-full object-cover">{{ /image }}
+        {{ else }}
+            <span class="slot-label">offers/{{ slug }}.jpg · 21:9</span>
+        {{ /if }}
+    </div>
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.45), rgba(27,43,40,.12) 40%, rgba(27,43,40,.72));"></div>
+    <div class="relative container-rsv py-12 text-white">
+        <a href="/offers" class="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white mb-5 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            All offers
+        </a>
+        {{ if linked_coupon_code }}
+            <span class="inline-flex w-fit items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold leading-none bg-terracotta text-white mb-4">Code {{ linked_coupon_code }}</span>
+        {{ /if }}
+        <h1 class="t-display-xl text-white max-w-[16ch] text-balance">{{ title | widont }}</h1>
+    </div>
+</section>
+
+<section class="container-rsv py-14 lg:py-20 grid lg:grid-cols-[1fr_360px] gap-12 items-start">
+    <div>
+        {{ if summary }}<p class="text-lg leading-relaxed text-ink/85 reading mb-10 reveal">{{ summary | widont }}</p>{{ /if }}
+
+        {{ if body }}
+            <div class="reading prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:text-ink prose-p:text-ink/85 prose-li:text-ink/85 prose-a:text-terracotta-dark prose-strong:text-ink mb-12 reveal">{{ body }}</div>
+        {{ /if }}
+
+        {{ if linked_rooms }}
+            <h2 class="t-h2 mb-6 reveal">Rooms in this offer</h2>
+            <div class="grid sm:grid-cols-2 gap-6">
+                {{ linked_rooms }}
+                    <div class="reveal">{{ partial:room-card }}</div>
+                {{ /linked_rooms }}
+            </div>
+        {{ /if }}
+    </div>
+
+    {{# Sticky CTA card #}}
+    <aside class="lg:sticky lg:top-[100px]">
+        <div class="bg-white rounded-lg shadow-card p-6">
+            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-terracotta-dark mb-3">Limited offer</p>
+            {{ if linked_coupon_code }}
+                <div x-data="{ copied: false }" class="mb-4">
+                    <p class="text-sm text-muted mb-2">Use this code at checkout:</p>
+                    <button
+                        type="button"
+                        class="w-full flex items-center justify-between gap-3 rounded-md border border-dashed border-terracotta/60 bg-terracotta/5 px-4 py-3 font-display text-[22px] tracking-wide text-terracotta-dark hover:bg-terracotta/10 transition-colors"
+                        @click="navigator.clipboard?.writeText('{{ linked_coupon_code }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                    >
+                        {{ linked_coupon_code }}
+                        <span class="text-xs font-sans font-semibold text-muted" x-text="copied ? 'Copied!' : 'Copy'"></span>
+                    </button>
+                </div>
+            {{ /if }}
+            {{ if valid_to }}
+                <p class="text-sm text-muted mb-5">Valid until {{ valid_to | format('j M Y') }}.</p>
+            {{ /if }}
+            <a href="/rooms" class="inline-flex items-center justify-center gap-2 w-full h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">{{ cta_label ?? 'Check dates' }}</a>
+            <p class="text-sm text-muted text-center mt-3">Free cancellation · book direct</p>
+        </div>
+    </aside>
+</section>

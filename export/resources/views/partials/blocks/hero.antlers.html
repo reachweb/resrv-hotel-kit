@@ -1,0 +1,25 @@
+{{#
+    Hero block. Two modes:
+      · image OR show_search  → full-bleed photo hero, white text (home / image-led)
+      · otherwise             → light text header on the page background (content pages)
+    Degrades gracefully: with no image the photo branch only fires for search heroes.
+#}}
+{{ if image || show_search }}
+    <section class="relative flex items-end min-h-[64vh] pt-28 lg:pt-32">
+        {{ partial:image-slot :asset="image" label="hero/{slug}.jpg · 16:9" ratio="16/9" class="absolute inset-0 rounded-none" :alt="heading" }}
+        <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.5), rgba(27,43,40,.12) 38%, rgba(27,43,40,.72));"></div>
+        <div class="relative container-rsv pb-14 lg:pb-16 text-white">
+            {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-white/85 mb-4">{{ overline }}</p>{{ /if }}
+            {{ if heading }}<h1 class="t-display-xl text-white max-w-[18ch] text-balance">{{ heading | widont }}</h1>{{ /if }}
+            {{ if lead }}<p class="text-lg leading-relaxed text-white/90 mt-6 max-w-[52ch]">{{ lead }}</p>{{ /if }}
+            {{ if cta_label }}<a href="{{ cta_url ?? '#' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-white text-ink hover:bg-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta mt-8">{{ cta_label }}</a>{{ /if }}
+            {{ if show_search }}<div class="mt-10 max-w-[1100px]">{{ livewire:availability-search calendar="range" live="false" redirectTo="/rooms" }}</div>{{ /if }}
+        </div>
+    </section>
+{{ else }}
+    <header class="container-rsv pt-14 lg:pt-20 pb-8 max-w-[680px]">
+        {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3 reveal">{{ overline }}</p>{{ /if }}
+        {{ if heading }}<h1 class="t-display mb-5 reveal text-balance">{{ heading | widont }}</h1>{{ /if }}
+        {{ if lead }}<p class="text-lg leading-relaxed text-muted reveal">{{ lead }}</p>{{ /if }}
+    </header>
+{{ /if }}

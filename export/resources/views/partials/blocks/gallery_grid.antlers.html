@@ -1,0 +1,40 @@
+{{#
+    Gallery grid — masonry columns + Alpine lightbox. Renders the assets if
+    present, else a graceful set of named placeholder slots. (No category filter:
+    the assets field carries no per-image category.)
+#}}
+<section class="section-sm" x-data="{ lb: false, src: '', cap: '' }">
+    <div class="container-rsv">
+        {{ if heading }}<h2 class="t-h2 mb-8 reveal">{{ heading | widont }}</h2>{{ /if }}
+
+        <div class="columns-1 sm:columns-2 {{ if columns == '2' }}lg:columns-2{{ elseif columns == '4' }}lg:columns-4{{ else }}lg:columns-3{{ /if }} gap-4 [&>*]:mb-4">
+            {{ if images }}
+                {{ images }}
+                    <button type="button" class="img-slot has-img rounded-lg break-inside-avoid block w-full cursor-pointer zoom-on-hover reveal" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                        <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
+                    </button>
+                {{ /images }}
+            {{ else }}
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 3/2;"><span class="slot-label">gallery/01.jpg · 3:2</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 3/4;"><span class="slot-label">gallery/02.jpg · 3:4</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 4/5;"><span class="slot-label">gallery/03.jpg · 4:5</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 16/9;"><span class="slot-label">gallery/04.jpg · 16:9</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 3/2;"><span class="slot-label">gallery/05.jpg · 3:2</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 3/4;"><span class="slot-label">gallery/06.jpg · 3:4</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 4/3;"><span class="slot-label">gallery/07.jpg · 4:3</span></div>
+                <div class="img-slot rounded-lg break-inside-avoid reveal" style="aspect-ratio: 1/1;"><span class="slot-label">gallery/08.jpg · 1:1</span></div>
+            {{ /if }}
+        </div>
+    </div>
+
+    {{# Lightbox #}}
+    <div x-show="lb" x-cloak x-transition.opacity @click="lb = false" @keydown.escape.window="lb = false" class="fixed inset-0 z-[80] flex items-center justify-center bg-ink/85 backdrop-blur-sm p-4">
+        <button type="button" class="absolute top-5 right-5 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close" @click="lb = false">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="max-w-[1100px] w-full" @click.stop>
+            <img :src="src" alt="" class="w-full rounded-xl">
+            <p class="text-sage-light/80 text-sm text-center mt-3" x-text="cap"></p>
+        </div>
+    </div>
+</section>

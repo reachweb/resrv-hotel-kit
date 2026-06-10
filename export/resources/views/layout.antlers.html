@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="{{ site:short_locale }}">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {{# SEO title/meta + JSON-LD #}}
+        {{ partial:meta }}
+
+        {{# Brand fonts — Fraunces (display) + Inter (body), DESIGN.md §4.2 #}}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
+
+        {{# Compiled site assets (Tailwind v4 + JS) #}}
+        {{ vite src="resources/js/site.js|resources/css/site.css" }}
+
+        {{# Livewire + Resrv frontend styles (calendar, components) #}}
+        {{ livewire:styles }}
+        <link rel="stylesheet" href="/vendor/statamic-resrv/frontend/css/resrv-frontend.css">
+
+        {{# Stripe JS is intentionally omitted here — added conditionally by the Stripe module (Phase 8). #}}
+    </head>
+    <body class="min-h-screen flex flex-col">
+
+        {{ partial:header }}
+
+        {{# Solid-nav pages clear the fixed header; transparent-hero pages manage their own top spacing. #}}
+        <main class="flex-1 w-full {{ unless transparent_nav }}pt-18 lg:pt-21{{ /unless }}">
+            {{ template_content }}
+        </main>
+
+        {{ partial:footer }}
+
+        {{# Resrv frontend JS (alpine-calendar + day.js) must load before Livewire scripts so its Alpine plugin registers #}}
+        <script src="/vendor/statamic-resrv/frontend/js/resrv-frontend.js"></script>
+        {{ livewire:scripts }}
+    </body>
+</html>

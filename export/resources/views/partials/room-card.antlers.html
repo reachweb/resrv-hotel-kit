@@ -1,0 +1,31 @@
+{{#
+    Room card — used in the rooms_showcase block and the rooms index.
+    Expects a `rooms` entry in scope (loop variable). Rates/prices stay live in
+    Resrv; this shows the editorial `from_price_label` only.
+#}}
+<a href="{{ url }}" class="group block h-full zoom-on-hover">
+    <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
+        {{ partial:image-slot :asset="hero_image" label="rooms/{slug}.jpg · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
+        <div class="p-5 lg:p-6 flex flex-col flex-1">
+            <h3 class="t-h3 mb-1.5">{{ title }}</h3>
+            {{ if intro }}<p class="text-sm text-muted mb-4">{{ intro | strip_tags | truncate:100 }}</p>{{ /if }}
+            <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted mb-4">
+                {{ if size_sqm }}<span>{{ size_sqm }} m²</span>{{ /if }}
+                {{ if max_occupancy }}<span>{{ max_occupancy }} guests</span>{{ /if }}
+                {{ if bed_configuration }}<span>{{ bed_configuration }}</span>{{ /if }}
+            </div>
+            {{ if amenities }}
+                <div class="flex flex-wrap gap-1.5 mb-5">
+                    {{ amenities }}<span class="inline-flex items-center gap-1.5 h-7.5 px-3 rounded-full bg-sage-light text-ink text-[13px] font-medium">{{ title }}</span>{{ /amenities }}
+                </div>
+            {{ /if }}
+            <div class="mt-auto flex items-end justify-between pt-4 border-t border-line">
+                <div>
+                    <span class="text-sm text-muted">from</span>
+                    <div class="font-display text-2xl text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}<span class="text-sm text-muted font-sans"> / night</span></div>
+                </div>
+                <span class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal pointer-events-none">View</span>
+            </div>
+        </div>
+    </article>
+</a>

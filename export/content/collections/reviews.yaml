@@ -1,0 +1,5 @@
+title: Reviews
+title_format: '{{ guest_name }}'
+sort_by: date
+sort_dir: desc
+date: true

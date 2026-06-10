@@ -1,0 +1,22 @@
+tree:
+  -
+    title: Rooms
+    url: /rooms
+  -
+    entry: dining
+    title: Dining
+  -
+    entry: spa
+    title: Spa
+  -
+    entry: offers
+    title: Offers
+  -
+    entry: gallery
+    title: Gallery
+  -
+    entry: about
+    title: About
+  -
+    entry: contact
+    title: Contact

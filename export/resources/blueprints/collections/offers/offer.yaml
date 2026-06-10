@@ -1,0 +1,68 @@
+title: Offer
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field: { type: text, display: Title, localizable: true, validate: [required] }
+          -
+            handle: slug
+            field: { type: slug, display: Slug, localizable: true, generate: true, validate: [required] }
+          -
+            handle: summary
+            field: { type: textarea, display: Summary, instructions: 'One-line teaser shown on offer cards.' }
+          -
+            handle: image
+            field:
+              type: assets
+              display: Image
+              container: assets
+              folder: offers
+              max_files: 1
+              mode: grid
+              instructions: 'Slot: `offers/<slug>.jpg · 3:2`.'
+          -
+            handle: body
+            field:
+              type: bard
+              display: Body
+              buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+              localizable: true
+  details:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: valid_from
+            field: { type: date, display: 'Valid from', width: 50 }
+          -
+            handle: valid_to
+            field: { type: date, display: 'Valid to', width: 50 }
+          -
+            handle: linked_coupon_code
+            field: { type: text, display: 'Coupon code', instructions: 'e.g. COASTAL10 — matches a Resrv dynamic-pricing coupon.', width: 50 }
+          -
+            handle: cta_label
+            field: { type: text, display: 'CTA label', default: 'Book this offer', width: 50 }
+          -
+            handle: linked_rooms
+            field:
+              type: entries
+              display: 'Linked rooms'
+              collections: [rooms]
+              instructions: 'Rooms this offer applies to (optional).'
+  seo:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true }

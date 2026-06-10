@@ -1,0 +1,95 @@
+{{#
+    Treatment detail — editorial body + the sticky single-date Resrv booking panel
+    (date + guests + per-day prices on the calendar, duration-tier rate rows, and
+    a "next available dates" list). Appointment time is picked at checkout (a free
+    Resrv Option), like extras.
+#}}
+
+{{# Breadcrumb #}}
+<nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
+    <a href="/spa" class="hover:text-ink transition-colors">Spa</a><span aria-hidden="true">/</span>
+    <span class="text-ink">{{ title }}</span>
+</nav>
+
+{{# Main two-column #}}
+<section class="container-rsv py-8 lg:py-12 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
+
+    {{# LEFT: content #}}
+    <div>
+        <div class="mb-5 reveal">
+            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-2">Spa &amp; Wellness{{ if duration_options }} · {{ duration_options }}{{ /if }}</p>
+            <h1 class="t-h1">{{ title }}</h1>
+        </div>
+
+        {{ partial:image-slot :asset="image" label="spa/{slug}.jpg · 3:2" ratio="3/2" class="rounded-xl mb-8 reveal" :alt="title" }}
+
+        {{ if summary }}
+            <p class="text-lg leading-relaxed text-ink/85 mb-6 reveal">{{ summary | widont }}</p>
+        {{ /if }}
+
+        {{ if body }}
+            <div class="reading prose prose-lg prose-p:text-ink/85 max-w-none mb-10 reveal">{{ body }}</div>
+        {{ /if }}
+
+        {{# Good to know #}}
+        <div class="bg-white rounded-lg border border-line p-5 lg:p-6 reveal">
+            <h2 class="text-xl font-semibold mb-4">Good to know</h2>
+            <ul class="space-y-2.5 text-[15px] text-ink/85">
+                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>Pick your appointment time at checkout — morning to early evening.</li>
+                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>The spa is adults-only and closed on Tuesdays.</li>
+                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>Every treatment ends with herbal tea on the quiet sun deck.</li>
+            </ul>
+        </div>
+    </div>
+
+    {{# RIGHT: sticky booking panel — single-date search + duration-tier rates #}}
+    <aside class="lg:sticky lg:top-[100px]" id="book">
+        <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
+            {{ if from_price_label }}
+            <div class="flex items-baseline gap-2 mb-1">
+                <span class="text-sm text-muted">from</span>
+                <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}</span>
+            </div>
+            <p class="text-sm text-muted mb-5">Pick a day to see times &amp; prices — the calendar shows live availability.</p>
+            {{ /if }}
+
+            {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
+
+            <div class="mt-4">
+                {{ livewire:availability-results :entry="id" rates="true" }}
+            </div>
+
+            {{ resrv:cutoff }}
+                {{ if has_cutoff_rules }}
+                    <div class="flex items-center justify-center gap-1.5 mt-4 text-sm text-warning">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        Last booking for today by {{ cutoff_time }}
+                    </div>
+                {{ /if }}
+            {{ /resrv:cutoff }}
+        </div>
+
+        {{# Next available dates #}}
+        <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-4">
+            {{ livewire:availability-list :entry="id" rates="true" }}
+        </div>
+
+        <p class="text-sm text-muted text-center mt-3 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Free cancellation up to a day before
+        </p>
+    </aside>
+</section>
+
+{{# More treatments #}}
+<section class="section-sm bg-sand">
+    <div class="container-rsv">
+        <h2 class="t-h2 mb-8 reveal">More from the menu</h2>
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {{ collection:spa_treatments id:not="{id}" limit="3" sort="title" }}
+                <div class="reveal h-full">{{ partial:treatment-card }}</div>
+            {{ /collection:spa_treatments }}
+        </div>
+    </div>
+</section>

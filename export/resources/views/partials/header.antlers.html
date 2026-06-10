@@ -1,0 +1,59 @@
+{{#
+    Site header — design `partials/header`.
+    Driven by {{ nav:main }} + the `site` global (never hardcode nav items).
+    Transparent→solid-on-scroll + mobile sheet are small Alpine components
+    (the Alpine that Livewire 4 bundles — do NOT add a second one).
+    Reuses the #siteNav / .nav-link / .brand state classes from site.css.
+    Pages with a full-bleed hero set `transparent_nav: true` in the cascade.
+#}}
+<header
+    id="siteNav"
+    x-data="{ transparent: {{ if transparent_nav }}true{{ else }}false{{ /if }}, scrolled: false, sheet: false }"
+    @scroll.window.passive="scrolled = (window.pageYOffset || document.documentElement.scrollTop) > 40"
+    @keydown.escape.window="sheet = false"
+    :class="transparent ? (scrolled ? 'is-transparent scrolled' : 'is-transparent') : 'is-solid'"
+    class="fixed top-0 inset-x-0 z-50 transition-all duration-300 is-solid"
+>
+    <div class="container-rsv flex items-center justify-between h-18 lg:h-21">
+        <a href="/" class="brand font-display text-2xl font-medium tracking-tight leading-none">{{ site:brand_name }}<span class="brand-dot text-terracotta">.</span></a>
+
+        <nav class="hidden lg:flex items-center gap-7">
+            {{ nav:main }}
+                <a href="{{ url }}" class="nav-link relative px-1 py-1 text-sm font-medium transition-colors {{ if is_current || is_parent }}is-active{{ /if }}">{{ title }}</a>
+            {{ /nav:main }}
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <a href="/rooms" class="hidden sm:inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-transparent text-sm font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">Book Now</a>
+            <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" @click="sheet = true">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+        </div>
+    </div>
+
+    {{# Mobile slide-in sheet #}}
+    <div id="navSheet" class="fixed inset-0 z-[60] lg:hidden" x-show="sheet" x-transition.opacity x-cloak>
+        <div class="absolute inset-0 bg-ink/40 backdrop-blur-sm" @click="sheet = false"></div>
+        <div
+            class="absolute inset-y-0 right-0 w-[86%] max-w-sm bg-shell flex flex-col p-7 transition-transform duration-300 ease-out"
+            :class="sheet ? 'translate-x-0' : 'translate-x-full'"
+        >
+            <div class="flex items-center justify-between mb-8">
+                <span class="font-display text-2xl">{{ site:brand_name }}<span class="text-terracotta">.</span></span>
+                <button type="button" class="grid place-items-center w-11 h-11 rounded-full hover:bg-sand" aria-label="Close menu" @click="sheet = false">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-1">
+                {{ nav:main }}
+                    <a href="{{ url }}" class="t-h3 font-display py-2.5 border-b border-line/70 {{ if is_current || is_parent }}text-terracotta{{ /if }}" @click="sheet = false">{{ title }}</a>
+                {{ /nav:main }}
+            </nav>
+            <a href="/rooms" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta w-full mt-8" @click="sheet = false">Book Now</a>
+            <div class="mt-auto pt-8 text-muted text-sm space-y-1">
+                <p>{{ site:phone }}</p>
+                <p>{{ site:email }}</p>
+            </div>
+        </div>
+    </div>
+</header>

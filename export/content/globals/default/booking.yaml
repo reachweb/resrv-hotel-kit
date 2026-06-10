@@ -1,0 +1,6 @@
+currency_symbol: '€'
+currency_display: before
+check_in_time: '15:00'
+check_out_time: '11:00'
+default_cutoff: 'Same-day bookings close at 16:00 local time.'
+cancellation_summary: 'Most rates include free cancellation up to 7 days before arrival. Non-refundable rates are clearly marked.'

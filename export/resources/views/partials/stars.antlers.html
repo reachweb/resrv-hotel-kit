@@ -1,0 +1,8 @@
+{{# Five rating stars filled up to {{ rating }} (1–5). Params: rating, class #}}
+<div class="flex gap-0.5 {{ class ?? 'text-terracotta' }}" aria-hidden="true">
+    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="{{ if rating >= 1 }}currentColor{{ else }}none{{ /if }}" stroke="currentColor" stroke-width="1.4"><path d="M12 17.3 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5z"/></svg>
+    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="{{ if rating >= 2 }}currentColor{{ else }}none{{ /if }}" stroke="currentColor" stroke-width="1.4"><path d="M12 17.3 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5z"/></svg>
+    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="{{ if rating >= 3 }}currentColor{{ else }}none{{ /if }}" stroke="currentColor" stroke-width="1.4"><path d="M12 17.3 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5z"/></svg>
+    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="{{ if rating >= 4 }}currentColor{{ else }}none{{ /if }}" stroke="currentColor" stroke-width="1.4"><path d="M12 17.3 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5z"/></svg>
+    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="{{ if rating >= 5 }}currentColor{{ else }}none{{ /if }}" stroke="currentColor" stroke-width="1.4"><path d="M12 17.3 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5z"/></svg>
+</div>

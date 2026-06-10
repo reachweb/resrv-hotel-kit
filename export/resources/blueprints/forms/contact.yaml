@@ -1,0 +1,47 @@
+tabs:
+  main:
+    display: Main
+    sections:
+      -
+        fields:
+          -
+            handle: first_name
+            field:
+              display: 'First name'
+              type: text
+              input_type: text
+              validate: [required]
+              width: 50
+          -
+            handle: last_name
+            field:
+              display: 'Last name'
+              type: text
+              input_type: text
+              validate: [required]
+              width: 50
+          -
+            handle: email
+            field:
+              display: Email
+              type: text
+              input_type: email
+              validate: [required, email]
+          -
+            handle: subject
+            field:
+              display: Subject
+              type: select
+              options:
+                reservation: 'Reservation enquiry'
+                existing: 'Existing booking'
+                dining: Dining
+                events: 'Events & groups'
+                other: Other
+              default: reservation
+          -
+            handle: message
+            field:
+              display: Message
+              type: textarea
+              validate: [required]

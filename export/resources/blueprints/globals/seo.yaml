@@ -1,0 +1,11 @@
+title: SEO
+fields:
+  -
+    handle: title_suffix
+    field: { type: text, display: 'Title suffix', default: ' · Resrv Hotel' }
+  -
+    handle: meta_description
+    field: { type: textarea, display: 'Default meta description', default: 'An intimate coastal-luxury resort on the Mediterranean. Sea-view suites, a private beach and an adults-only spa. Book direct in under a minute.' }
+  -
+    handle: og_image
+    field: { type: assets, display: 'Default OG image', container: assets, folder: brand, max_files: 1, mode: list }

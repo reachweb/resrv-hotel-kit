@@ -1,0 +1,64 @@
+{{#
+    Experience detail — content-driven (no booking). Hero band, body, highlight
+    checklist, gallery, and an hours/CTA card.
+#}}
+
+{{# Hero #}}
+<section class="relative flex items-end min-h-[420px] lg:min-h-[52vh]">
+    <div class="img-slot has-img absolute inset-0 rounded-none">
+        {{ if hero_image }}
+            {{ hero_image }}<img src="{{ glide:url width='2000' }}" alt="{{ alt ?? title }}" class="absolute inset-0 w-full h-full object-cover">{{ /hero_image }}
+        {{ else }}
+            <span class="slot-label">experiences/{{ slug }}.jpg · 21:9</span>
+        {{ /if }}
+    </div>
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.45), rgba(27,43,40,.12) 40%, rgba(27,43,40,.72));"></div>
+    <div class="relative container-rsv py-12 text-white">
+        <a href="/experiences" class="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white mb-5 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            All experiences
+        </a>
+        {{ if category }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-white/85 mb-3">{{ category:title }}</p>{{ /if }}
+        <h1 class="t-display-xl text-white max-w-[18ch] text-balance">{{ title | widont }}</h1>
+    </div>
+</section>
+
+<section class="container-rsv py-14 lg:py-20 grid lg:grid-cols-[1fr_360px] gap-12 items-start">
+    <div>
+        {{ if body }}
+            <div class="reading prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:text-ink prose-p:text-ink/85 prose-li:text-ink/85 prose-a:text-terracotta-dark prose-strong:text-ink mb-10 reveal">{{ body }}</div>
+        {{ /if }}
+
+        {{ if highlights }}
+            <h2 class="t-h2 mb-5 reveal">Highlights</h2>
+            <ul class="space-y-3 text-base text-ink/85 mb-12 reveal">
+                {{ highlights }}
+                    <li class="flex gap-3">
+                        <svg class="w-5 h-5 text-success shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        {{ value }}
+                    </li>
+                {{ /highlights }}
+            </ul>
+        {{ /if }}
+
+        {{ if gallery }}
+            <div class="grid sm:grid-cols-2 gap-4">
+                {{ gallery limit="4" }}
+                    <div class="img-slot has-img rounded-lg reveal" style="aspect-ratio: 3/2;"><img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy"></div>
+                {{ /gallery }}
+            </div>
+        {{ /if }}
+    </div>
+
+    {{# Hours / CTA card #}}
+    <aside class="lg:sticky lg:top-[100px]">
+        <div class="bg-white rounded-lg shadow-card p-6">
+            {{ if hours }}
+                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-2">Hours</p>
+                <p class="font-medium mb-5">{{ hours }}</p>
+            {{ /if }}
+            <a href="/contact" class="inline-flex items-center justify-center gap-2 w-full h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">{{ cta_label ?? 'Enquire' }}</a>
+            <p class="text-sm text-muted text-center mt-3">We'll arrange everything before you arrive.</p>
+        </div>
+    </aside>
+</section>

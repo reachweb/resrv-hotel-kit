@@ -1,0 +1,190 @@
+{{#
+    Room detail — gallery + lightbox, specs/amenities, extras tease, reviews,
+    and the sticky Resrv booking panel (range search + per-rate results).
+    Extras/options are only teased here; real selection happens at checkout.
+#}}
+<div x-data="{ lb: false, src: '', cap: '' }">
+
+    {{# Breadcrumb #}}
+    <nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
+        <a href="/rooms" class="hover:text-ink transition-colors">Rooms</a><span aria-hidden="true">/</span>
+        <span class="text-ink">{{ title }}</span>
+    </nav>
+
+    {{# Gallery — hero + two stacked thumbs, lightbox over everything #}}
+    <section class="container-rsv pt-5">
+        <div class="grid lg:grid-cols-[1.6fr_1fr] gap-3 rounded-xl overflow-hidden max-h-[560px]">
+            {{ if hero_image }}
+                {{ hero_image }}
+                    <button type="button" class="img-slot has-img cursor-pointer zoom-on-hover relative min-h-[280px] block w-full" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                        <img src="{{ glide:url width='1400' }}" alt="{{ alt ?? title }}">
+                    </button>
+                {{ /hero_image }}
+            {{ else }}
+                <div class="img-slot relative min-h-[280px]"><span class="slot-label">rooms/{{ slug }}.jpg · 3:2</span></div>
+            {{ /if }}
+            <div class="grid grid-rows-2 gap-3">
+                {{ if gallery }}
+                    {{ gallery limit="2" }}
+                        <button type="button" class="img-slot has-img cursor-pointer zoom-on-hover relative block w-full" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                            <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
+                        </button>
+                    {{ /gallery }}
+                {{ else }}
+                    <div class="img-slot relative"><span class="slot-label">rooms/{{ slug }}-gallery-1.jpg · 3:2</span></div>
+                    <div class="img-slot relative"><span class="slot-label">rooms/{{ slug }}-gallery-2.jpg · 3:2</span></div>
+                {{ /if }}
+            </div>
+        </div>
+    </section>
+
+    {{# Main two-column #}}
+    <section class="container-rsv py-10 lg:py-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
+
+        {{# LEFT: content #}}
+        <div>
+            <div class="mb-5 reveal">
+                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-2">{{ view_type }}{{ if view_type && floor }} · {{ /if }}{{ floor }}</p>
+                <h1 class="t-h1">{{ title }}</h1>
+            </div>
+
+            {{ if intro }}
+                <div class="reading text-lg leading-relaxed text-ink/85 space-y-5 mb-10 reveal">{{ intro | markdown }}</div>
+            {{ /if }}
+
+            {{# Specs #}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 reveal">
+                {{ if size_sqm }}
+                <div class="bg-white rounded-lg p-4 border border-line">
+                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+                    <div class="text-sm text-muted">Size</div><div class="font-medium">{{ size_sqm }} m²</div>
+                </div>
+                {{ /if }}
+                {{ if max_occupancy }}
+                <div class="bg-white rounded-lg p-4 border border-line">
+                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div class="text-sm text-muted">Sleeps</div><div class="font-medium">{{ max_occupancy }} guests</div>
+                </div>
+                {{ /if }}
+                {{ if bed_configuration }}
+                <div class="bg-white rounded-lg p-4 border border-line">
+                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9V5a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v4M2 9v10M2 9h20M22 9v10M2 15h20"/></svg>
+                    <div class="text-sm text-muted">Bed</div><div class="font-medium">{{ bed_configuration }}</div>
+                </div>
+                {{ /if }}
+                {{ if view_type }}
+                <div class="bg-white rounded-lg p-4 border border-line">
+                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="text-sm text-muted">View</div><div class="font-medium">{{ view_type }}</div>
+                </div>
+                {{ /if }}
+            </div>
+            <hr class="border-line mb-10" />
+
+            {{# Amenities & features #}}
+            <h2 class="t-h2 mb-6 reveal">In this room</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-12 reveal">
+                {{ amenities }}
+                    <div class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-sage shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</div>
+                {{ /amenities }}
+                {{ room_features }}
+                    <div class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-sage shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</div>
+                {{ /room_features }}
+            </div>
+            <hr class="border-line mb-10" />
+
+            {{# Extras tease — assigned Resrv extras; real selection is checkout step 1 #}}
+            {{ if extras }}
+                <h2 class="t-h2 mb-2 reveal">Make it yours</h2>
+                <p class="text-base text-muted mb-6 reveal">Add extras at checkout — a few favourites:</p>
+                <div class="grid sm:grid-cols-2 gap-4 mb-12 reveal">
+                    {{ extras | values | limit:4 }}
+                        <div class="bg-white rounded-lg p-4 border border-line flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-full bg-sand grid place-items-center text-teal shrink-0">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-medium text-[15px]">{{ name }}</div>
+                                <div class="text-sm text-muted">{{ booking:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</div>
+                            </div>
+                        </div>
+                    {{ /extras }}
+                </div>
+                <hr class="border-line mb-10" />
+            {{ /if }}
+
+            {{# Reviews #}}
+            <h2 class="t-h2 mb-6 reveal">What guests say</h2>
+            <div class="grid sm:grid-cols-2 gap-5 reveal">
+                {{ collection:reviews limit="2" sort="date:desc" }}
+                    {{ partial:testimonial variant="light" }}
+                {{ /collection:reviews }}
+            </div>
+        </div>
+
+        {{# RIGHT: sticky booking panel #}}
+        <aside class="lg:sticky lg:top-[100px]" id="book">
+            <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
+                {{ if from_price_label }}
+                <div class="flex items-baseline gap-2 mb-1">
+                    <span class="text-sm text-muted">from</span>
+                    <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}</span>
+                    <span class="text-sm text-muted">/ night</span>
+                </div>
+                <p class="text-sm text-muted mb-5">Pick your dates for live rates &amp; availability.</p>
+                {{ /if }}
+
+                {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
+
+                <div class="mt-4">
+                    {{ livewire:availability-results :entry="id" rates="true" }}
+                </div>
+
+                {{ resrv:cutoff }}
+                    {{ if has_cutoff_rules }}
+                        <div class="flex items-center justify-center gap-1.5 mt-4 text-sm text-warning">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                            Last booking for tonight by {{ cutoff_time }}
+                        </div>
+                    {{ /if }}
+                {{ /resrv:cutoff }}
+            </div>
+            <p class="text-sm text-muted text-center mt-3 flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+                No card needed to reserve flexible rates
+            </p>
+        </aside>
+    </section>
+
+    {{# You may also like #}}
+    <section class="section-sm bg-sand">
+        <div class="container-rsv">
+            <h2 class="t-h2 mb-8 reveal">You may also like</h2>
+            <div class="grid gap-6 md:grid-cols-3">
+                {{ collection:rooms id:not="{id}" limit="3" sort="title" }}
+                    <div class="reveal">{{ partial:room-card }}</div>
+                {{ /collection:rooms }}
+            </div>
+        </div>
+    </section>
+
+    {{# Mobile sticky CTA #}}
+    <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line p-4 flex items-center justify-between gap-4 shadow-raised">
+        <div>
+            {{ if from_price_label }}<span class="font-display text-[22px] text-terracotta-dark">{{ booking:currency_symbol }}{{ from_price_label }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
+        </div>
+        <a href="#book" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark flex-1 max-w-[220px]">Check availability</a>
+    </div>
+
+    {{# Lightbox #}}
+    <div x-show="lb" x-cloak x-transition.opacity @click="lb = false" @keydown.escape.window="lb = false" class="fixed inset-0 z-[80] flex items-center justify-center bg-ink/85 backdrop-blur-sm p-4">
+        <button type="button" class="absolute top-5 right-5 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close" @click="lb = false">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="max-w-[1100px] w-full" @click.stop>
+            <img :src="src" alt="" class="w-full rounded-xl">
+            <p class="text-sage-light/80 text-sm text-center mt-3" x-text="cap"></p>
+        </div>
+    </div>
+</div>

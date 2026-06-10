@@ -1,0 +1,23 @@
+{{# Rooms showcase — chosen rooms, or featured rooms as a fallback. #}}
+<section class="section-sm">
+    <div class="container-rsv">
+        <div class="flex items-end justify-between gap-6 mb-10 lg:mb-14">
+            <div class="reveal">
+                {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3">{{ overline }}</p>{{ /if }}
+                {{ if heading }}<h2 class="t-h2 max-w-[18ch]">{{ heading | widont }}</h2>{{ /if }}
+                {{ if intro }}<p class="text-base leading-relaxed text-muted mt-4 max-w-[54ch]">{{ intro }}</p>{{ /if }}
+            </div>
+            {{ if cta_label }}
+                <a href="{{ cta_url ?? '/rooms' }}" class="group/cta text-sm font-semibold text-teal hover:text-terracotta-dark transition hidden sm:inline-flex items-center gap-1.5 shrink-0 pb-1">{{ cta_label }} <svg class="w-4 h-4 transition-transform group-hover/cta:translate-x-[3px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 18 6-6-6-6"/></svg></a>
+            {{ /if }}
+        </div>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {{ if rooms }}
+                {{ rooms }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /rooms }}
+            {{ else }}
+                {{ collection:rooms featured:is="true" sort="from_price_label" limit="6" }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /collection:rooms }}
+            {{ /if }}
+        </div>
+        {{ if cta_label }}<a href="{{ cta_url ?? '/rooms' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta w-full mt-8 sm:hidden">{{ cta_label }}</a>{{ /if }}
+    </div>
+</section>

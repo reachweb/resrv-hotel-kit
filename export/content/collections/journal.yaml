@@ -1,0 +1,9 @@
+title: Journal
+route: '/journal/{slug}'
+template: journal/show
+taxonomies:
+  - journal_categories
+  - journal_tags
+date: true
+sort_by: date
+sort_dir: desc

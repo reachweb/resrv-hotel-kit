@@ -1,0 +1,6 @@
+title: Pages
+structure:
+  root: true
+route: '{parent_uri}/{slug}'
+template: pages/show
+propagate: true

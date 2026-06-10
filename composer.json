@@ -1,0 +1,9 @@
+{
+    "name": "reachweb/resrv-hotel",
+    "extra": {
+        "statamic": {
+            "name": "Resrv Hotel",
+            "description": "A coastal-luxury hotel starter kit showcasing the Resrv reservations addon - rooms, spa & restaurant bookings through one checkout."
+        }
+    }
+}

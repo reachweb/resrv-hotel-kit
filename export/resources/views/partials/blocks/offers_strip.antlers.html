@@ -1,0 +1,13 @@
+{{# Offers strip — chosen offers, or all offers as a fallback. #}}
+<section class="section-sm bg-sand">
+    <div class="container-rsv">
+        {{ partial:section-header :overline="overline" :heading="heading" :intro="intro" }}
+        <div class="grid gap-6 md:grid-cols-3">
+            {{ if offers }}
+                {{ offers }}<div class="reveal h-full">{{ partial:offer-card }}</div>{{ /offers }}
+            {{ else }}
+                {{ collection:offers sort="valid_from" limit="6" }}<div class="reveal h-full">{{ partial:offer-card }}</div>{{ /collection:offers }}
+            {{ /if }}
+        </div>
+    </div>
+</section>

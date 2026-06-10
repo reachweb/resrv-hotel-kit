@@ -1,0 +1,23 @@
+title: 'Room Feature'
+fields:
+  -
+    handle: title
+    field:
+      type: text
+      display: Title
+      validate: [required]
+  -
+    handle: icon
+    field:
+      type: text
+      display: Icon
+      instructions: 'Icon name (thin line set), e.g. "sea-view". Maps to the frontend icon sprite.'
+      width: 50
+  -
+    handle: slug
+    field:
+      type: slug
+      display: Slug
+      localizable: true
+      width: 50
+      generate: true

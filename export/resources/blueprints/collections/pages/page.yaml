@@ -1,0 +1,362 @@
+title: Page
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: Title
+              localizable: true
+              validate: [required]
+          -
+            handle: slug
+            field:
+              type: slug
+              display: Slug
+              localizable: true
+              generate: true
+              validate: [required]
+          -
+            handle: builder
+            field:
+              type: replicator
+              display: 'Page builder'
+              instructions: 'Assemble the page from stackable sections. Every image is a named slot and degrades gracefully if empty.'
+              collapse: accordion
+              sets:
+                sections:
+                  display: Sections
+                  sets:
+                    hero:
+                      display: Hero
+                      instructions: 'Full-bleed lead section. Optionally overlaps the availability search widget.'
+                      icon: assets
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, instructions: 'Small eyebrow above the heading.', width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: lead
+                          field: { type: textarea, display: 'Lead copy' }
+                        -
+                          handle: image
+                          field:
+                            type: assets
+                            display: 'Background image'
+                            container: assets
+                            folder: hero
+                            max_files: 1
+                            mode: grid
+                            instructions: 'Slot: `hero/<page>.jpg · 16:9`.'
+                        -
+                          handle: cta_label
+                          field: { type: text, display: 'Button label', width: 50 }
+                        -
+                          handle: cta_url
+                          field: { type: text, display: 'Button URL', width: 50 }
+                        -
+                          handle: show_search
+                          field: { type: toggle, display: 'Show availability search', instructions: 'Overlays the booking search widget on the hero.', default: false }
+                    rich_text:
+                      display: 'Rich text'
+                      icon: text
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: content
+                          field:
+                            type: bard
+                            display: Content
+                            buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+                        -
+                          handle: width
+                          field: { type: select, display: Width, options: { narrow: 'Narrow (reading)', wide: Wide }, default: narrow, width: 50 }
+                    image_text_split:
+                      display: 'Image + text split'
+                      icon: 'layout-grid'
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: text
+                          field:
+                            type: bard
+                            display: Text
+                            buttons: [bold, italic, unorderedlist, anchor, removeformat]
+                        -
+                          handle: image
+                          field:
+                            type: assets
+                            display: Image
+                            container: assets
+                            max_files: 1
+                            mode: grid
+                            instructions: 'Slot: `<section>.jpg · 4:3`.'
+                        -
+                          handle: image_position
+                          field: { type: button_group, display: 'Image position', options: { left: Left, right: Right }, default: left, width: 50 }
+                        -
+                          handle: cta_label
+                          field: { type: text, display: 'Button label', width: 50 }
+                        -
+                          handle: cta_url
+                          field: { type: text, display: 'Button URL', width: 50 }
+                    gallery_grid:
+                      display: 'Gallery grid'
+                      icon: assets
+                      fields:
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: columns
+                          field: { type: select, display: Columns, options: { '2': Two, '3': Three, '4': Four }, default: '3', cast_booleans: false, width: 50 }
+                        -
+                          handle: images
+                          field:
+                            type: assets
+                            display: Images
+                            container: assets
+                            folder: gallery
+                            mode: grid
+                            instructions: 'Slots: `gallery/<name>.jpg · 3:2`.'
+                    rooms_showcase:
+                      display: 'Rooms showcase'
+                      icon: hammer
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: rooms
+                          field:
+                            type: entries
+                            display: Rooms
+                            collections: [rooms]
+                            instructions: 'Leave empty to show featured rooms automatically.'
+                        -
+                          handle: cta_label
+                          field: { type: text, display: 'Button label', width: 50 }
+                        -
+                          handle: cta_url
+                          field: { type: text, display: 'Button URL', width: 50 }
+                    treatments_grid:
+                      display: 'Treatments grid'
+                      icon: hammer
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: treatments
+                          field:
+                            type: entries
+                            display: Treatments
+                            collections: [spa_treatments]
+                            instructions: 'Leave empty to show every treatment.'
+                    restaurant_booking:
+                      display: 'Restaurant booking band'
+                      icon: hammer
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: venue
+                          field:
+                            type: entries
+                            display: Venue
+                            collections: [restaurant]
+                            max_items: 1
+                            instructions: 'Leave empty to use the first restaurant entry.'
+                    offers_strip:
+                      display: 'Offers strip'
+                      icon: tags
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: offers
+                          field:
+                            type: entries
+                            display: Offers
+                            collections: [offers]
+                            instructions: 'Leave empty to show all current offers.'
+                    reviews_carousel:
+                      display: 'Reviews carousel'
+                      icon: star
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: show_aggregate
+                          field: { type: toggle, display: 'Show aggregate rating', default: true }
+                        -
+                          handle: reviews
+                          field:
+                            type: entries
+                            display: Reviews
+                            collections: [reviews]
+                            instructions: 'Leave empty to show featured reviews automatically.'
+                    experiences_grid:
+                      display: 'Experiences grid'
+                      icon: 'layout-grid'
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: experiences
+                          field:
+                            type: entries
+                            display: Experiences
+                            collections: [experiences]
+                            instructions: 'Leave empty to show all experiences.'
+                        -
+                          handle: cta_label
+                          field: { type: text, display: 'Button label', width: 50 }
+                        -
+                          handle: cta_url
+                          field: { type: text, display: 'Button URL', width: 50 }
+                    cta_band:
+                      display: 'CTA band'
+                      icon: bullhorn
+                      fields:
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading }
+                        -
+                          handle: text
+                          field: { type: textarea, display: Text }
+                        -
+                          handle: cta_label
+                          field: { type: text, display: 'Button label', width: 50 }
+                        -
+                          handle: cta_url
+                          field: { type: text, display: 'Button URL', width: 50 }
+                        -
+                          handle: background
+                          field: { type: button_group, display: Background, options: { teal: Teal, terracotta: Terracotta, sand: Sand }, default: teal, width: 50 }
+                    faq_block:
+                      display: 'FAQ block'
+                      icon: list
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                        -
+                          handle: faqs
+                          field:
+                            type: entries
+                            display: FAQs
+                            collections: [faqs]
+                            instructions: 'Leave empty to show all FAQs grouped by category.'
+                    availability_search_band:
+                      display: 'Availability search band'
+                      icon: calendar
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro }
+                    map_contact:
+                      display: 'Map + contact'
+                      icon: 'map-pin'
+                      fields:
+                        -
+                          handle: overline
+                          field: { type: text, display: Overline, width: 50 }
+                        -
+                          handle: heading
+                          field: { type: text, display: Heading, width: 50 }
+                        -
+                          handle: intro
+                          field: { type: textarea, display: Intro, instructions: 'Contact details come from the Site global; this is supporting copy.' }
+                        -
+                          handle: show_map
+                          field: { type: toggle, display: 'Show map', default: true, width: 50 }
+                        -
+                          handle: show_form
+                          field: { type: toggle, display: 'Show contact form', default: true, width: 50 }
+  sidebar:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true, instructions: 'Falls back to the page title + global suffix.' }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true, instructions: 'Falls back to the global default.' }
+          -
+            handle: og_image
+            field:
+              type: assets
+              display: 'Social image'
+              container: assets
+              folder: brand
+              max_files: 1
+              mode: list

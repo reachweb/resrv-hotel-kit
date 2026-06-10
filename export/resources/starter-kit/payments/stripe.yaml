@@ -1,0 +1,4 @@
+# Starter-kit payments-module marker. The post-install hook reads this to learn
+# which gateway option was chosen (module selections are not exposed to hooks),
+# then removes the resources/starter-kit directory.
+gateway: stripe

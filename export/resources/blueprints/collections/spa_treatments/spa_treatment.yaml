@@ -1,0 +1,87 @@
+title: 'Spa Treatment'
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: 'Treatment name'
+              localizable: true
+              validate: [required]
+          -
+            handle: slug
+            field:
+              type: slug
+              display: Slug
+              localizable: true
+              generate: true
+              validate: [required]
+          -
+            handle: duration_options
+            field:
+              type: text
+              display: 'Duration label'
+              instructions: 'Display-only (e.g. "60 / 90 min"). The bookable duration tiers are Resrv rates scoped to this collection.'
+              width: 50
+          -
+            handle: from_price_label
+            field:
+              type: text
+              display: '"From" price label'
+              instructions: 'Display-only marketing price (e.g. "90"). The real, bookable price comes from Resrv availability/rates.'
+              width: 50
+          -
+            handle: summary
+            field:
+              type: textarea
+              display: Summary
+              localizable: true
+              instructions: 'One short sentence for the treatment card.'
+          -
+            handle: image
+            field:
+              type: assets
+              display: Image
+              container: assets
+              folder: spa
+              max_files: 1
+              mode: grid
+              instructions: 'Slot: `spa/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+          -
+            handle: body
+            field:
+              type: bard
+              display: Body
+              localizable: true
+              buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+  booking:
+    display: Booking
+    sections:
+      -
+        display: Resrv
+        instructions: 'Single-date appointment availability for this treatment (quantity = slots per day). Duration tiers are Resrv rates scoped to this collection; appointment times are a free Resrv Option — both managed in Resrv → CP (not here).'
+        fields:
+          -
+            handle: availability
+            field: { type: resrv_availability, display: Availability }
+          -
+            handle: options
+            field: { type: resrv_options, display: Options }
+          -
+            handle: cutoff
+            field: { type: resrv_cutoff, display: Cutoff }
+  seo:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true }

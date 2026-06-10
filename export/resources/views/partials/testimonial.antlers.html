@@ -1,0 +1,21 @@
+{{#
+    Testimonial card. Expects a `reviews` entry in scope. Params:
+      variant — default (teal context, white text) or 'light' (white card, ink
+                text — room detail, light sections).
+#}}
+{{ if variant == 'light' }}
+    <figure class="bg-white rounded-lg p-5 border border-line flex flex-col">
+        {{ partial:stars :rating="rating" }}
+        <blockquote class="font-display text-[18px] leading-snug my-3 flex-1">&ldquo;{{ quote }}&rdquo;</blockquote>
+        <figcaption class="text-sm text-muted"><span class="text-ink font-medium">{{ guest_name }}</span>{{ if stay_type }} · {{ stay_type }}{{ /if }} · {{ source ?? 'Verified' }}</figcaption>
+    </figure>
+{{ else }}
+    <figure class="bg-white/[0.06] border border-sage/20 rounded-lg p-6 flex flex-col">
+        {{ partial:stars :rating="rating" }}
+        <blockquote class="font-display text-[19px] leading-snug text-white mt-4 mb-5 flex-1">&ldquo;{{ quote }}&rdquo;</blockquote>
+        <figcaption class="text-sm text-sage-light/80">
+            <span class="text-white font-medium">{{ guest_name }}</span>
+            {{ if stay_type || source }}<br>{{ stay_type }}{{ if stay_type && source }} · {{ /if }}{{ source }}{{ /if }}
+        </figcaption>
+    </figure>
+{{ /if }}

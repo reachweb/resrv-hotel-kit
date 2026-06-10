@@ -1,0 +1,41 @@
+title: Review
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: guest_name
+            field: { type: text, display: 'Guest name', validate: [required], width: 50 }
+          -
+            handle: rating
+            field:
+              type: integer
+              display: Rating
+              instructions: '1–5 stars.'
+              default: 5
+              validate: ['integer', 'min:1', 'max:5']
+              width: 50
+          -
+            handle: quote
+            field: { type: textarea, display: Quote, validate: [required] }
+          -
+            handle: stay_type
+            field: { type: text, display: 'Stay type', instructions: 'e.g. Honeymoon, Family holiday.', width: 50 }
+          -
+            handle: source
+            field: { type: text, display: Source, instructions: 'e.g. Verified stay, Google.', default: 'Verified stay', width: 50 }
+          -
+            handle: avatar
+            field:
+              type: assets
+              display: Avatar
+              container: assets
+              folder: brand
+              max_files: 1
+              mode: list
+              instructions: 'Optional. Slot: `brand/avatar-<name>.jpg · 1:1`.'
+          -
+            handle: featured
+            field: { type: toggle, display: 'Featured on home', default: false }

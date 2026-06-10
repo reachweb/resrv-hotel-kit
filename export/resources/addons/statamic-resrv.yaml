@@ -1,0 +1,27 @@
+name: 'Resrv Hotel'
+address1: 'Akti Koundourou 12'
+zip_city: '72100 Agios Nikolaos'
+country: Greece
+phone: '+30 28410 00000'
+mail: stay@resrv-hotel.test
+enable_time: false
+enable_affiliates: true
+enable_cutoff_rules: true
+minimum_days_before: 0
+minimum_reservation_period_in_days: 1
+maximum_reservation_period_in_days: 21
+free_cancellation_period: 7
+full_payment_after_free_cancellation: true
+maximum_quantity: 6
+admin_email: admin@resrv-hotel.test
+checkout_forms_default: checkout
+checkout_entry: checkout
+checkout_completed_entry: checkout-complete
+payment: full
+minutes_to_hold: 10
+enable_abandoned_emails: true
+abandoned_email_delay_days: 1
+currency_name: Euro
+currency_isoCode: EUR
+currency_symbol: €
+currency_delimiter: ','

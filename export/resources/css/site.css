@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+/*
+ * Content sources Tailwind scans for utility classes.
+ * - ../views          → our Antlers templates + published Resrv Blade overrides
+ *                       (resources/views/vendor/statamic-resrv/**)
+ * - ../../content     → class names referenced in entry/markdown content
+ * - vendor/...resrv   → Resrv's own Blade views, so any class used by a component
+ *                       we have NOT overridden still compiles (else checkout is unstyled).
+ *                       An explicit @source overrides Tailwind's gitignore skip of vendor/.
+ */
+@source "../views";
+@source "../../content";
+@source "../../vendor/reachweb/statamic-resrv/resources/views/**/*.blade.php";
+
+/*
+ * Brand tokens — mirrored 1:1 from DESIGN.md §4 / the design handoff `tokens.css`.
+ * These generate utilities like bg-teal, text-terracotta, font-display, rounded-lg.
+ * Naming note: the handoff's `--border` token (#DCD5C7) is `--color-line` here, so the
+ * utility reads `border-line`; the @layer components classes below reference it as such.
+ */
+@theme {
+  --color-ink:             #1B2B28;
+  --color-teal:            #2E4A47;
+  --color-teal-hover:      #24423F;
+  --color-sage:            #9CB4B0;
+  --color-sage-light:      #C5D3CF;
+  --color-shell:           #F3EEE6;
+  --color-sand:            #E8DFD2;
+  --color-terracotta:      #C98A5E;
+  --color-terracotta-dark: #B5754A;
+  --color-muted:           #5A6B67;
+  --color-line:            #DCD5C7;
+  --color-success:         #4F7A5B;
+  --color-warning:         #C99A4E;
+  --color-error:           #B5523E;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 9999px;
+
+  /* Warm, low, diffuse shadows (DESIGN §4.3). */
+  --shadow-card:   0 1px 2px rgba(27,43,40,.04), 0 8px 24px rgba(27,43,40,.06);
+  --shadow-raised: 0 12px 40px rgba(27,43,40,.12);
+}
+
+/*
+ * Booking-calendar theming (@reachweb/alpine-calendar reads these CSS variables).
+ * Declared at :root; the plugin's defaults are zero-specificity so these win.
+ * Mapped to brand tokens per DESIGN.md §4.6.
+ */
+:root {
+  --color-calendar-bg:                  #FFFFFF;
+  --color-calendar-text:                #1B2B28; /* Ink */
+  --color-calendar-border:              #DCD5C7; /* Border */
+  --color-calendar-hover:               #C5D3CF; /* Sage Light */
+  --color-calendar-overlay:             rgba(27,43,40,.30);
+  --color-calendar-primary:             #C98A5E; /* Terracotta — selected/active day */
+  --color-calendar-primary-text:        #FFFFFF;
+  --color-calendar-muted:               #5A6B67; /* Muted */
+  --color-calendar-disabled:            #B7B1A4;
+  --color-calendar-other-month:         #B7B1A4;
+  --color-calendar-weekday:             #5A6B67;
+  --color-calendar-range:               #E8DFD2; /* Sand — in-range fill */
+  --color-calendar-today-ring:          #9CB4B0; /* Sage */
+  --color-calendar-focus-ring:          #C98A5E; /* Terracotta */
+  --color-calendar-available:           #4F7A5B; /* Success — availability dot/label */
+  --color-calendar-available-bg:        #EAF1EA;
+  --color-calendar-unavailable:         #B7B1A4;
+  --color-calendar-day-meta:            #5A6B67; /* Muted — per-day price label */
+
+  --radius-calendar:                    16px;
+  --radius-calendar-day:                9999px;
+  --radius-calendar-day-range-edge:     9999px;
+  --radius-calendar-day-range-middle:   0;
+
+  --shadow-calendar: 0 12px 40px rgba(27,43,40,.12);
+  --font-calendar: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ============================================================
+   BASE — global resets/defaults ported from tokens.css (§4)
+   ============================================================ */
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  /* Hide Alpine-controlled elements until Alpine boots (loaded via livewire:scripts). */
+  [x-cloak] { display: none !important; }
+
+  body {
+    background: var(--color-shell);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings default to the display face; utilities (font-sans, etc.) still win. */
+  h1, h2, h3, h4 { font-family: var(--font-display); }
+
+  ::selection { background: var(--color-terracotta); color: #fff; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+}
+
+/* ============================================================
+   COMPONENTS — reusable classes ported from the design handoff
+   `tokens.css` (+ inline page styles for .seg / .pay-method /
+   .filter-chip). Design vars are mapped onto the @theme tokens
+   above so @theme stays the single source of truth.
+   ============================================================ */
+/* Fluid display/heading type kept as @utility (clamp() doesn't inline cleanly).
+   Fixed-size type (t-overline→text-xs font-semibold uppercase tracking-[0.12em];
+   t-small→text-sm; t-body→text-base leading-relaxed; t-body-l→text-lg leading-relaxed;
+   t-h4→text-xl font-semibold; tabular→tabular-nums) is inlined in the markup;
+   font-display is a @theme utility, font-body→font-sans. */
+@utility t-display-xl { font-family: var(--font-display); font-weight: 500; font-size: clamp(40px, 6.2vw, 72px); line-height: 1.05; letter-spacing: -0.02em; }
+@utility t-display { font-family: var(--font-display); font-weight: 500; font-size: clamp(32px, 4.6vw, 56px); line-height: 1.08; letter-spacing: -0.015em; }
+@utility t-h1 { font-family: var(--font-display); font-weight: 500; font-size: clamp(32px, 3.6vw, 44px); line-height: 1.1; letter-spacing: -0.01em; }
+@utility t-h2 { font-family: var(--font-display); font-weight: 500; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.15; letter-spacing: -0.01em; }
+@utility t-h3 { font-family: var(--font-display); font-weight: 500; font-size: clamp(21px, 1.8vw, 24px); line-height: 1.25; }
+
+@layer components {
+
+  /* Buttons are inlined as Tailwind utilities in the markup (no .btn component). */
+
+  /* Chips/badges are inlined as utilities in the markup
+     (chip: inline-flex items-center gap-1.5 h-7.5 px-3 rounded-full bg-sage-light text-ink text-[13px] font-medium ·
+      badge: inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none + bg/text). */
+
+  /* ---- Form controls (§5.12) ---- */
+  .field-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-ink); margin-bottom: 7px; }
+  .input, .select, .textarea {
+    width: 100%; height: 48px; padding: 0 14px; background: #fff; color: var(--color-ink);
+    border: 1.5px solid var(--color-line); border-radius: var(--radius-md); font-size: 15px; font-family: var(--font-sans);
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .textarea { height: auto; padding: 12px 14px; min-height: 96px; resize: vertical; line-height: 1.55; }
+  .input::placeholder, .textarea::placeholder { color: var(--color-muted); opacity: .7; }
+  .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--color-terracotta); box-shadow: 0 0 0 2px rgba(201,138,94,.35); }
+  .field-help { font-size: 12.5px; color: var(--color-muted); margin-top: 6px; }
+  .field-error { font-size: 12.5px; color: var(--color-error); margin-top: 6px; display: flex; gap: 5px; align-items: center; }
+  .input.has-error, .select.has-error { border-color: var(--color-error); }
+  .select {
+    -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6B67' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+  }
+
+  /* Cards/surfaces/dividers are inlined as utilities in the markup
+     (bg-white rounded-lg shadow-card · bg-sand/-shell/-teal · h-px bg-line border-0). */
+
+  /* ---- Image slots (§0.4) — graceful placeholder w/ ratio + label ---- */
+  .img-slot {
+    position: relative; overflow: hidden; border-radius: inherit;
+    background:
+      radial-gradient(120% 120% at 30% 20%, rgba(156,180,176,.55), transparent 60%),
+      linear-gradient(135deg, var(--color-sand), var(--color-sage-light));
+  }
+  .img-slot > img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform .5s cubic-bezier(.2,.6,.2,1), filter .4s ease;
+  }
+  .img-slot > .slot-label {
+    position: absolute; left: 12px; bottom: 11px; z-index: 1;
+    font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--color-teal);
+    background: rgba(255,255,255,.72); backdrop-filter: blur(3px); padding: 3px 8px; border-radius: var(--radius-pill);
+  }
+  .img-slot.has-img > .slot-label { display: none; }
+  .img-slot .slot-mark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(46,74,71,.32); }
+  .zoom-on-hover:hover .img-slot > img { transform: scale(1.04); filter: brightness(1.03); }
+
+  /* ---- Calendar / date picker (§4.6) ----
+     Reference markup for the optional /styleguide (mirrors components.html).
+     The LIVE Resrv booking calendar is the bundled alpine-calendar, themed via the
+     :root --color-calendar-* vars above — NOT these classes. */
+  .cal { background: var(--color-calendar-bg); border-radius: var(--radius-calendar); padding: 18px; box-shadow: var(--shadow-raised); width: 320px; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .cal-nav { width: 34px; height: 34px; border-radius: var(--radius-pill); border: 1px solid var(--color-line); background: #fff; cursor: pointer; display: grid; place-items: center; color: var(--color-ink); }
+  .cal-nav:hover { background: var(--color-sage-light); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--color-muted); padding-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .cal-day {
+    aspect-ratio: 1/1.18; border-radius: var(--radius-calendar-day); border: 0; background: transparent;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; cursor: pointer;
+    color: var(--color-calendar-text); font-size: 14px; font-weight: 500; line-height: 1; position: relative;
+  }
+  .cal-day .px { font-size: 9.5px; font-weight: 500; color: var(--color-muted); }
+  .cal-day .avdot { width: 4px; height: 4px; border-radius: 50%; background: var(--color-calendar-available); position: absolute; bottom: 5px; }
+  .cal-day:hover:not(.is-disabled):not(.is-selected) { background: var(--color-calendar-hover); }
+  .cal-day.in-range { background: var(--color-calendar-range); border-radius: 0; }
+  .cal-day.is-selected { background: var(--color-calendar-primary); color: var(--color-calendar-primary-text); }
+  .cal-day.is-selected .px, .cal-day.is-selected .avdot { color: #fff; background: #fff; opacity: .85; }
+  .cal-day.range-start { border-top-left-radius: var(--radius-calendar-day); border-bottom-left-radius: var(--radius-calendar-day); }
+  .cal-day.range-end   { border-top-right-radius: var(--radius-calendar-day); border-bottom-right-radius: var(--radius-calendar-day); }
+  .cal-day.is-disabled { color: var(--color-calendar-disabled); cursor: not-allowed; }
+  .cal-day.is-disabled .px, .cal-day.is-disabled .avdot { display: none; }
+  .cal-day.is-empty { pointer-events: none; }
+
+  /* ---- Layout helpers ---- */
+  .container-rsv { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
+  @media (min-width: 1024px) { .container-rsv { padding-inline: 40px; } }
+  .reading { max-width: 680px; }
+  .section { padding-block: 56px; }
+  @media (min-width: 1024px) { .section { padding-block: 104px; } }
+  .section-sm { padding-block: 48px; }
+  @media (min-width: 1024px) { .section-sm { padding-block: 72px; } }
+
+  /* hide scrollbar for horizontal rails */
+  .no-bar::-webkit-scrollbar { display: none; }
+  .no-bar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ---- Navigation states (header partial mirrors these on #siteNav) ---- */
+  #siteNav.is-solid { background: rgba(243,238,230,.88); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
+  #siteNav.is-solid .brand, #siteNav.is-solid .nav-link { color: var(--color-ink); }
+  #siteNav.is-transparent .brand, #siteNav.is-transparent .nav-link { color: #fff; }
+  #siteNav.is-transparent #navBurger { color: #fff; }
+  #siteNav.is-solid #navBurger { color: var(--color-ink); }
+  #siteNav.is-transparent.scrolled { background: rgba(243,238,230,.92); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
+  #siteNav.is-transparent.scrolled .brand, #siteNav.is-transparent.scrolled .nav-link { color: var(--color-ink); }
+  #siteNav.is-transparent.scrolled #navBurger { color: var(--color-ink); }
+  .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .25s ease; opacity: .85; }
+  .nav-link:hover::after { transform: scaleX(1); }
+  .nav-link.is-active { color: var(--color-terracotta) !important; }
+  .nav-link.is-active::after { transform: scaleX(1); background: var(--color-terracotta); }
+  .brand-dot { font-family: var(--font-display); }
+
+  /* ---- Guests stepper ---- */
+  .step-btn {
+    width: 34px; height: 34px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; color: var(--color-ink);
+    display: grid; place-items: center; cursor: pointer; transition: border-color .2s ease, background .2s ease;
+  }
+  .step-btn:hover { border-color: var(--color-ink); }
+  .step-btn svg { width: 16px; height: 16px; }
+  .is-disabled { opacity: .35; pointer-events: none; }
+
+  /* ---- Search-widget field ---- */
+  .sw-field {
+    display: flex; flex-direction: column; justify-content: center; gap: 3px; text-align: left; padding: 14px 18px;
+    cursor: pointer; background: transparent; border: 0; transition: background .2s ease; border-radius: var(--radius-md); min-height: 62px;
+  }
+  .sw-field > span, .sw-field input { white-space: nowrap; }
+  .sw-field:hover { background: var(--color-shell); }
+  .sw-div { width: 1px; align-self: stretch; background: var(--color-line); margin: 10px 0; }
+
+  /* ---- Accordion (FAQ block) ---- */
+  .acc-panel { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .acc-item.open .acc-panel { max-height: 320px; }
+  .acc-item.open .acc-icon { transform: rotate(45deg); }
+  .acc-icon { transition: transform .25s ease; }
+
+  /* ---- Segmented control (checkout options / rate picker) ---- */
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+  .seg-btn { padding: 9px 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s ease; }
+  .seg-btn:hover { border-color: var(--color-ink); }
+  .seg-btn.is-on { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
+  .seg-btn.is-on .text-muted { color: rgba(255,255,255,.7) !important; }
+
+  /* ---- Payment-method picker (checkout) ---- */
+  .pay-method { text-align: left; padding: 18px; border-radius: var(--radius-lg); border: 2px solid var(--color-line); background: #fff; cursor: pointer; transition: all .2s ease; }
+  .pay-method:hover { border-color: var(--color-sage); }
+  .pay-method.is-on { border-color: var(--color-terracotta); background: rgba(201,138,94,.05); }
+  .pm-radio { width: 18px; height: 18px; border-radius: var(--radius-pill); border: 2px solid var(--color-muted); display: inline-grid; place-items: center; flex-shrink: 0; }
+  .pay-method.is-on .pm-radio { border-color: var(--color-terracotta); }
+  .pay-method.is-on .pm-radio::after { content: ''; width: 9px; height: 9px; border-radius: var(--radius-pill); background: var(--color-terracotta); }
+
+  /* ---- Filter chip (gallery category filter) ---- */
+  .filter-chip { height: 38px; padding: 0 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; color: var(--color-ink); font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s ease; }
+  .filter-chip:hover { border-color: var(--color-ink); }
+  .filter-chip.is-on { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
+}
+
+/* ============================================================
+   MOTION (§4.4) — reveal-on-scroll (toggled by a small Alpine
+   observer). Kept outside @layer components so the reduced-motion
+   reset reliably wins.
+   ============================================================ */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .img-slot > img { transition: none; }
+}

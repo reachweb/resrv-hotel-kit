@@ -1,0 +1,7 @@
+title: Experiences
+route: '/experiences/{slug}'
+template: experiences/show
+taxonomies:
+  - experience_categories
+sort_by: title
+sort_dir: asc

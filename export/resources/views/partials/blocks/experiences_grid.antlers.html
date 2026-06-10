@@ -1,0 +1,14 @@
+{{# Experiences grid — bento layout (first tile spans wider). #}}
+<section class="section">
+    <div class="container-rsv">
+        {{ partial:section-header :overline="overline" :heading="heading" :intro="intro" }}
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3 auto-rows-[280px]">
+            {{ if experiences }}
+                {{ experiences }}{{ partial:experience-tile }}{{ /experiences }}
+            {{ else }}
+                {{ collection:experiences limit="6" }}{{ partial:experience-tile }}{{ /collection:experiences }}
+            {{ /if }}
+        </div>
+        {{ if cta_label }}<div class="mt-10 text-center"><a href="{{ cta_url ?? '#' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">{{ cta_label }}</a></div>{{ /if }}
+    </div>
+</section>

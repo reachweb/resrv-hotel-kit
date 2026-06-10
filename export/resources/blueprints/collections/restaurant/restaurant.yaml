@@ -1,0 +1,102 @@
+title: Restaurant
+tabs:
+  main:
+    display: Content
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: 'Venue name'
+              localizable: true
+              validate: [required]
+          -
+            handle: slug
+            field:
+              type: slug
+              display: Slug
+              localizable: true
+              generate: true
+              validate: [required]
+          -
+            handle: tagline
+            field:
+              type: text
+              display: Tagline
+              localizable: true
+              instructions: 'Short descriptor (e.g. "Sea-facing restaurant").'
+          -
+            handle: image
+            field:
+              type: assets
+              display: Image
+              container: assets
+              folder: dining
+              max_files: 1
+              mode: grid
+              instructions: 'Slot: `dining/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+          -
+            handle: body
+            field:
+              type: bard
+              display: Body
+              localizable: true
+              buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+  details:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: hours
+            field:
+              type: grid
+              display: Hours
+              mode: table
+              add_row: 'Add service'
+              fields:
+                -
+                  handle: label
+                  field: { type: text, display: Service, width: 50 }
+                -
+                  handle: time
+                  field: { type: text, display: Time, width: 50 }
+          -
+            handle: highlights
+            field:
+              type: list
+              display: Highlights
+              instructions: 'Short bullet highlights.'
+              add_button: 'Add highlight'
+  booking:
+    display: Booking
+    sections:
+      -
+        display: Resrv
+        instructions: 'Single-date table availability (quantity = covers per sitting). Lunch/Dinner sittings are Resrv rates scoped to this collection; arrival times are a free Resrv Option; extras (e.g. champagne) are assigned in Resrv → Extras — all managed in Resrv → CP (not here).'
+        fields:
+          -
+            handle: availability
+            field: { type: resrv_availability, display: Availability }
+          -
+            handle: options
+            field: { type: resrv_options, display: Options }
+          -
+            handle: extras
+            field: { type: resrv_extras, display: Extras }
+          -
+            handle: cutoff
+            field: { type: resrv_cutoff, display: Cutoff }
+  seo:
+    display: SEO
+    sections:
+      -
+        fields:
+          -
+            handle: seo_title
+            field: { type: text, display: 'SEO title', localizable: true }
+          -
+            handle: seo_description
+            field: { type: textarea, display: 'SEO description', localizable: true }

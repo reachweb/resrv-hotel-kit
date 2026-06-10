@@ -1,0 +1,5 @@
+title: Offers
+route: '/offers/{slug}'
+template: offers/show
+sort_by: title
+sort_dir: asc

@@ -1,0 +1,48 @@
+{{#
+    Journal article — editorial layout in the kit's design language (the design
+    bundle ships no journal page). Bard `content` renders with the shared prose
+    classes; tags as chips; two more stories below.
+#}}
+
+{{# Breadcrumb #}}
+<nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
+    <a href="/journal" class="hover:text-ink transition-colors">Journal</a><span aria-hidden="true">/</span>
+    <span class="text-ink">{{ title }}</span>
+</nav>
+
+<article class="container-rsv py-8 lg:py-12">
+    <div class="max-w-[720px] mx-auto">
+        <header class="mb-8 reveal">
+            <div class="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">
+                {{ journal_categories limit="1" }}<span class="text-terracotta-dark">{{ title }}</span>{{ /journal_categories }}
+                <time datetime="{{ date | format('Y-m-d') }}">{{ date | format('j F Y') }}</time>
+            </div>
+            <h1 class="t-h1 mb-5 text-balance">{{ title | widont }}</h1>
+            {{ if excerpt }}<p class="text-lg leading-relaxed text-muted">{{ excerpt | widont }}</p>{{ /if }}
+            {{ if author }}<p class="text-sm text-muted mt-5">By <span class="text-ink font-medium">{{ author }}</span></p>{{ /if }}
+        </header>
+
+        {{ partial:image-slot :asset="hero_image" label="journal/{slug}.jpg · 16:9" ratio="16/9" class="rounded-xl mb-10 reveal" :alt="title" }}
+
+        <div class="reading prose prose-lg prose-p:text-ink/85 max-w-none reveal">{{ content }}</div>
+
+        {{ if journal_tags }}
+            <div class="flex flex-wrap gap-1.5 mt-10 pt-8 border-t border-line">
+                {{ journal_tags }}<span class="inline-flex items-center gap-1.5 h-7.5 px-3 rounded-full bg-sage-light text-ink text-[13px] font-medium">{{ title }}</span>{{ /journal_tags }}
+            </div>
+        {{ /if }}
+    </div>
+</article>
+
+{{# More stories #}}
+<section class="section-sm bg-sand">
+    <div class="container-rsv">
+        <h2 class="t-h2 mb-8 reveal">More from the journal</h2>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {{ collection:journal id:not="{id}" limit="3" sort="date:desc" }}
+                <div class="reveal h-full">{{ partial:journal-card }}</div>
+            {{ /collection:journal }}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,11 @@
+{{#
+    Section header — overline + heading + optional intro. Params:
+      overline, heading, intro, align ('center' to centre), class (wrapper)
+#}}
+{{ if overline || heading || intro }}
+    <div class="{{ class ?? 'mb-10 lg:mb-14' }} reveal{{ if align == 'center' }} text-center max-w-[640px] mx-auto{{ /if }}">
+        {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3">{{ overline }}</p>{{ /if }}
+        {{ if heading }}<h2 class="t-h2{{ unless align == 'center' }} max-w-[22ch]{{ /unless }}">{{ heading | widont }}</h2>{{ /if }}
+        {{ if intro }}<p class="text-base leading-relaxed text-muted mt-4 max-w-[54ch]{{ if align == 'center' }} mx-auto{{ /if }}">{{ intro }}</p>{{ /if }}
+    </div>
+{{ /if }}

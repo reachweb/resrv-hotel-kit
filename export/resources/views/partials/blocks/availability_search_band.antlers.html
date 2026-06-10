@@ -1,0 +1,9 @@
+{{# Availability search band — drops the Resrv search widget in a section. #}}
+<section class="section-sm bg-sand">
+    <div class="container-rsv">
+        {{ partial:section-header :overline="overline" :heading="heading" :intro="intro" align="center" }}
+        <div class="max-w-[1100px] mx-auto mt-8">
+            {{ livewire:availability-search calendar="range" live="false" redirectTo="/rooms" }}
+        </div>
+    </div>
+</section>

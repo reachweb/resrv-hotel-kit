@@ -1,0 +1,22 @@
+{{# Reviews — teal section with testimonial cards. #}}
+<section class="section-sm bg-teal text-white">
+    <div class="container-rsv">
+        <div class="grid lg:grid-cols-[0.9fr_1.6fr] gap-12 lg:gap-16 items-center">
+            <div class="reveal">
+                {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">{{ overline }}</p>{{ /if }}
+                {{ if heading }}<h2 class="t-display text-white mb-5 text-balance">{{ heading | widont }}</h2>{{ /if }}
+                {{ if show_aggregate }}
+                    {{ partial:stars :rating="5" class="text-terracotta" }}
+                    <p class="text-sm text-sage-light/80 mt-3">Rated by guests who stayed with us.</p>
+                {{ /if }}
+            </div>
+            <div class="grid sm:grid-cols-2 gap-5">
+                {{ if reviews }}
+                    {{ reviews }}{{ partial:testimonial }}{{ /reviews }}
+                {{ else }}
+                    {{ collection:reviews limit="4" }}{{ partial:testimonial }}{{ /collection:reviews }}
+                {{ /if }}
+            </div>
+        </div>
+    </div>
+</section>

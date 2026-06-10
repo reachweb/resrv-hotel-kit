@@ -1,0 +1,29 @@
+{{#
+    Restaurant booking widget — expects a `restaurant` entry in scope (the venue).
+    Single-date search + party size; the sittings compare as rate rows below.
+#}}
+<div class="reveal">
+    {{ if tagline || hours }}
+    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-sm text-muted mb-6">
+        <span class="font-medium text-ink">{{ title }}</span>
+        {{ if tagline }}<span>{{ tagline }}</span>{{ /if }}
+        {{ hours }}{{ if label == 'Lunch' || label == 'Dinner' }}<span>{{ label }} {{ time }}</span>{{ /if }}{{ /hours }}
+    </div>
+    {{ /if }}
+
+    {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" }}
+
+    <div class="mt-5">
+        {{ livewire:availability-results :entry="id" rates="true" }}
+    </div>
+
+    {{# Sittings on the following days #}}
+    <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-5">
+        {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
+    </div>
+
+    <p class="text-sm text-muted text-center mt-4 flex items-center justify-center gap-1.5">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Pick your arrival time at checkout &middot; breakfast needs no booking.
+    </p>
+</div>
