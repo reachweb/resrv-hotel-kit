@@ -20,7 +20,12 @@
         {{ livewire:styles }}
         <link rel="stylesheet" href="/vendor/statamic-resrv/frontend/css/resrv-frontend.css">
 
-        {{# Stripe JS is intentionally omitted here — added conditionally by the Stripe module (Phase 8). #}}
+        {{# Stripe.js — required by Resrv's payment component (it calls Stripe(publicKey))
+            but never bundled by the addon. Loaded only when a publishable key is configured,
+            so offline-only installs ship zero Stripe references. #}}
+        {{ if {config:resrv-config:stripe_publishable_key} }}
+            <script src="https://js.stripe.com/v3/"></script>
+        {{ /if }}
     </head>
     <body class="min-h-screen flex flex-col">
 

@@ -29,6 +29,7 @@ class StarterKitPostInstall
         }
 
         $gateway = $this->selectedPaymentGateway();
+        $this->applyPaymentGateway($gateway, $console);
 
         $console->newLine();
         $console->line('  <info>✓ Resrv Hotel installed.</info>');
@@ -73,6 +74,71 @@ class StarterKitPostInstall
         }
 
         return 'offline';
+    }
+
+    /**
+     * Apply the chosen gateway to config/resrv-config.php. The kit ships the file
+     * with the offline gateway active (works keyless), so 'offline' is a no-op.
+     * 'stripe' swaps the single gateway; 'both' populates the payment_gateways
+     * array (first entry is the checkout default), which surfaces Resrv's gateway
+     * picker. Plain string replacement against the exact shipped lines — if a
+     * future edit changes them, we warn instead of guessing.
+     */
+    private function applyPaymentGateway(string $gateway, $console): void
+    {
+        if ($gateway === 'offline') {
+            return;
+        }
+
+        $this->writeStripeEnvPlaceholders();
+
+        $configPath = base_path('config/resrv-config.php');
+        $contents = file_get_contents($configPath);
+
+        if ($gateway === 'stripe') {
+            $search = "'payment_gateway' => OfflinePaymentGateway::class,";
+            $replace = "'payment_gateway' => \\Reach\\StatamicResrv\\Http\\Payment\\StripePaymentGateway::class,";
+        } else { // both
+            $search = "'payment_gateways' => [],";
+            $replace = <<<'PHP'
+'payment_gateways' => [
+        'stripe' => [
+            'class' => \Reach\StatamicResrv\Http\Payment\StripePaymentGateway::class,
+            'label' => 'Credit Card',
+        ],
+        'offline' => [
+            'class' => \Reach\StatamicResrv\Http\Payment\OfflinePaymentGateway::class,
+            'label' => 'Bank Transfer / Pay at Property',
+        ],
+    ],
+PHP;
+        }
+
+        if (substr_count($contents, $search) === 1) {
+            file_put_contents($configPath, str_replace($search, $replace, $contents));
+            $console->info("Payment gateway configured for [{$gateway}] in config/resrv-config.php.");
+        } else {
+            $console->warn("Could not update config/resrv-config.php automatically — set the [{$gateway}] gateway by hand (see STRIPE.md).");
+        }
+    }
+
+    /**
+     * Append the RESRV_STRIPE_* placeholders to .env / .env.example (idempotent).
+     */
+    private function writeStripeEnvPlaceholders(): void
+    {
+        $block = "\n# Statamic Resrv — Stripe gateway keys (see STRIPE.md)\n"
+            ."RESRV_STRIPE_SECRET=\n"
+            ."RESRV_STRIPE_PUBLISHABLE=\n"
+            ."RESRV_STRIPE_WEBHOOK_SECRET=\n";
+
+        foreach (['.env', '.env.example'] as $file) {
+            $path = base_path($file);
+
+            if (file_exists($path) && ! str_contains(file_get_contents($path), 'RESRV_STRIPE_SECRET')) {
+                file_put_contents($path, $block, FILE_APPEND);
+            }
+        }
     }
 
     /**

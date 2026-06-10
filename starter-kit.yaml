@@ -53,6 +53,7 @@ export_paths:
   - config/session.php
   - resources/addons/statamic-resrv.yaml
   - lang/vendor/statamic-resrv
+  - STRIPE.md
 dependencies:
   reachweb/statamic-resrv: dev-main
 modules:
