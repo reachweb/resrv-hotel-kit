@@ -18,14 +18,16 @@ class StarterKitPostInstall
     public function handle($console)
     {
         // Resrv's tables — `php artisan resrv:install` does NOT run migrations.
-        $console->call('migrate', ['--force' => true]);
+        // These MUST run in a subprocess: the installer's PHP process booted
+        // before composer required the addon, so its autoloader/providers can't
+        // see Resrv's migrations or models ($console->call() silently runs the
+        // app-only migrations and the seeder fatals on the missing model class).
+        $migrated = $this->artisan('migrate --force', $console);
 
-        if ($this->demoContentSelected()) {
-            $console->call('db:seed', [
-                '--class' => 'Database\\Seeders\\ResrvDemoSeeder',
-                '--force' => true,
-            ]);
-            $console->info('Resrv Hotel demo data seeded (rolling 12-month availability — re-run the seeder any time to refresh it).');
+        if ($migrated && $this->demoContentSelected()) {
+            if ($this->artisan('db:seed --class="Database\\Seeders\\ResrvDemoSeeder" --force', $console)) {
+                $console->info('Resrv Hotel demo data seeded (rolling 12-month availability — re-run the seeder any time to refresh it).');
+            }
         }
 
         $gateway = $this->selectedPaymentGateway();
@@ -48,6 +50,24 @@ class StarterKitPostInstall
         }
 
         $this->cleanUpMarkers();
+    }
+
+    /**
+     * Run an artisan command in a fresh subprocess (whose autoloader includes the
+     * dependencies composer just installed). Returns true on exit code 0.
+     */
+    private function artisan(string $command, $console): bool
+    {
+        $cmd = escapeshellarg(PHP_BINARY).' '.escapeshellarg(base_path('artisan')).' '.$command.' --no-interaction 2>&1';
+
+        $console->line("  Running: php artisan {$command}");
+        passthru($cmd, $exitCode);
+
+        if ($exitCode !== 0) {
+            $console->warn("  [php artisan {$command}] failed (exit {$exitCode}) — run it by hand after the install.");
+        }
+
+        return $exitCode === 0;
     }
 
     /**
