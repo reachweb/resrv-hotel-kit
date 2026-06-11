@@ -58,7 +58,7 @@ export_paths:
   - DEMO-DATA.md
   - CALENDAR-THEMING.md
 dependencies:
-  reachweb/statamic-resrv: dev-main
+  reachweb/statamic-resrv: ^6.0
 modules:
   demo_content:
     prompt: 'Install demo content (pages, rooms, spa & restaurant, offers, FAQs) and seed availability/rates/extras?'
