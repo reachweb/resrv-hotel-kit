@@ -32,7 +32,7 @@ checkout**, demo data included.
 ## Install
 
 ```bash
-statamic new my-hotel reachweb/resrv-hotel
+statamic new my-hotel reachweb/resrv-hotel-kit
 ```
 
 The installer prompts per module:

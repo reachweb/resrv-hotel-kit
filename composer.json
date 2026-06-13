@@ -1,5 +1,5 @@
 {
-    "name": "reachweb/resrv-hotel",
+    "name": "reachweb/resrv-hotel-kit",
     "extra": {
         "statamic": {
             "name": "Resrv Hotel",
