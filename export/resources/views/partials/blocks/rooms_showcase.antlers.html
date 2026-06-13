@@ -1,5 +1,8 @@
-{{# Rooms showcase — chosen rooms, or featured rooms as a fallback. #}}
-<section class="section-sm">
+{{# Rooms showcase — chosen rooms, or featured rooms as a fallback.
+   mt-24/lg:mt-28 restores the breathing room the design put on `<main>`
+   (pt-24 lg:pt-28) above the first content section — dropped on home because
+   transparent_nav zeroes the layout's main padding. Home-only block. #}}
+<section class="section-sm mt-24 lg:mt-28">
     <div class="container-rsv">
         <div class="flex items-end justify-between gap-6 mb-10 lg:mb-14">
             <div class="reveal">
