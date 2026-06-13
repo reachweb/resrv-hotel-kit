@@ -36,7 +36,7 @@ tabs:
               folder: dining
               max_files: 1
               mode: grid
-              instructions: 'Slot: `dining/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+              instructions: 'Recommended ratio 3:2. Degrades gracefully if empty.'
           -
             handle: body
             field:

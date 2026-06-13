@@ -53,7 +53,7 @@ tabs:
               folder: rooms
               max_files: 1
               mode: grid
-              instructions: 'Slot: `rooms/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+              instructions: 'Recommended ratio 3:2. Degrades gracefully if empty.'
           -
             handle: gallery
             field:
@@ -62,7 +62,7 @@ tabs:
               container: assets
               folder: rooms
               mode: grid
-              instructions: 'Slots: `rooms/<slug>-gallery-*.jpg · 3:2`.'
+              instructions: 'Recommended ratio 3:2.'
   details:
     display: Details
     sections:

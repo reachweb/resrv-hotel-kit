@@ -17,7 +17,7 @@ builder:
     type: rooms_showcase
     overline: 'Rooms & Suites'
     heading: 'Rooms that open to the sea'
-    intro: 'From a quiet garden double to a cliffside suite with its own plunge pool — every room is dressed in linen and natural light.'
+    intro: 'From a quiet garden double to a private-pool villa — every room is dressed in linen and natural light.'
     cta_label: 'View all rooms'
     cta_url: '/rooms'
   -

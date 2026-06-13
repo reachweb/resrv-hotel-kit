@@ -10,7 +10,6 @@ cta_label: 'Book with COASTAL10'
 linked_rooms:
   - garden-view-double
   - sea-view-suite
-  - cliffside-honeymoon-suite
 body:
   -
     type: paragraph

@@ -47,7 +47,6 @@ export_paths:
   - package.json
   - vite.config.js
   - public/build
-  - public/assets
   - config/resrv-config.php
   - config/cache.php
   - config/session.php

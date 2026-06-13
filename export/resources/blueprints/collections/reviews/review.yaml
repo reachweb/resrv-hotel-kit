@@ -35,7 +35,7 @@ tabs:
               folder: brand
               max_files: 1
               mode: list
-              instructions: 'Optional. Slot: `brand/avatar-<name>.jpg · 1:1`.'
+              instructions: 'Optional. Recommended ratio 1:1.'
           -
             handle: featured
             field: { type: toggle, display: 'Featured on home', default: false }

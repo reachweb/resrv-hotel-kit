@@ -12,7 +12,6 @@ pruned). Each piece exists to demonstrate a specific Resrv capability.
 | Sea View Suite | 320 | 3 | Carries every targeted rate — best rate-comparison demo |
 | Terracotta Villa | 640 | 1 | Single-unit scarcity (sells out first) |
 | Coastal Family Room | 290 | 3 | Has the connecting-room option |
-| Cliffside Honeymoon Suite | 480 | 2 | Shared-allotment partner rate |
 
 Weekend nights (Fri/Sat) carry a +15% uplift; two blackout nights ~3 weeks out
 demonstrate sold-out handling.
@@ -31,11 +30,12 @@ demonstrate sold-out handling.
   per-treatment prices live in the availability rows (massage €90/€130, couples
   ritual €175, …). Capacity = appointments per day; the spa is **closed Tuesdays**
   (no availability rows — the engine refuses the day regardless of UI).
-- **La Marea** restaurant: **Lunch (€35/guest, 20 covers)** and **Dinner (€55/guest,
-  30 covers)** sittings as independent rate pools; party size rides the reservation
-  quantity. **Closed Mondays.**
-- Free required **Options** carry the time-of-day choice (appointment time / arrival
-  time per sitting) — Resrv has no time-of-day primitive, options are the pattern.
+- **La Marea** restaurant: **Lunch (€35/table, 12 tables)** and **Dinner (€55/table,
+  16 tables)** sittings as independent rate pools — priced **per table**, so headcount
+  never scales the price (the reservation books one table). **Closed Mondays.**
+- Free required **Options** carry the time-of-day choice and headcount (appointment
+  time per treatment; seating time + party size on the venue — sitting-agnostic, since
+  options are not rate-scoped) — Resrv has no time-of-day primitive, options are the pattern.
 
 ## Extras
 
@@ -43,16 +43,16 @@ demonstrate sold-out handling.
 | --- | --- |
 | Airport Transfer (€55) | Fixed price, single |
 | Breakfast Hamper (€18) | **Per-day** pricing |
-| Champagne on Arrival (€45) | Multiples (up to 5) + **cross-product** — also attached to La Marea, where fixed extras scale × party size |
+| Champagne on Arrival (€45) | Multiples (up to 5) + **cross-product** — also attached to La Marea (a table booking takes it at its fixed price) |
 | In-room Spa Treatment (€90) | Multiples, category Wellness |
 | Private Boat Tour (€220) | High-value experience extra |
 | Late Check-out (€40) | **Conditional** — only shown for stays of 2+ nights — and uncategorised |
 
 ## Options (per room, stored in DB)
 
-Breakfast (none/continental/full — **per-day** pricing), transfer vehicle
-(sedan/van/luxury — fixed), bed setup (king/twin — free, required) and the family
-room's connecting-room option (fixed).
+Breakfast (none/continental/full — **per-day** pricing), bed setup (king/twin —
+free, required) and the family room's connecting-room option (fixed). The airport
+transfer is an **extra**, not an option.
 
 ## Pricing campaigns & coupon
 

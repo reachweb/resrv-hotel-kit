@@ -22,7 +22,7 @@
             <h1 class="t-h1">{{ title }}</h1>
         </div>
 
-        {{ partial:image-slot :asset="image" label="spa/{slug}.jpg · 3:2" ratio="3/2" class="rounded-xl mb-8 reveal" :alt="title" }}
+        {{ partial:image-slot :asset="image" label="Treatment image · 3:2" ratio="3/2" class="rounded-xl mb-8 reveal" :alt="title" }}
 
         {{ if summary }}
             <p class="text-lg leading-relaxed text-ink/85 mb-6 reveal">{{ summary | widont }}</p>
@@ -54,7 +54,11 @@
             <p class="text-sm text-muted mb-5">Pick a day to see times &amp; prices — the calendar shows live availability.</p>
             {{ /if }}
 
-            {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
+            {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
+                scroll-mt clears the fixed header (h-18/lg:h-21). #}}
+            <div data-resrv-booking-top class="scroll-mt-28">
+                {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" resetOnBoot="true" view="availability-search-panel" }}
+            </div>
 
             <div class="mt-4">
                 {{ livewire:availability-results :entry="id" rates="true" }}
@@ -70,9 +74,11 @@
             {{ /resrv:cutoff }}
         </div>
 
-        {{# Next available dates #}}
+        {{# Next available dates — a day browser; clicking a day reloads the panel above
+            (date only, so both durations stay visible). Using the date-grouped view +
+            selectDate(date) avoids the advanced→single results morph that races Alpine. #}}
         <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-4">
-            {{ livewire:availability-list :entry="id" rates="true" }}
+            {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
         </div>
 
         <p class="text-sm text-muted text-center mt-3 flex items-center justify-center gap-1.5">

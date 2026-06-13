@@ -1,6 +1,11 @@
 {{#
     Restaurant booking widget — expects a `restaurant` entry in scope (the venue).
-    Single-date search + party size; the sittings compare as rate rows below.
+    Single-date search → results panel lists the day's sittings (Lunch/Dinner) as rate
+    rows, each "Book now" → checkout. The list below is a "pick another day" browser:
+    clicking a day reloads the panel above (date only, so both sittings stay visible —
+    selecting a rate there would lock the shared session and collapse the panel). Party
+    size and arrival time are picked at checkout (free Resrv Options), so the price shown
+    is per table and never multiplied by headcount.
 #}}
 <div class="reveal">
     {{ if tagline || hours }}
@@ -11,13 +16,17 @@
     </div>
     {{ /if }}
 
-    {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" }}
+    {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
+        scroll-mt clears the fixed header (h-18/lg:h-21). #}}
+    <div data-resrv-booking-top class="scroll-mt-28">
+        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" resetOnBoot="true" }}
+    </div>
 
     <div class="mt-5">
         {{ livewire:availability-results :entry="id" rates="true" }}
     </div>
 
-    {{# Sittings on the following days #}}
+    {{# Browse other days — clicking a day reloads the sittings panel above #}}
     <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-5">
         {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
     </div>

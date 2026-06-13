@@ -26,7 +26,7 @@
                         class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col @unless($row['available']) opacity-80 @endunless"
                     >
                         <div class="img-slot relative" style="aspect-ratio: 3/2;">
-                            <span class="slot-label">rooms/{{ $entry->slug() }}.jpg · 3:2</span>
+                            <span class="slot-label">Room image · 3:2</span>
                             @unless ($row['available'])
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-sand text-muted absolute top-3 left-3 z-10">Sold out</span>
                             @endunless

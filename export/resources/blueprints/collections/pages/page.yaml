@@ -54,7 +54,7 @@ tabs:
                             folder: hero
                             max_files: 1
                             mode: grid
-                            instructions: 'Slot: `hero/<page>.jpg · 16:9`.'
+                            instructions: 'Recommended ratio 16:9.'
                         -
                           handle: cta_label
                           field: { type: text, display: 'Button label', width: 50 }
@@ -107,7 +107,7 @@ tabs:
                             container: assets
                             max_files: 1
                             mode: grid
-                            instructions: 'Slot: `<section>.jpg · 4:3`.'
+                            instructions: 'Recommended ratio 4:3.'
                         -
                           handle: image_position
                           field: { type: button_group, display: 'Image position', options: { left: Left, right: Right }, default: left, width: 50 }
@@ -135,7 +135,7 @@ tabs:
                             container: assets
                             folder: gallery
                             mode: grid
-                            instructions: 'Slots: `gallery/<name>.jpg · 3:2`.'
+                            instructions: 'Recommended ratio 3:2.'
                     rooms_showcase:
                       display: 'Rooms showcase'
                       icon: hammer

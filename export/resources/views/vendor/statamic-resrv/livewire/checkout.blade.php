@@ -62,9 +62,8 @@
         {{-- ORDER SUMMARY --}}
         <aside class="order-1 lg:order-2 lg:sticky lg:top-[100px] min-w-0">
             <div class="bg-white rounded-lg shadow-card overflow-hidden">
-                @php($slotFolder = ['spa_treatments' => 'spa', 'restaurant' => 'dining'][$this->entry->collection()->handle()] ?? $this->entry->collection()->handle())
                 <div class="img-slot" style="aspect-ratio: 16/9;">
-                    <span class="slot-label">{{ $slotFolder }}/{{ $this->entry->slug() }}.jpg · 16:9</span>
+                    <span class="slot-label">Booking image · 16:9</span>
                 </div>
                 <div class="p-5 lg:p-6">
                     <x-resrv::checkout-reservation-details

@@ -29,7 +29,7 @@ tabs:
               folder: experiences
               max_files: 1
               mode: grid
-              instructions: 'Slot: `experiences/<slug>.jpg · 3:2`.'
+              instructions: 'Recommended ratio 3:2.'
           -
             handle: body
             field:
@@ -57,7 +57,7 @@ tabs:
               container: assets
               folder: experiences
               mode: grid
-              instructions: 'Slots: `experiences/<slug>-*.jpg · 3:2`.'
+              instructions: 'Recommended ratio 3:2.'
   details:
     display: Details
     sections:

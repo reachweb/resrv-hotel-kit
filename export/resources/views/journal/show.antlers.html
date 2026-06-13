@@ -23,7 +23,7 @@
             {{ if author }}<p class="text-sm text-muted mt-5">By <span class="text-ink font-medium">{{ author }}</span></p>{{ /if }}
         </header>
 
-        {{ partial:image-slot :asset="hero_image" label="journal/{slug}.jpg · 16:9" ratio="16/9" class="rounded-xl mb-10 reveal" :alt="title" }}
+        {{ partial:image-slot :asset="hero_image" label="Article image · 16:9" ratio="16/9" class="rounded-xl mb-10 reveal" :alt="title" }}
 
         <div class="reading prose prose-lg prose-p:text-ink/85 max-w-none reveal">{{ content }}</div>
 

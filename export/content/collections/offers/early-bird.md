@@ -9,7 +9,6 @@ cta_label: 'See available dates'
 linked_rooms:
   - sea-view-suite
   - terracotta-villa
-  - cliffside-honeymoon-suite
 body:
   -
     type: paragraph

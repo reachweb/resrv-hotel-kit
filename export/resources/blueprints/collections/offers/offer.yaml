@@ -23,7 +23,7 @@ tabs:
               folder: offers
               max_files: 1
               mode: grid
-              instructions: 'Slot: `offers/<slug>.jpg · 3:2`.'
+              instructions: 'Recommended ratio 3:2.'
           -
             handle: body
             field:

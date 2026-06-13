@@ -59,7 +59,6 @@ class ResrvDemoSeeder extends Seeder
         'sea-view-suite' => ['base' => 320, 'allotment' => 3],
         'terracotta-villa' => ['base' => 640, 'allotment' => 1],
         'coastal-family-room' => ['base' => 290, 'allotment' => 3],
-        'cliffside-honeymoon-suite' => ['base' => 480, 'allotment' => 2],
     ];
 
     /** The weekday the spa is closed — no availability rows are generated for it. */
@@ -91,24 +90,24 @@ class ResrvDemoSeeder extends Seeder
     ];
 
     /**
-     * La Marea sittings (collection-scoped rates) — each an independent seat pool.
-     * `price` is the set-menu price per guest; the search quantity is the party size,
-     * so checkout multiplies it. `covers` = seats available per open day.
+     * La Marea sittings (collection-scoped rates) — each an independent table pool.
+     * `price` is the flat price per table; the reservation books one table (quantity
+     * stays 1), so it does not scale with party size. `tables` = tables bookable per
+     * open day. Party size and seating time are captured separately as free Options
+     * (see seedRestaurant).
      */
     private array $sittings = [
         'lunch-sitting' => [
             'title' => 'Lunch Sitting',
-            'description' => 'A long Mediterranean lunch by the water — set menu per guest, 13:00 to 16:00.',
+            'description' => 'A long Mediterranean lunch by the water — priced per table, 13:00 to 16:00.',
             'price' => 35,
-            'covers' => 20,
-            'times' => ['13:00', '13:30', '14:00'],
+            'tables' => 12,
         ],
         'dinner-sitting' => [
             'title' => 'Dinner Sitting',
-            'description' => 'Dinner as the light softens — set menu per guest, 19:30 to 22:30.',
+            'description' => 'Dinner as the light softens — priced per table, 19:30 to 22:30.',
             'price' => 55,
-            'covers' => 30,
-            'times' => ['19:30', '20:00', '20:30'],
+            'tables' => 16,
         ],
     ];
 
@@ -319,7 +318,7 @@ class ResrvDemoSeeder extends Seeder
 
         // Targeted rate -> room assignments (apply_to_all = false rates only).
         $this->assignRateToRooms('bed-breakfast', ['garden-view-double', 'sea-view-suite', 'coastal-family-room']);
-        $this->assignRateToRooms('shared-allotment', ['sea-view-suite', 'cliffside-honeymoon-suite']);
+        $this->assignRateToRooms('shared-allotment', ['sea-view-suite']);
         $this->assignRateToRooms('last-minute-seasonal', ['garden-view-double', 'sea-view-suite', 'terracotta-villa']);
     }
 
@@ -535,13 +534,6 @@ class ResrvDemoSeeder extends Seeder
                 ['name' => 'Full Mediterranean', 'price' => 20, 'price_type' => 'perday'],
             ]);
 
-            // Airport transfer vehicle — fixed pricing.
-            $this->seedOption($statamicId, 'transfer-vehicle', 'Airport transfer vehicle', false, [
-                ['name' => 'Sedan', 'price' => 0, 'price_type' => 'free'],
-                ['name' => 'Van', 'price' => 30, 'price_type' => 'fixed'],
-                ['name' => 'Luxury', 'price' => 80, 'price_type' => 'fixed'],
-            ]);
-
             // Bed setup — free choice, only where a twin makes sense.
             if (in_array($slug, ['garden-view-double', 'sea-view-suite', 'coastal-family-room'], true)) {
                 $this->seedOption($statamicId, 'bed-setup', 'Bed setup', true, [
@@ -737,10 +729,12 @@ class ResrvDemoSeeder extends Seeder
 
     /**
      * La Marea (Appendix J): Lunch/Dinner sittings are independent collection-scoped
-     * rates, each with its own daily cover pool; price is the set menu per guest and
-     * the search quantity (party size) multiplies it. Arrival times are a free
-     * required Option — options are not rate-scoped, so each value carries its
-     * sitting label. Champagne is attached to exercise cross-product extras.
+     * rates, each with its own daily table pool; price is a flat price per table and
+     * the reservation books a single table (quantity stays 1), so it does not scale
+     * with party size. Arrival time and party size are free required Options. Options
+     * are not rate-scoped, so the arrival values are sitting-agnostic (Early/Standard/
+     * Late seating) — a concrete clock time would belong to only one sitting and show
+     * up wrongly under the other. Champagne is attached to exercise cross-product extras.
      */
     private function seedRestaurant(): void
     {
@@ -767,18 +761,27 @@ class ResrvDemoSeeder extends Seeder
             );
         }
 
-        $arrivalValues = [];
-        foreach ($this->sittings as $cfg) {
-            foreach ($cfg['times'] as $time) {
-                $arrivalValues[] = ['name' => "{$cfg['title']} · {$time}", 'price' => 0, 'price_type' => 'free'];
-            }
+        // Seating time within whichever sitting was booked. Options are not rate-scoped,
+        // so these are sitting-agnostic — a concrete clock time (e.g. 13:00) belongs to
+        // only one sitting and would mislead under the other.
+        $this->seedOption($venueId, 'arrival-time', 'Arrival time', true, [
+            ['name' => 'Early seating', 'price' => 0, 'price_type' => 'free'],
+            ['name' => 'Standard seating', 'price' => 0, 'price_type' => 'free'],
+            ['name' => 'Late seating', 'price' => 0, 'price_type' => 'free'],
+        ]);
+
+        // Party size — captured for the kitchen but free: the price is per table, so
+        // headcount never scales it (the reservation always books a single table).
+        $partySizes = [];
+        for ($guests = 1; $guests <= 8; $guests++) {
+            $partySizes[] = ['name' => $guests.' '.Str::plural('guest', $guests), 'price' => 0, 'price_type' => 'free'];
         }
-        $this->seedOption($venueId, 'arrival-time', 'Arrival time', true, $arrivalValues);
+        $this->seedOption($venueId, 'party-size', 'Party size', true, $partySizes);
 
         DB::transaction(function () use ($venueId, $sittingRates) {
             foreach ($this->sittings as $slug => $cfg) {
                 $this->seedSingleDateAvailability(
-                    $venueId, $sittingRates[$slug]->id, $cfg['price'], $cfg['covers'], self::RESTAURANT_CLOSED_WEEKDAY,
+                    $venueId, $sittingRates[$slug]->id, $cfg['price'], $cfg['tables'], self::RESTAURANT_CLOSED_WEEKDAY,
                 );
             }
         });
@@ -863,12 +866,12 @@ class ResrvDemoSeeder extends Seeder
             // the row resrv:send-abandoned-emails picks up.
             'DEMO04' => [
                 'status' => 'expired',
-                'item_id' => $this->roomIds['cliffside-honeymoon-suite'],
+                'item_id' => $this->roomIds['terracotta-villa'],
                 'rate' => $this->rates['best-flexible'],
                 'date_start' => Carbon::today()->addDays(35),
                 'date_end' => Carbon::today()->addDays(38),
                 'quantity' => 1,
-                'amount' => 1440, // 3 nights x 480
+                'amount' => 1920, // 3 nights x 640
                 'customer' => $customers['claire'],
                 'created_at' => Carbon::now()->subDays(2),
                 'updated_at' => Carbon::now()->subDays(2),
@@ -908,9 +911,10 @@ class ResrvDemoSeeder extends Seeder
 
     /**
      * Single-date rolling availability (Appendix J): one row per open day, where
-     * `available` is the day's bookable capacity (appointment slots / table covers)
-     * and `price` is per booking unit (appointment / guest) — checkout multiplies it
-     * by the search quantity. Weekly closures are enforced in the data itself (no row
+     * `available` is the day's bookable capacity (appointment slots / tables) and
+     * `price` is per booking unit (spa appointment / restaurant table) — checkout
+     * multiplies it by the search quantity (spa = guests; the restaurant books one
+     * table, so quantity stays 1). Weekly closures are enforced in the data itself (no row
      * on the closed weekday) rather than via the search component's `disabledDays`,
      * so the engine refuses closed-day bookings regardless of front-end wiring.
      */

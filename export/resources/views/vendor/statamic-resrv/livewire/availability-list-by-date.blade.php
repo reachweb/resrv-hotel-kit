@@ -1,62 +1,47 @@
 @use(Carbon\Carbon)
 
-{{-- Restyled to the design's card language — sittings/rates grouped by date (the
-     restaurant's "sittings by date"). The selectDate() wiring is stock. --}}
 <div class="relative">
     @if ($availableDates->isNotEmpty())
         <div class="divide-y divide-line">
             <div class="pb-4">
                 <h3 class="text-xl font-semibold">{{ trans('statamic-resrv::frontend.availableDates') }}</h3>
-                @if ($data->hasDates())
-                <p class="text-sm text-muted mt-0.5">
-                    {{ trans('statamic-resrv::frontend.availableDatesFrom') }} {{ Carbon::parse($data->dates['date_start'])->format('D j M Y') }}
-                </p>
-                @endif
+                <p class="text-sm text-muted mt-0.5">Pick a day to load it into the panel above.</p>
             </div>
 
             {{-- Display cap: the engine returns every future date with availability —
-                 show the next 7; re-searching from a later date moves the window. --}}
+                 show the next 7; clicking a later day re-anchors the window. --}}
             @foreach ($availableDates->take(7) as $date => $rateEntries)
-                <div class="py-4">
-                    <div class="flex items-baseline gap-3 mb-3">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                @php($isSelected = $data->hasDates() && Carbon::parse($date)->isSameDay(Carbon::parse($data->dates['date_start'])))
+                @php($fromPrice = collect($rateEntries)->min(fn ($info) => (float) $info['price']))
+                {{-- x-on:click (not @click — Blade would parse @ as a directive) smoothly
+                     brings the search/results panel back into view; block:'nearest' makes it
+                     a no-op when the panel is already visible, so it only scrolls when it
+                     makes sense (e.g. you're scrolled down at the list on mobile). The target
+                     sits above the dynamic results/list, so its position is morph-stable. --}}
+                <button type="button"
+                        wire:click="selectDate('{{ $date }}')"
+                        wire:key="day-{{ $date }}"
+                        x-on:click="document.querySelector('[data-resrv-booking-top]')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })"
+                        @if ($isSelected) aria-current="date" @endif
+                        class="group w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">
+                    <span class="flex items-baseline gap-3">
+                        <span class="block">
+                            <span class="block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                                 {{ Carbon::parse($date)->format('D') }}
-                            </p>
-                            <p class="text-lg font-medium">
+                            </span>
+                            <span class="block text-lg font-medium {{ $isSelected ? 'text-terracotta-dark' : 'group-hover:text-terracotta-dark transition-colors' }}">
                                 {{ Carbon::parse($date)->format('j M Y') }}
-                            </p>
-                        </div>
-                        <p class="text-sm text-muted">
+                            </span>
+                        </span>
+                        <span class="text-sm text-muted">
                             {{ count($rateEntries) }} {{ trans_choice('statamic-resrv::frontend.optionsAvailable', count($rateEntries)) }}
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        @foreach ($rateEntries as $rateId => $info)
-                            <button type="button"
-                                 class="flex flex-col p-3.5 bg-white rounded-md border border-line hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta transition-colors text-left cursor-pointer"
-                                 wire:click="selectDate('{{ $date }}', '{{ $rateId }}')"
-                                 wire:key="{{ $date }}-{{ $rateId }}">
-                                <span class="text-[15px] font-medium">
-                                    {{ $this->entryRates[$rateId] ?? $rateId }}
-                                </span>
-                                <span class="mt-1 text-sm font-semibold text-terracotta-dark">
-                                    {{ config('resrv-config.currency_symbol') }}{{ $info['price'] }}
-                                </span>
-                                @if ($info['available'] <= 5)
-                                    <span class="text-xs text-warning mt-0.5 font-medium">
-                                        {{ trans('statamic-resrv::frontend.only') }} {{ $info['available'] }} {{ trans('statamic-resrv::frontend.left') }}
-                                    </span>
-                                @elseif ($info['available'] > 1)
-                                    <span class="text-xs text-muted mt-0.5">
-                                        {{ $info['available'] }} {{ trans('statamic-resrv::frontend.available') }}
-                                    </span>
-                                @endif
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
+                        </span>
+                    </span>
+                    <span class="flex items-center gap-2.5 shrink-0 text-muted">
+                        <span class="text-sm">{{ trans('statamic-resrv::frontend.from') }} {{ config('resrv-config.currency_symbol') }}{{ $fromPrice }}</span>
+                        <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </span>
+                </button>
             @endforeach
             @if ($availableDates->count() > 7)
             <p class="text-sm text-muted pt-4">Showing the next 7 days with availability &mdash; pick a later date above to see more.</p>

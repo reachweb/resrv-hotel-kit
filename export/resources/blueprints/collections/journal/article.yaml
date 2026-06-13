@@ -23,7 +23,7 @@ tabs:
               folder: gallery
               max_files: 1
               mode: grid
-              instructions: 'Slot: `gallery/journal-<slug>.jpg · 16:9`.'
+              instructions: 'Recommended ratio 16:9.'
           -
             handle: excerpt
             field: { type: textarea, display: Excerpt, instructions: 'Short teaser for article cards.' }

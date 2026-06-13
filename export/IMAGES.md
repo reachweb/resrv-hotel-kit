@@ -1,20 +1,22 @@
 # Image manifest
 
 The kit ships **no photography**. Every image renders through a graceful *named slot*
-(`partials/image-slot`): when the asset is missing you see a labelled placeholder with
-the expected path and aspect ratio; when you add the file (or attach an asset in the CP)
-the slot renders it via Glide.
+(`partials/image-slot`): when nothing is attached you see a labelled placeholder with
+the slot name and aspect ratio; attach an image and the slot renders it via Glide.
 
-Two ways to fill a slot:
+**To fill a slot, attach an image to the entry's image field in the Control Panel.**
+The slot renders whatever you attach, regardless of filename. Each image field is
+pre-scoped to a folder in the `assets` container (e.g. rooms → `public/assets/rooms/`),
+so CP uploads land there automatically — the folders are created on upload, nothing is
+pre-scaffolded. You can also pre-stage files on disk under `public/assets/<folder>/` and
+then attach them, but dropping a file in alone won't fill a slot: the entry field has to
+reference it.
 
-1. **CP (preferred):** upload to the `assets` container and attach it to the entry's
-   image field — the slot uses the attached asset regardless of filename.
-2. **By convention:** drop files into `public/assets/<folder>/` using the names below —
-   the placeholder labels show exactly which file each slot expects.
-
-All slots are rendered with `aspect-ratio`, so any sufficiently large image works;
-the ratios below are what the layout was designed around. Aim for ≥1600px on the
-long edge (Glide serves `width=1600` and downsizes responsively).
+The tables below are a **reference**, not a requirement — they list every slot, the
+folder/filename convention we suggest (handy for staying organized and matching these
+docs), where it appears, and the aspect ratio the layout was designed around. All slots
+use `aspect-ratio`, so any sufficiently large image works; aim for ≥1600px on the long
+edge (Glide serves `width=1600` and downsizes responsively).
 
 ## Heroes & pages
 
@@ -26,7 +28,7 @@ long edge (Glide serves `width=1600` and downsizes responsively).
 | `<page-slug>.jpg` | 4:3 | `image_text_split` blocks (About story, taverna split, …) |
 | `map-location.jpg` | 21:9 | Contact page map slot |
 
-## Rooms (5 entries)
+## Rooms (4 entries)
 
 | Slot | Ratio | Where it appears |
 | --- | --- | --- |
@@ -35,7 +37,7 @@ long edge (Glide serves `width=1600` and downsizes responsively).
 | `rooms/<slug>-gallery-2.jpg` | 3:2 | Room detail gallery, third image |
 
 Room slugs: `garden-view-double`, `sea-view-suite`, `terracotta-villa`,
-`coastal-family-room`, `cliffside-honeymoon-suite`.
+`coastal-family-room`.
 
 ## Spa & dining
 
@@ -62,9 +64,8 @@ Treatment slugs: `mediterranean-massage`, `sea-salt-body-polish`,
 ## Gallery page
 
 The gallery block renders attached assets as a masonry grid; until populated it shows
-eight placeholder slots (`gallery/01.jpg` 3:2 · `02` 3:4 · `03` 4:5 · `04` 16:9 ·
-`05` 3:2 · `06` 3:4 · `07` 4:3 · `08` 1:1). Attach any number of images in the CP —
-the mixed ratios are only the placeholder rhythm.
+eight placeholder slots (ratios 3:2 · 3:4 · 4:5 · 16:9 · 3:2 · 3:4 · 4:3 · 1:1). Attach
+any number of images in the CP — the mixed ratios are only the placeholder rhythm.
 
 ## Brand
 

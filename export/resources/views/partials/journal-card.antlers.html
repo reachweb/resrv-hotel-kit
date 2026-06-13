@@ -4,7 +4,7 @@
 #}}
 <a href="{{ url }}" class="group block h-full zoom-on-hover">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
-        {{ partial:image-slot :asset="hero_image" label="journal/{slug}.jpg · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
+        {{ partial:image-slot :asset="hero_image" label="Article image · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
         <div class="p-5 lg:p-6 flex flex-col flex-1">
             <div class="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3">
                 {{ journal_categories limit="1" }}<span class="text-terracotta-dark">{{ title }}</span>{{ /journal_categories }}

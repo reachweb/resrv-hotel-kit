@@ -50,7 +50,7 @@ tabs:
               folder: spa
               max_files: 1
               mode: grid
-              instructions: 'Slot: `spa/<slug>.jpg · 3:2`. Templates degrade gracefully if empty.'
+              instructions: 'Recommended ratio 3:2. Degrades gracefully if empty.'
           -
             handle: body
             field:

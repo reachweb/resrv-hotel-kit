@@ -2,7 +2,7 @@
 <section class="section">
     <div class="container-rsv grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div class="reveal{{ if image_position == 'right' }} lg:order-2{{ /if }}">
-            {{ partial:image-slot :asset="image" label="{slug}.jpg · 4:3" ratio="4/3" class="rounded-xl" :alt="heading" }}
+            {{ partial:image-slot :asset="image" label="Section image · 4:3" ratio="4/3" class="rounded-xl" :alt="heading" }}
         </div>
         <div class="reveal{{ if image_position == 'right' }} lg:order-1{{ /if }}">
             {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">{{ overline }}</p>{{ /if }}

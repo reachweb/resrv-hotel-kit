@@ -5,7 +5,7 @@
 <a href="{{ url }}" class="group block h-full">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
         <div class="relative zoom-on-hover">
-            {{ partial:image-slot :asset="image" label="offers/{slug}.jpg · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
+            {{ partial:image-slot :asset="image" label="Offer image · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
             {{ if linked_coupon_code }}<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none absolute top-3 left-3 bg-terracotta text-white">{{ linked_coupon_code }}</span>{{ /if }}
         </div>
         <div class="p-6 flex flex-col flex-1">

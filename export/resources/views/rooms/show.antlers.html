@@ -22,7 +22,7 @@
                     </button>
                 {{ /hero_image }}
             {{ else }}
-                <div class="img-slot relative min-h-[280px]"><span class="slot-label">rooms/{{ slug }}.jpg · 3:2</span></div>
+                <div class="img-slot relative min-h-[280px]"><span class="slot-label">Room image · 3:2</span></div>
             {{ /if }}
             <div class="grid grid-rows-2 gap-3">
                 {{ if gallery }}
@@ -32,8 +32,8 @@
                         </button>
                     {{ /gallery }}
                 {{ else }}
-                    <div class="img-slot relative"><span class="slot-label">rooms/{{ slug }}-gallery-1.jpg · 3:2</span></div>
-                    <div class="img-slot relative"><span class="slot-label">rooms/{{ slug }}-gallery-2.jpg · 3:2</span></div>
+                    <div class="img-slot relative"><span class="slot-label">Room gallery image · 3:2</span></div>
+                    <div class="img-slot relative"><span class="slot-label">Room gallery image · 3:2</span></div>
                 {{ /if }}
             </div>
         </div>
@@ -135,7 +135,7 @@
                 <p class="text-sm text-muted mb-5">Pick your dates for live rates &amp; availability.</p>
                 {{ /if }}
 
-                {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
+                {{ livewire:availability-search calendar="range" resetOnBoot="true" view="availability-search-panel" }}
 
                 <div class="mt-4">
                     {{ livewire:availability-results :entry="id" rates="true" }}

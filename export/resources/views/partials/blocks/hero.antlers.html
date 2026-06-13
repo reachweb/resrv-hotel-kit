@@ -6,7 +6,7 @@
 #}}
 {{ if image || show_search }}
     <section class="relative flex items-end min-h-[64vh] pt-28 lg:pt-32">
-        {{ partial:image-slot :asset="image" label="hero/{slug}.jpg · 16:9" ratio="16/9" class="absolute inset-0 rounded-none" :alt="heading" }}
+        {{ partial:image-slot :asset="image" label="Hero image · 16:9" ratio="16/9" class="absolute inset-0 rounded-none" :alt="heading" }}
         <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.5), rgba(27,43,40,.12) 38%, rgba(27,43,40,.72));"></div>
         <div class="relative container-rsv pb-14 lg:pb-16 text-white">
             {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-white/85 mb-4">{{ overline }}</p>{{ /if }}

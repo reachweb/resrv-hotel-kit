@@ -99,14 +99,14 @@
                         aria-label="{{ trans_choice('statamic-resrv::frontend.selectDate', ($calendar === 'range') ? 2 : 1) }}"
                         class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div x-show="! isDatesEmpty" x-cloak class="absolute {{ $variant === 'card' ? 'top-1.5 end-1.5' : 'inset-y-0 end-2 items-center' }} flex z-10">
+                    <div x-show="! isDatesEmpty" x-cloak class="absolute inset-y-0 items-center {{ $variant === 'card' ? 'end-1.5' : 'end-2' }} flex z-10">
                         <button
                             type="button"
                             x-on:click.stop="clearSelection()"
                             class="cursor-pointer p-1 rounded-full text-muted hover:text-ink hover:bg-sand transition-colors"
                             aria-label="Clear selection"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-[1.1rem] h-[1.1rem]">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" />
                             </svg>
                         </button>
