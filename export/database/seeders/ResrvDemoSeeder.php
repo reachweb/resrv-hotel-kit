@@ -117,6 +117,12 @@ class ResrvDemoSeeder extends Seeder
     /** Resolved Statamic entry ids, keyed by room slug, populated by ensureEntryMappings(). */
     private array $roomIds = [];
 
+    /**
+     * Force the optional demo reservations on regardless of RESRV_SEED_DEMO_RESERVATIONS.
+     * Set by the `demo:reset` command so the public demo always has sample bookings.
+     */
+    public bool $withDemoReservations = false;
+
     public function run(): void
     {
         $this->pruneStaleAvailability();
@@ -135,7 +141,7 @@ class ResrvDemoSeeder extends Seeder
         // Optional demo reservations (reports + abandoned-recovery showcase). Off by
         // default — they add CP noise and re-seeding resets the availability counts
         // their holds decremented.
-        if (env('RESRV_SEED_DEMO_RESERVATIONS', false)) {
+        if ($this->withDemoReservations || env('RESRV_SEED_DEMO_RESERVATIONS', false)) {
             $this->seedDemoReservations();
         }
 
