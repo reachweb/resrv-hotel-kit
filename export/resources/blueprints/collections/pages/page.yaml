@@ -76,10 +76,8 @@ tabs:
                           field: { type: text, display: Heading, width: 50 }
                         -
                           handle: content
-                          field:
-                            type: bard
-                            display: Content
-                            buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
+                          field: prose.body
+                          config: { display: Content, localizable: false }
                         -
                           handle: width
                           field: { type: select, display: Width, options: { narrow: 'Narrow (reading)', wide: Wide }, default: narrow, width: 50 }
@@ -346,11 +344,10 @@ tabs:
       -
         fields:
           -
-            handle: seo_title
-            field: { type: text, display: 'SEO title', localizable: true, instructions: 'Falls back to the page title + global suffix.' }
-          -
-            handle: seo_description
-            field: { type: textarea, display: 'SEO description', localizable: true, instructions: 'Falls back to the global default.' }
+            import: seo
+            config:
+              seo_title: { instructions: 'Falls back to the page title + global suffix.' }
+              seo_description: { instructions: 'Falls back to the global default.' }
           -
             handle: og_image
             field:

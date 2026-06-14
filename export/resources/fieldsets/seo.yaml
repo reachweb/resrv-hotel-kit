@@ -1,0 +1,8 @@
+title: SEO
+fields:
+  -
+    handle: seo_title
+    field: { type: text, display: 'SEO title', localizable: true }
+  -
+    handle: seo_description
+    field: { type: textarea, display: 'SEO description', localizable: true }

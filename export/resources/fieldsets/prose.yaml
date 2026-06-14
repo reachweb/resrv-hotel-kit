@@ -1,0 +1,9 @@
+title: Prose
+fields:
+  -
+    handle: body
+    field:
+      type: bard
+      display: Body
+      localizable: true
+      buttons: [h2, h3, bold, italic, unorderedlist, orderedlist, quote, anchor, removeformat]
