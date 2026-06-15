@@ -2,6 +2,7 @@
 id: venue-la-marea
 blueprint: restaurant
 title: 'La Marea'
+availability: venue-la-marea
 tagline: 'Sea-facing restaurant'
 hours:
   - label: Breakfast

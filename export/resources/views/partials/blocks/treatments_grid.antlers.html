@@ -6,7 +6,7 @@
             {{ if treatments }}
                 {{ treatments }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /treatments }}
             {{ else }}
-                {{ collection:spa_treatments sort="from_price_label:desc" }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /collection:spa_treatments }}
+                {{ collection:spa_treatments sort="title" }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /collection:spa_treatments }}
             {{ /if }}
         </div>
     </div>

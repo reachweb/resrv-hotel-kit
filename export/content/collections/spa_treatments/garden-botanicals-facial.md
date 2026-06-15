@@ -3,7 +3,7 @@ id: spa-garden-botanicals-facial
 blueprint: spa_treatment
 title: 'Facial, Garden Botanicals'
 duration_options: '60 min'
-from_price_label: '85'
+availability: spa-garden-botanicals-facial
 summary: 'Calming, with rosemary and citrus.'
 body:
   -

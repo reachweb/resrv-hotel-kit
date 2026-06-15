@@ -2,8 +2,7 @@
 id: sea-view-suite
 blueprint: room
 title: 'Sea View Suite'
-from_price_label: '320'
-featured: true
+availability: sea-view-suite
 size_sqm: 38
 max_occupancy: 3
 floor: 'First & second floor'

@@ -3,11 +3,12 @@
     labelled placeholder that degrades gracefully. Params:
       asset  — an assets-field value (single file)
       label  — slot hint shown when empty, e.g. "Room image · 3:2"
-      ratio  — aspect-ratio (default 3/2)
+      ratio  — aspect-ratio (default 3/2; ignored when fill is set)
       class  — extra wrapper classes (default rounded-xl)
+      fill   — skip the ratio so the slot fills an absolutely-positioned parent (full-bleed hero)
       alt    — img alt text
 #}}
-<div class="img-slot {{ if asset }}has-img{{ /if }} {{ class ?? 'rounded-xl' }}" style="aspect-ratio: {{ ratio ?? '3/2' }};">
+<div class="img-slot {{ if asset }}has-img{{ /if }} {{ class ?? 'rounded-xl' }}"{{ unless fill }} style="aspect-ratio: {{ ratio ?? '3/2' }};"{{ /unless }}>
     {{ if asset }}
         {{ asset }}<img src="{{ glide:url width='1600' }}" alt="{{ alt ?? title }}" loading="lazy">{{ /asset }}
     {{ else }}

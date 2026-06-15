@@ -3,7 +3,7 @@ id: spa-mediterranean-massage
 blueprint: spa_treatment
 title: 'Mediterranean Massage'
 duration_options: '60 / 90 min'
-from_price_label: '90'
+availability: spa-mediterranean-massage
 summary: 'Slow full-body with warm local oils.'
 body:
   -

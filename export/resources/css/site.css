@@ -37,8 +37,8 @@
   --color-warning:         #C99A4E;
   --color-error:           #B5523E;
 
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Newsreader", ui-serif, Georgia, serif;
+  --font-sans:    "Manrope", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm:   8px;
   --radius-md:   12px;
@@ -82,7 +82,7 @@
   --radius-calendar-day-range-middle:   0;
 
   --shadow-calendar: 0 12px 40px rgba(27,43,40,.12);
-  --font-calendar: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-calendar: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ============================================================
@@ -224,11 +224,27 @@
   #siteNav.is-solid { background: rgba(243,238,230,.88); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
   #siteNav.is-solid .brand, #siteNav.is-solid .nav-link { color: var(--color-ink); }
   #siteNav.is-transparent .brand, #siteNav.is-transparent .nav-link { color: #fff; }
-  #siteNav.is-transparent #navBurger { color: #fff; }
+  /* is-solid first so is-transparent (equal specificity) wins the burger color over the hero, matching .brand/.nav-link above */
   #siteNav.is-solid #navBurger { color: var(--color-ink); }
+  #siteNav.is-transparent #navBurger { color: #fff; }
   #siteNav.is-transparent.scrolled { background: rgba(243,238,230,.92); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
   #siteNav.is-transparent.scrolled .brand, #siteNav.is-transparent.scrolled .nav-link { color: var(--color-ink); }
   #siteNav.is-transparent.scrolled #navBurger { color: var(--color-ink); }
+  /* The header keeps a static `is-solid` class as a no-JS fallback, so Alpine's
+     `is-transparent` must explicitly clear the solid bar's background/border/blur —
+     otherwise white links sit on the light Shell bar (the real low-contrast bug). */
+  #siteNav.is-transparent { background: transparent; border-bottom-color: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  /* Transparent-state scrim + text-shadow — keeps the white logo/links AA-readable
+     over any hero image; both fade out when the bar solidifies on scroll. */
+  #siteNav::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 150%;
+    background: linear-gradient(180deg, rgba(12,22,20,.6), rgba(12,22,20,0));
+    opacity: 0; pointer-events: none; z-index: -1; transition: opacity .3s ease;
+  }
+  #siteNav.is-transparent::before { opacity: 1; }
+  #siteNav.is-transparent.scrolled::before { opacity: 0; }
+  #siteNav.is-transparent .brand, #siteNav.is-transparent .nav-link, #siteNav.is-transparent #navBurger { text-shadow: 0 1px 2px rgba(0,0,0,.28); }
+  #siteNav.is-transparent.scrolled .brand, #siteNav.is-transparent.scrolled .nav-link, #siteNav.is-transparent.scrolled #navBurger { text-shadow: none; }
   .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .25s ease; opacity: .85; }
   .nav-link:hover::after { transform: scaleX(1); }
   .nav-link.is-active { color: var(--color-terracotta) !important; }

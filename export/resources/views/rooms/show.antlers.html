@@ -126,10 +126,10 @@
         {{# RIGHT: sticky booking panel #}}
         <aside class="lg:sticky lg:top-[100px]" id="book">
             <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
-                {{ if from_price_label }}
+                {{ if availability }}
                 <div class="flex items-baseline gap-2 mb-1">
                     <span class="text-sm text-muted">from</span>
-                    <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}</span>
+                    <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>
                     <span class="text-sm text-muted">/ night</span>
                 </div>
                 <p class="text-sm text-muted mb-5">Pick your dates for live rates &amp; availability.</p>
@@ -172,7 +172,7 @@
     {{# Mobile sticky CTA #}}
     <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line p-4 flex items-center justify-between gap-4 shadow-raised">
         <div>
-            {{ if from_price_label }}<span class="font-display text-[22px] text-terracotta-dark">{{ booking:currency_symbol }}{{ from_price_label }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
+            {{ if availability }}<span class="font-display text-[22px] text-terracotta-dark">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
         </div>
         <a href="#book" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark flex-1 max-w-[220px]">Check availability</a>
     </div>

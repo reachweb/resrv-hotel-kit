@@ -1,7 +1,8 @@
 {{#
     Room card — used in the rooms_showcase block and the rooms index.
     Expects a `rooms` entry in scope (loop variable). Rates/prices stay live in
-    Resrv; this shows the editorial `from_price_label` only.
+    Resrv; the "from" price is Resrv's own lowest available price
+    ({{ availability:cheapest }}), so there is no stored/editable price to drift.
 #}}
 <a href="{{ url }}" class="group block h-full zoom-on-hover">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
@@ -20,10 +21,12 @@
                 </div>
             {{ /if }}
             <div class="mt-auto flex items-end justify-between pt-4 border-t border-line">
-                <div>
-                    <span class="text-sm text-muted">from</span>
-                    <div class="font-display text-2xl text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}<span class="text-sm text-muted font-sans"> / night</span></div>
-                </div>
+                {{ if availability }}
+                    <div>
+                        <span class="text-sm text-muted">from</span>
+                        <div class="font-display text-2xl text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}<span class="text-sm text-muted font-sans"> / night</span></div>
+                    </div>
+                {{ /if }}
                 <span class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal pointer-events-none">View</span>
             </div>
         </div>

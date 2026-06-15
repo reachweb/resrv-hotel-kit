@@ -2,8 +2,7 @@
 id: terracotta-villa
 blueprint: room
 title: 'Terracotta Villa · Private Pool'
-from_price_label: '640'
-featured: true
+availability: terracotta-villa
 size_sqm: 75
 max_occupancy: 4
 floor: 'Garden level, private entrance'

@@ -189,6 +189,17 @@ class ResrvDemoSeeder extends Seeder
 
             $ids[$slug] = $entry->id();
 
+            // The CP "Enable reservations" toggle and the ResrvAvailability field read the
+            // entry's stored `availability` value, which must equal the entry id to register
+            // as enabled (an empty/absent value is treated as 'disabled'). Flat-file demo
+            // content created outside the CP can miss this, so set it idempotently here —
+            // saving quietly, only when it differs — so a fresh seed always leaves
+            // reservations switched on. saveQuietly() skips EntrySaved so the resrv_entries
+            // mirror below stays the single, deterministic source for the mapping/enabled flag.
+            if ($entry->get('availability') !== $entry->id()) {
+                $entry->set('availability', $entry->id())->saveQuietly();
+            }
+
             ResrvEntry::updateOrCreate(
                 ['item_id' => $entry->id()],
                 [

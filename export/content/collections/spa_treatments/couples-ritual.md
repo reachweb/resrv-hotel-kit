@@ -3,7 +3,7 @@ id: spa-couples-ritual
 blueprint: spa_treatment
 title: 'Couples Ritual'
 duration_options: '90 min'
-from_price_label: '175'
+availability: spa-couples-ritual
 summary: 'Side-by-side massage in the double room.'
 body:
   -

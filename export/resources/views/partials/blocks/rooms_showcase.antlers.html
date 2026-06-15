@@ -1,4 +1,4 @@
-{{# Rooms showcase — chosen rooms, or featured rooms as a fallback.
+{{# Rooms showcase — shows the rooms chosen in this block.
    mt-24/lg:mt-28 restores the breathing room the design put on `<main>`
    (pt-24 lg:pt-28) above the first content section — dropped on home because
    transparent_nav zeroes the layout's main padding. Home-only block. #}}
@@ -15,11 +15,7 @@
             {{ /if }}
         </div>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {{ if rooms }}
-                {{ rooms }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /rooms }}
-            {{ else }}
-                {{ collection:rooms featured:is="true" sort="from_price_label" limit="6" }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /collection:rooms }}
-            {{ /if }}
+            {{ rooms }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /rooms }}
         </div>
         {{ if cta_label }}<a href="{{ cta_url ?? '/rooms' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta w-full mt-8 sm:hidden">{{ cta_label }}</a>{{ /if }}
     </div>

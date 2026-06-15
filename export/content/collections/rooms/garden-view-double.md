@@ -2,8 +2,7 @@
 id: garden-view-double
 blueprint: room
 title: 'Garden View Double'
-from_price_label: '180'
-featured: false
+availability: garden-view-double
 size_sqm: 24
 max_occupancy: 2
 floor: 'Ground floor'

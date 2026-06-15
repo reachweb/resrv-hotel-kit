@@ -3,7 +3,7 @@ id: spa-sea-salt-body-polish
 blueprint: spa_treatment
 title: 'Sea-Salt Body Polish'
 duration_options: '45 min'
-from_price_label: '70'
+availability: spa-sea-salt-body-polish
 summary: 'Exfoliation and hydration, head to toe.'
 body:
   -

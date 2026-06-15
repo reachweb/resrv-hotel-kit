@@ -21,24 +21,11 @@ tabs:
               generate: true
               validate: [required]
           -
-            handle: from_price_label
-            field:
-              type: text
-              display: '"From" price label'
-              instructions: 'Display-only marketing price (e.g. "180"). The real, bookable price comes from Resrv availability/rates.'
-              width: 50
-          -
             handle: intro
             field:
               type: markdown
               display: Introduction
               localizable: true
-          -
-            handle: featured
-            field:
-              type: toggle
-              display: 'Featured on home'
-              default: false
   media:
     display: Media
     sections:
@@ -109,9 +96,6 @@ tabs:
           -
             handle: availability
             field: { type: resrv_availability, display: Availability }
-          -
-            handle: fixed_pricing
-            field: { type: resrv_fixed_pricing, display: 'Fixed pricing' }
           -
             handle: options
             field: { type: resrv_options, display: Options }

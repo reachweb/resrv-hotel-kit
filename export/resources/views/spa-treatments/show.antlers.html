@@ -46,10 +46,10 @@
     {{# RIGHT: sticky booking panel — single-date search + duration-tier rates #}}
     <aside class="lg:sticky lg:top-[100px]" id="book">
         <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
-            {{ if from_price_label }}
+            {{ if availability }}
             <div class="flex items-baseline gap-2 mb-1">
                 <span class="text-sm text-muted">from</span>
-                <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ from_price_label }}</span>
+                <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>
             </div>
             <p class="text-sm text-muted mb-5">Pick a day to see times &amp; prices — the calendar shows live availability.</p>
             {{ /if }}

@@ -153,7 +153,7 @@ tabs:
                             type: entries
                             display: Rooms
                             collections: [rooms]
-                            instructions: 'Leave empty to show featured rooms automatically.'
+                            instructions: 'Choose the rooms to show in this section.'
                         -
                           handle: cta_label
                           field: { type: text, display: 'Button label', width: 50 }

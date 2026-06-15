@@ -2,8 +2,7 @@
 id: coastal-family-room
 blueprint: room
 title: 'Coastal Family Room'
-from_price_label: '290'
-featured: false
+availability: coastal-family-room
 size_sqm: 42
 max_occupancy: 4
 floor: 'Ground & first floor'

@@ -28,13 +28,6 @@ tabs:
               instructions: 'Display-only (e.g. "60 / 90 min"). The bookable duration tiers are Resrv rates scoped to this collection.'
               width: 50
           -
-            handle: from_price_label
-            field:
-              type: text
-              display: '"From" price label'
-              instructions: 'Display-only marketing price (e.g. "90"). The real, bookable price comes from Resrv availability/rates.'
-              width: 50
-          -
             handle: summary
             field:
               type: textarea

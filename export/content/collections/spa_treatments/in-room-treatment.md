@@ -3,7 +3,7 @@ id: spa-in-room-treatment
 blueprint: spa_treatment
 title: 'In-Room Treatment'
 duration_options: '60 min'
-from_price_label: '90'
+availability: spa-in-room-treatment
 summary: 'Our therapist comes to your suite.'
 body:
   -
