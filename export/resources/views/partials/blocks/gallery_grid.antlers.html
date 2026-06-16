@@ -3,14 +3,16 @@
     present, else a graceful set of named placeholder slots. (No category filter:
     the assets field carries no per-image category.)
 #}}
-<section class="section-sm" x-data="{ lb: false, src: '', cap: '' }">
+<section class="section-sm" x-data="lightbox([
+    {{ if images }}{{ images }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt ?? title }}' },{{ /images }}{{ /if }}
+])">
     <div class="container-rsv">
         {{ if heading }}<h2 class="t-h2 mb-8 reveal">{{ heading | widont }}</h2>{{ /if }}
 
         <div class="columns-1 sm:columns-2 {{ if columns == '2' }}lg:columns-2{{ elseif columns == '4' }}lg:columns-4{{ else }}lg:columns-3{{ /if }} gap-4 [&>*]:mb-4">
             {{ if images }}
                 {{ images }}
-                    <button type="button" class="img-slot has-img rounded-lg break-inside-avoid block w-full cursor-pointer zoom-on-hover reveal" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                    <button type="button" class="img-slot has-img rounded-lg break-inside-avoid block w-full cursor-pointer zoom-on-hover reveal" @click="open('{{ glide:url width='1800' }}')">
                         <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
                     </button>
                 {{ /images }}
@@ -27,14 +29,6 @@
         </div>
     </div>
 
-    {{# Lightbox #}}
-    <div x-show="lb" x-cloak x-transition.opacity @click="lb = false" @keydown.escape.window="lb = false" class="fixed inset-0 z-[80] flex items-center justify-center bg-ink/85 backdrop-blur-sm p-4">
-        <button type="button" class="absolute top-5 right-5 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close" @click="lb = false">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-        <div class="max-w-[1100px] w-full" @click.stop>
-            <img :src="src" alt="" class="w-full rounded-xl">
-            <p class="text-sage-light/80 text-sm text-center mt-3" x-text="cap"></p>
-        </div>
-    </div>
+    {{# Lightbox — click any image, then browse with the arrows or ← / → keys #}}
+    {{ partial:lightbox }}
 </section>

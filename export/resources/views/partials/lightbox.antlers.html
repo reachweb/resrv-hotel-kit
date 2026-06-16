@@ -1,0 +1,24 @@
+{{#
+    Shared lightbox overlay. Drop it inside an `x-data="lightbox([...])"` root
+    (the component lives in resources/js/site.js); clickable tiles in that root
+    call `open('<full-size url>')`. Browses the image set with the on-screen
+    arrows or the ← / → keys, with an "N / M" counter. Arrows + counter only
+    show when there's more than one image, so it degrades to a plain viewer.
+#}}
+<div x-show="lb" x-cloak x-transition.opacity @click="lb = false" @keydown.escape.window="lb = false" @keydown.left.window="lb && go(-1)" @keydown.right.window="lb && go(1)" class="fixed inset-0 z-[80] flex items-center justify-center bg-ink/85 backdrop-blur-sm p-4">
+    <button type="button" class="absolute top-5 right-5 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close" @click="lb = false">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <button type="button" x-show="imgs.length > 1" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Previous image" @click.stop="go(-1)">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button type="button" x-show="imgs.length > 1" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Next image" @click.stop="go(1)">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+    <div @click.stop>
+        <img :src="lb ? imgs[i]?.s : ''" alt="" class="max-h-[85vh] max-w-[90vw] rounded-xl">
+        <p class="text-sage-light/80 text-sm text-center mt-3">
+            <span x-text="imgs[i]?.c"></span><span x-show="imgs.length > 1" class="text-sage-light/50" x-text="(imgs[i]?.c ? '  ·  ' : '') + (i + 1) + ' / ' + imgs.length"></span>
+        </p>
+    </div>
+</div>

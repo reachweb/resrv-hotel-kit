@@ -50,9 +50,10 @@ class ResrvDemoSeeder extends Seeder
     private const AVAILABILITY_MORPH = Availability::class;
 
     /**
-     * Rooms keyed by slug. `base` = nightly reference price (the figure stored in
-     * availability rows; relative rates derive their displayed price from it).
-     * `allotment` = rooms available for the main (Best Flexible) inventory.
+     * Rooms keyed by slug. `base` = nightly reference price (the figure stored in the
+     * Best Flexible availability rows; every other rate derives its displayed price from
+     * it). `allotment` = the single shared inventory pool — Best Flexible owns the rows
+     * and Advance Saver, Bed & Breakfast and Last-Minute all draw down the same count.
      */
     private array $rooms = [
         'garden-view-double' => ['base' => 180, 'allotment' => 4],
@@ -215,16 +216,23 @@ class ResrvDemoSeeder extends Seeder
     }
 
     /**
-     * The rate plans for the `rooms` collection. One global base rate plus four
-     * variations that, between them, exercise every Resrv rate capability:
-     * independent + relative pricing, independent + shared availability, all three
-     * cancellation states (explicit free-cancellation, non-refundable, inherited),
-     * and the full restriction set (date window, min/max stay, min/max days before).
+     * The rate plans for the `rooms` collection. A single independent base rate (Best
+     * Flexible) owns the inventory pool; three child rates share it (availability_type
+     * 'shared', base_rate_id -> Best Flexible) so the room can never be oversold across
+     * rates. Between them they exercise independent + relative pricing (both percent and
+     * fixed modifiers), shared availability, targeted vs apply-to-all rates, the free and
+     * non-refundable cancellation states, and the full restriction set (date window,
+     * min/max stay, min/max days before).
      */
     private function seedRates(): void
     {
+        // Retired in the rate-model revision: the former 'shared-allotment' (Partner
+        // Allotment) rate. Force-remove it and its pivots on re-seed so existing demo
+        // databases converge to the four-rate structure below.
+        $this->removeRetiredRate('rooms', 'shared-allotment');
+
         // 1) Best Flexible — independent pricing, independent availability, free cancellation 7d.
-        //    The base inventory every other rate references.
+        //    The single shared inventory pool every other rate draws from.
         $this->rates['best-flexible'] = Rate::updateOrCreate(
             ['collection' => 'rooms', 'slug' => 'best-flexible'],
             [
@@ -244,7 +252,8 @@ class ResrvDemoSeeder extends Seeder
 
         $baseId = $this->rates['best-flexible']->id;
 
-        // 2) Advance Saver — relative (-18%) pricing, independent allotment, non-refundable.
+        // 2) Advance Saver — relative (-18%) pricing, SHARED availability (child of Best
+        //    Flexible — draws the same inventory pool), non-refundable.
         $this->rates['advance-saver'] = Rate::updateOrCreate(
             ['collection' => 'rooms', 'slug' => 'advance-saver'],
             [
@@ -256,7 +265,7 @@ class ResrvDemoSeeder extends Seeder
                 'modifier_type' => 'percent',
                 'modifier_operation' => 'decrease',
                 'modifier_amount' => 18,
-                'availability_type' => 'independent',
+                'availability_type' => 'shared',
                 'refundable' => false,
                 'cancellation_policy' => 'non_refundable',
                 'free_cancellation_period' => null,
@@ -265,17 +274,22 @@ class ResrvDemoSeeder extends Seeder
             ]
         );
 
-        // 3) Bed & Breakfast — independent pricing + its own allotment, free cancellation 3d.
-        //    Targeted to a subset of rooms (apply_to_all = false + entry pivot).
+        // 3) Bed & Breakfast — relative (+€25/night fixed) pricing, SHARED availability
+        //    (child of Best Flexible), free cancellation 3d. Targeted to a subset of rooms
+        //    (apply_to_all = false + entry pivot). The breakfast premium is a per-night
+        //    fixed modifier on the shared base price, not its own seeded rows.
         $this->rates['bed-breakfast'] = Rate::updateOrCreate(
             ['collection' => 'rooms', 'slug' => 'bed-breakfast'],
             [
                 'title' => 'Bed & Breakfast',
                 'description' => 'Includes a full Mediterranean breakfast — free cancellation up to 3 days before arrival.',
                 'apply_to_all' => false,
-                'pricing_type' => 'independent',
-                'availability_type' => 'independent',
-                'base_rate_id' => null,
+                'pricing_type' => 'relative',
+                'base_rate_id' => $baseId,
+                'modifier_type' => 'fixed',
+                'modifier_operation' => 'increase',
+                'modifier_amount' => 25,
+                'availability_type' => 'shared',
                 'refundable' => true,
                 'cancellation_policy' => 'free_cancellation',
                 'free_cancellation_period' => 3,
@@ -284,29 +298,9 @@ class ResrvDemoSeeder extends Seeder
             ]
         );
 
-        // 4) Shared Allotment — independent pricing, SHARED availability (draws from Best
-        //    Flexible's pool), capped at 2, cancellation inherits the global default.
-        $this->rates['shared-allotment'] = Rate::updateOrCreate(
-            ['collection' => 'rooms', 'slug' => 'shared-allotment'],
-            [
-                'title' => 'Partner Allotment',
-                'description' => 'A small shared allotment — limited availability.',
-                'apply_to_all' => false,
-                'pricing_type' => 'independent',
-                'availability_type' => 'shared',
-                'base_rate_id' => $baseId,
-                'max_available' => 2,
-                'require_price_override' => false,
-                'refundable' => true,
-                'cancellation_policy' => null, // inherit global free-cancellation default
-                'free_cancellation_period' => null,
-                'order' => 4,
-                'published' => true,
-            ]
-        );
-
-        // 5) Last-Minute / Seasonal — relative (-12%), restricted: seasonal date window,
-        //    2–14 night stays, booked 1–21 days before arrival. Non-refundable.
+        // 4) Last-Minute / Seasonal — relative (-12%), SHARED availability (child of Best
+        //    Flexible), restricted: seasonal date window, 2–14 night stays, booked 1–21
+        //    days before arrival. Non-refundable.
         $this->rates['last-minute-seasonal'] = Rate::updateOrCreate(
             ['collection' => 'rooms', 'slug' => 'last-minute-seasonal'],
             [
@@ -318,7 +312,7 @@ class ResrvDemoSeeder extends Seeder
                 'modifier_type' => 'percent',
                 'modifier_operation' => 'decrease',
                 'modifier_amount' => 12,
-                'availability_type' => 'independent',
+                'availability_type' => 'shared',
                 'date_start' => Carbon::today()->startOfDay(),
                 'date_end' => Carbon::today()->addMonths(3)->endOfDay(),
                 'min_stay' => 2,
@@ -328,14 +322,13 @@ class ResrvDemoSeeder extends Seeder
                 'refundable' => false,
                 'cancellation_policy' => 'non_refundable',
                 'free_cancellation_period' => null,
-                'order' => 5,
+                'order' => 4,
                 'published' => true,
             ]
         );
 
         // Targeted rate -> room assignments (apply_to_all = false rates only).
         $this->assignRateToRooms('bed-breakfast', ['garden-view-double', 'sea-view-suite', 'coastal-family-room']);
-        $this->assignRateToRooms('shared-allotment', ['sea-view-suite']);
         $this->assignRateToRooms('last-minute-seasonal', ['garden-view-double', 'sea-view-suite', 'terracotta-villa']);
     }
 
@@ -352,53 +345,60 @@ class ResrvDemoSeeder extends Seeder
     }
 
     /**
-     * Rolling availability. Only rates with their own inventory get rows: every
-     * independent rate (including relative-independent rates, which store the
-     * reference price and have the modifier applied at query time). Shared rates
-     * read their base rate's rows, so they are intentionally skipped here.
+     * Force-remove a rooms rate retired from the demo, along with its pivots, price
+     * overrides and any availability rows, so re-seeding an existing demo database
+     * converges to the current rate set. No-op when the rate was never seeded.
+     */
+    private function removeRetiredRate(string $collection, string $slug): void
+    {
+        $rate = Rate::withTrashed()->where('collection', $collection)->where('slug', $slug)->first();
+
+        if (! $rate) {
+            return;
+        }
+
+        Availability::where('rate_id', $rate->id)->delete();
+        DB::table('resrv_rate_entries')->where('rate_id', $rate->id)->delete();
+        DB::table('resrv_rate_prices')->where('rate_id', $rate->id)->delete();
+        $rate->forceDelete();
+    }
+
+    /**
+     * Rolling availability. Best Flexible is the only independent rooms rate, so it is the
+     * only one with its own rows — it owns the shared inventory pool. The three child rates
+     * (Advance Saver, Bed & Breakfast, Last-Minute) read these rows and apply their modifier
+     * at query time, so they are not seeded; any rows left under a child rate id by an
+     * earlier independent-structure seed are cleared first.
      */
     private function seedAvailability(): void
     {
         $start = Carbon::today()->startOfDay();
         $end = $start->copy()->addMonths(self::MONTHS_AHEAD);
 
+        // Child (shared) rooms rates own no rows — drop any left by a prior independent
+        // seed so Best Flexible's pool is the only rooms inventory.
+        $sharedRateIds = collect($this->rates)
+            ->filter(fn (Rate $rate) => $rate->isShared())
+            ->pluck('id');
+
+        if ($sharedRateIds->isNotEmpty()) {
+            Availability::whereIn('rate_id', $sharedRateIds)->delete();
+        }
+
+        $baseRateId = $this->rates['best-flexible']->id;
+
         foreach ($this->rooms as $slug => $cfg) {
             $entryId = $this->roomIds[$slug];
 
-            // (rate slug => [reference price, allotment, optional date-window clamp])
-            $plans = [
-                'best-flexible' => ['price' => $cfg['base'], 'available' => $cfg['allotment']],
-                'advance-saver' => ['price' => $cfg['base'], 'available' => min(2, $cfg['allotment'])],
-            ];
-
-            if ($this->roomHasRate($slug, 'bed-breakfast')) {
-                // B&B carries a breakfast premium baked into its own reference price.
-                $plans['bed-breakfast'] = ['price' => $cfg['base'] + 25, 'available' => min(2, $cfg['allotment'])];
-            }
-
-            if ($this->roomHasRate($slug, 'last-minute-seasonal')) {
-                // Only seed within the seasonal window the rate itself allows.
-                $plans['last-minute-seasonal'] = [
-                    'price' => $cfg['base'],
-                    'available' => min(2, $cfg['allotment']),
-                    'until' => $start->copy()->addMonths(3),
-                ];
-            }
-
-            DB::transaction(function () use ($entryId, $slug, $plans, $start, $end) {
-                foreach ($plans as $rateSlug => $plan) {
-                    $rateId = $this->rates[$rateSlug]->id;
-                    $until = $plan['until'] ?? $end;
-
-                    for ($date = $start->copy(); $date->lte($until); $date->addDay()) {
-                        Availability::updateOrCreate(
-                            ['statamic_id' => $entryId, 'date' => $date->toDateString(), 'rate_id' => $rateId],
-                            [
-                                'available' => $this->availableFor($slug, $rateSlug, $date, $plan['available']),
-                                'price' => $this->priceFor($date, $plan['price']),
-                            ],
-                        );
-                    }
+            DB::transaction(function () use ($entryId, $cfg, $baseRateId, $start, $end) {
+                for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+                    Availability::updateOrCreate(
+                        ['statamic_id' => $entryId, 'date' => $date->toDateString(), 'rate_id' => $baseRateId],
+                        [
+                            'available' => $this->availableFor($date, $cfg['allotment']),
+                            'price' => $this->priceFor($date, $cfg['base']),
+                        ],
+                    );
                 }
             });
         }
@@ -413,30 +413,18 @@ class ResrvDemoSeeder extends Seeder
     }
 
     /**
-     * A couple of blackout nights per room on the base rate (~3 weeks out) to
-     * demonstrate sold-out handling; every other night uses the plan allotment.
+     * A couple of blackout nights per room (~3 weeks out) on the shared Best Flexible
+     * pool, to demonstrate sold-out handling: every rate drawing on the pool then shows
+     * "No availability" for those nights. Every other night returns the room's allotment.
      */
-    private function availableFor(string $slug, string $rateSlug, Carbon $date, int $allotment): int
+    private function availableFor(Carbon $date, int $allotment): int
     {
-        if ($rateSlug === 'best-flexible') {
-            $blackout = [
-                Carbon::today()->addDays(21)->toDateString(),
-                Carbon::today()->addDays(22)->toDateString(),
-            ];
-            if (in_array($date->toDateString(), $blackout, true)) {
-                return 0;
-            }
-        }
+        $blackout = [
+            Carbon::today()->addDays(21)->toDateString(),
+            Carbon::today()->addDays(22)->toDateString(),
+        ];
 
-        return $allotment;
-    }
-
-    private function roomHasRate(string $slug, string $rateSlug): bool
-    {
-        return DB::table('resrv_rate_entries')
-            ->where('rate_id', $this->rates[$rateSlug]->id)
-            ->where('statamic_id', $this->roomIds[$slug])
-            ->exists();
+        return in_array($date->toDateString(), $blackout, true) ? 0 : $allotment;
     }
 
     /**

@@ -9,12 +9,13 @@ checkout**, demo data included.
 
 - **Three bookable products** on one Resrv install: nightly room stays (range calendar),
   spa appointments and restaurant table sittings (single-date calendar + party size).
-- **Five rooms / five rate plans** exercising every Resrv rate capability — independent,
-  relative (−18% saver), targeted B&B, shared allotment, restricted last-minute — plus
-  extras (incl. one conditional), per-room options, two dynamic-pricing campaigns,
-  a `COASTAL10` coupon and a demo affiliate.
+- **Four rooms / four rate plans** spanning Resrv's rate capabilities — a Best Flexible base
+  (independent pricing, owns the inventory pool) plus three rates that **share its availability**:
+  a non-refundable Advance Saver (−18%), a Bed & Breakfast (+€25/night), and a restricted
+  Last-Minute rate (seasonal window, min/max stay, booking lead time) — plus extras (incl. one
+  conditional), per-room options, two dynamic-pricing campaigns, a `COASTAL10` coupon and a demo affiliate.
 - **Rolling 12-month availability** seeded relative to install day — the demo never goes stale.
-- A complete marketing site: page-builder driven pages (12 block types), offers,
+- A complete marketing site: page-builder driven pages (14 block types), offers,
   experiences, FAQs, reviews, optional journal — all Antlers + Tailwind v4 + the
   Livewire-bundled Alpine.
 - Restyled Resrv checkout, search, calendar and result components (Blade overrides —

@@ -3,7 +3,10 @@
     and the sticky Resrv booking panel (range search + per-rate results).
     Extras/options are only teased here; real selection happens at checkout.
 #}}
-<div x-data="{ lb: false, src: '', cap: '' }">
+<div x-data="lightbox([
+    {{ if hero_image }}{{ hero_image }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /hero_image }}{{ /if }}
+    {{ if gallery }}{{ gallery }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /gallery }}{{ /if }}
+])">
 
     {{# Breadcrumb #}}
     <nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
@@ -12,30 +15,41 @@
         <span class="text-ink">{{ title }}</span>
     </nav>
 
-    {{# Gallery — hero + two stacked thumbs, lightbox over everything #}}
+    {{# Gallery — hero + two stacked thumbs (desktop), hero-only + "+N photos"
+        button (mobile). Each tile carries its own aspect-ratio + rounding (house
+        pattern, §0.4) so nothing collapses and every corner rounds consistently.
+        The lightbox (bottom of file) browses the full image set. #}}
     <section class="container-rsv pt-5">
-        <div class="grid lg:grid-cols-[1.6fr_1fr] gap-3 rounded-xl overflow-hidden max-h-[560px]">
+        <div class="relative grid gap-3 lg:grid-cols-[1.6fr_1fr]">
             {{ if hero_image }}
                 {{ hero_image }}
-                    <button type="button" class="img-slot has-img cursor-pointer zoom-on-hover relative min-h-[280px] block w-full" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                    <button type="button" class="img-slot has-img zoom-on-hover cursor-pointer block w-full rounded-xl aspect-[4/3] lg:aspect-[7/5]" @click="open('{{ glide:url width='1800' }}')">
                         <img src="{{ glide:url width='1400' }}" alt="{{ alt ?? title }}">
                     </button>
                 {{ /hero_image }}
             {{ else }}
-                <div class="img-slot relative min-h-[280px]"><span class="slot-label">Room image · 3:2</span></div>
+                <div class="img-slot rounded-xl aspect-[4/3] lg:aspect-[7/5]"><span class="slot-label">Room image · 3:2</span></div>
             {{ /if }}
-            <div class="grid grid-rows-2 gap-3">
+            <div class="hidden gap-3 lg:grid lg:grid-rows-2">
                 {{ if gallery }}
                     {{ gallery limit="2" }}
-                        <button type="button" class="img-slot has-img cursor-pointer zoom-on-hover relative block w-full" @click="lb = true; src = '{{ glide:url width='1800' }}'; cap = '{{ alt ?? title }}'">
+                        <button type="button" class="img-slot has-img zoom-on-hover cursor-pointer block w-full rounded-xl" @click="open('{{ glide:url width='1800' }}')">
                             <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
                         </button>
                     {{ /gallery }}
                 {{ else }}
-                    <div class="img-slot relative"><span class="slot-label">Room gallery image · 3:2</span></div>
-                    <div class="img-slot relative"><span class="slot-label">Room gallery image · 3:2</span></div>
+                    <div class="img-slot rounded-xl"><span class="slot-label">Room gallery image · 3:2</span></div>
+                    <div class="img-slot rounded-xl"><span class="slot-label">Room gallery image · 3:2</span></div>
                 {{ /if }}
             </div>
+
+            {{# "View all" notice — opens the lightbox. Centered on mobile (hero-only there) so it's obvious; bottom-right on desktop. #}}
+            <button type="button" x-show="imgs.length > 1" @click="i = 0; lb = true"
+                class="absolute bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:right-4 lg:translate-x-0 z-10 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2.5 text-sm font-semibold text-ink shadow-raised ring-1 ring-black/5 backdrop-blur hover:bg-white transition"
+                aria-label="View all photos">
+                <svg class="w-4 h-4 text-teal shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 20"/></svg>
+                <span x-text="'+' + imgs.length + ' photos'"></span>
+            </button>
         </div>
     </section>
 
@@ -177,14 +191,6 @@
         <a href="#book" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark flex-1 max-w-[220px]">Check availability</a>
     </div>
 
-    {{# Lightbox #}}
-    <div x-show="lb" x-cloak x-transition.opacity @click="lb = false" @keydown.escape.window="lb = false" class="fixed inset-0 z-[80] flex items-center justify-center bg-ink/85 backdrop-blur-sm p-4">
-        <button type="button" class="absolute top-5 right-5 w-11 h-11 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close" @click="lb = false">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-        <div class="max-w-[1100px] w-full" @click.stop>
-            <img :src="src" alt="" class="w-full rounded-xl">
-            <p class="text-sage-light/80 text-sm text-center mt-3" x-text="cap"></p>
-        </div>
-    </div>
+    {{# Lightbox — open a tile (or "+N photos"), then browse with the arrows or ← / → keys #}}
+    {{ partial:lightbox }}
 </div>

@@ -18,11 +18,10 @@ demonstrate sold-out handling.
 
 | Rate plan | Demonstrates |
 | --- | --- |
-| **Best Flexible** | Independent pricing + inventory, free cancellation (7 days), applies to all rooms — the base every relative rate references |
-| **Advance Saver** (−18%) | Relative pricing off Best Flexible, own allotment, **non-refundable** |
-| **Bed & Breakfast** (+€25) | Independent rate **targeted to a subset** of rooms (not apply-to-all) |
-| **Partner Allotment** | **Shared availability** drawing from Best Flexible's pool, capped at 2, inherits the global cancellation default |
-| **Last-Minute Escape** (−12%) | The full restriction set: 3-month seasonal window, 2–14 night stays, bookable 1–21 days before arrival, non-refundable |
+| **Best Flexible** | Independent pricing + inventory, free cancellation (7 days), applies to all rooms — owns the single inventory pool every other rate shares |
+| **Advance Saver** (−18%) | Relative **percentage** pricing, **shared availability** (child of Best Flexible), **non-refundable** |
+| **Bed & Breakfast** (+€25/night) | Relative **fixed** per-night pricing, shared availability, free cancellation (3 days), **targeted to a subset** of rooms (not apply-to-all) |
+| **Last-Minute Escape** (−12%) | Shared availability + the full restriction set: 3-month seasonal window, 2–14 night stays, bookable 1–21 days before arrival, non-refundable |
 
 ## Spa & restaurant (single-date products)
 
