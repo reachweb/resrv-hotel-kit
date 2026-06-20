@@ -1,7 +1,6 @@
 {{# Rooms showcase — shows the rooms chosen in this block.
-   mt-24/lg:mt-28 restores the breathing room the design put on `<main>`
-   (pt-24 lg:pt-28) above the first content section — dropped on home because
-   transparent_nav zeroes the layout's main padding. Home-only block. #}}
+   mt-24/lg:mt-28 restores top spacing dropped on home because transparent_nav
+   zeroes the layout's main padding. Home-only block. #}}
 <section class="section-sm mt-24 lg:mt-28">
     <div class="container-rsv">
         <div class="flex items-end justify-between gap-6 mb-10 lg:mb-14">
@@ -17,6 +16,6 @@
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {{ rooms }}<div class="reveal h-full">{{ partial:room-card }}</div>{{ /rooms }}
         </div>
-        {{ if cta_label }}<a href="{{ cta_url ?? '/rooms' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta w-full mt-8 sm:hidden">{{ cta_label }}</a>{{ /if }}
+        {{ if cta_label }}{{ partial:button :href="cta_url ?? '/rooms'" :label="cta_label" variant="secondary" focus="true" class="inline-flex sm:hidden w-full mt-8" }}{{ /if }}
     </div>
 </section>

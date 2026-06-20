@@ -1,15 +1,7 @@
-{{#
-    Journal article — editorial layout in the kit's design language (the design
-    bundle ships no journal page). Bard `content` renders with the shared prose
-    classes; tags as chips; two more stories below.
-#}}
+{{# Journal article — editorial layout; Bard `content` with the shared prose
+    classes, tags as chips, more stories below. #}}
 
-{{# Breadcrumb #}}
-<nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
-    <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
-    <a href="/journal" class="hover:text-ink transition-colors">Journal</a><span aria-hidden="true">/</span>
-    <span class="text-ink">{{ title }}</span>
-</nav>
+{{ partial:breadcrumb section_url="/journal" section_label="Journal" }}
 
 <article class="container-rsv py-8 lg:py-12">
     <div class="max-w-[720px] mx-auto">
@@ -29,20 +21,14 @@
 
         {{ if journal_tags }}
             <div class="flex flex-wrap gap-1.5 mt-10 pt-8 border-t border-line">
-                {{ journal_tags }}<span class="inline-flex items-center gap-1.5 h-7.5 px-3 rounded-full bg-sage-light text-ink text-[13px] font-medium">{{ title }}</span>{{ /journal_tags }}
+                {{ journal_tags }}{{ partial:chip :label="title" }}{{ /journal_tags }}
             </div>
         {{ /if }}
     </div>
 </article>
 
-{{# More stories #}}
-<section class="section-sm bg-sand">
-    <div class="container-rsv">
-        <h2 class="t-h2 mb-8 reveal">More from the journal</h2>
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {{ collection:journal id:not="{id}" limit="3" sort="date:desc" }}
-                <div class="reveal h-full">{{ partial:journal-card }}</div>
-            {{ /collection:journal }}
-        </div>
-    </div>
-</section>
+{{ partial:related-section heading="More from the journal" grid="gap-6 md:grid-cols-2 lg:grid-cols-3" }}
+    {{ collection:journal id:not="{id}" limit="3" sort="date:desc" }}
+        <div class="reveal h-full">{{ partial:journal-card }}</div>
+    {{ /collection:journal }}
+{{ /partial:related-section }}

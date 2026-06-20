@@ -1,8 +1,5 @@
-{{#
-    Gallery grid — masonry columns + Alpine lightbox. Renders the assets if
-    present, else a graceful set of named placeholder slots. (No category filter:
-    the assets field carries no per-image category.)
-#}}
+{{# Gallery grid — masonry columns + Alpine lightbox; renders assets or a graceful
+    set of named placeholder slots. #}}
 <section class="section-sm" x-data="lightbox([
     {{ if images }}{{ images }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt ?? title }}' },{{ /images }}{{ /if }}
 ])">
@@ -29,6 +26,5 @@
         </div>
     </div>
 
-    {{# Lightbox — click any image, then browse with the arrows or ← / → keys #}}
     {{ partial:lightbox }}
 </section>

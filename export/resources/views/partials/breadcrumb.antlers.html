@@ -1,0 +1,9 @@
+{{#
+    Breadcrumb — Home / {section} / {title}. Params: section_url, section_label.
+    `title` is read from the entry in scope.
+#}}
+<nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
+    <a href="{{ section_url }}" class="hover:text-ink transition-colors">{{ section_label }}</a><span aria-hidden="true">/</span>
+    <span class="text-ink">{{ title }}</span>
+</nav>

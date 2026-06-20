@@ -8,7 +8,7 @@
             {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">{{ overline }}</p>{{ /if }}
             {{ if heading }}<h2 class="t-h2 mb-6 text-balance">{{ heading | widont }}</h2>{{ /if }}
             <div class="space-y-4 text-lg leading-relaxed text-ink/85 [&_a]:text-terracotta-dark [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">{{ text }}</div>
-            {{ if cta_label }}<a href="{{ cta_url ?? '#' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta mt-8">{{ cta_label }}</a>{{ /if }}
+            {{ if cta_label }}{{ partial:button :href="cta_url" :label="cta_label" variant="secondary" focus="true" class="inline-flex mt-8" }}{{ /if }}
         </div>
     </div>
 </section>

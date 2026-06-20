@@ -1,7 +1,4 @@
-{{#
-    Experience tile — image with gradient + title/teaser overlay (bento grid).
-    Expects an `experiences` entry in scope; the first tile spans wider (bento).
-#}}
+{{# Experience tile — image with gradient + title/teaser overlay. Expects an `experiences` entry in scope; the first tile spans wider (bento). #}}
 <a href="{{ url }}" class="group block zoom-on-hover{{ if first }} md:col-span-2 lg:row-span-2{{ /if }}">
     <div class="img-slot {{ if hero_image }}has-img{{ /if }} rounded-xl relative h-full min-h-[260px]">
         {{ if hero_image }}

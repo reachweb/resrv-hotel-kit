@@ -1,8 +1,5 @@
-{{#
-    Page-builder renderer — one partial per Replicator set (partials/blocks/*).
-    The marketing pages (Dining, Spa, About, Gallery, Contact, FAQ, Offers,
-    Experiences) are all assembled from these stackable blocks.
-#}}
+{{# Page-builder renderer — one partial per Replicator set (partials/blocks/*);
+    marketing pages are assembled from these stackable blocks. #}}
 {{ if builder }}
     {{ builder }}
         {{ partial src="blocks/{type}" }}

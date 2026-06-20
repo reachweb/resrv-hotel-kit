@@ -1,0 +1,19 @@
+{{#
+    Button / CTA — the single pill used site-wide. The base emits NO display
+    utility, so every caller passes one (e.g. inline-flex / hidden sm:inline-flex)
+    plus any extras (w-full, mt-8, flex-1) via `class`. Params:
+      label   — text (or pass inner content as {{ slot }})
+      href    — link target (default '#'); used when tag='a'
+      tag     — a | button. Default a.
+      type    — button type when tag='button' (button | submit). Default button.
+      variant — primary (terracotta) | secondary (outline-teal) | white. Default primary.
+      size    — sm (h-10) | md (h-12). Default md.
+      focus   — truthy adds the focus-visible outline ring.
+      class   — display utility + extras (required for the button to lay out).
+      attrs   — raw attribute passthrough, e.g. attrs='@click="sheet = false"'.
+#}}
+{{ if (tag ?? 'a') == 'button' }}
+<button type="{{ type ?? 'button' }}" class="items-center justify-center gap-2 {{ if size == 'sm' }}h-10 px-4.5 text-sm{{ else }}h-12 px-6 text-[15px]{{ /if }} rounded-lg border-[1.5px] font-semibold leading-none whitespace-nowrap transition {{ if variant == 'secondary' }}border-teal bg-transparent text-teal hover:bg-teal hover:text-white{{ elseif variant == 'white' }}border-transparent bg-white text-ink hover:bg-sand{{ else }}border-transparent bg-terracotta text-white hover:bg-terracotta-dark{{ /if }}{{ if focus }} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta{{ /if }}{{ if class }} {{ class }}{{ /if }}"{{ if attrs }} {{ attrs | raw }}{{ /if }}>{{ if label }}{{ label }}{{ else }}{{ slot }}{{ /if }}</button>
+{{ else }}
+<a href="{{ href ?? '#' }}" class="items-center justify-center gap-2 {{ if size == 'sm' }}h-10 px-4.5 text-sm{{ else }}h-12 px-6 text-[15px]{{ /if }} rounded-lg border-[1.5px] font-semibold leading-none whitespace-nowrap transition {{ if variant == 'secondary' }}border-teal bg-transparent text-teal hover:bg-teal hover:text-white{{ elseif variant == 'white' }}border-transparent bg-white text-ink hover:bg-sand{{ else }}border-transparent bg-terracotta text-white hover:bg-terracotta-dark{{ /if }}{{ if focus }} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta{{ /if }}{{ if class }} {{ class }}{{ /if }}"{{ if attrs }} {{ attrs | raw }}{{ /if }}>{{ if label }}{{ label }}{{ else }}{{ slot }}{{ /if }}</a>
+{{ /if }}

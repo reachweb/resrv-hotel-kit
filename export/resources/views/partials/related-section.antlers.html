@@ -1,0 +1,12 @@
+{{#
+    Closing 'related items' band (rooms/spa/journal detail pages). The collection
+    loop + cards are passed as {{ slot }}. Params: heading, grid (grid classes).
+#}}
+<section class="section-sm bg-sand">
+    <div class="container-rsv">
+        <h2 class="t-h2 mb-8 reveal">{{ heading }}</h2>
+        <div class="grid {{ grid ?? 'gap-6 md:grid-cols-2 lg:grid-cols-3' }}">
+            {{ slot }}
+        </div>
+    </div>
+</section>

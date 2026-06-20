@@ -27,6 +27,11 @@
     </head>
     <body class="min-h-screen flex flex-col">
 
+        {{# Offers / news strip above the header — Site global ▸ Announcement tab #}}
+        {{ if site:announcement_enabled && site:announcement_text }}
+            {{ partial:announcement-bar }}
+        {{ /if }}
+
         {{ partial:header }}
 
         {{# Solid-nav pages clear the fixed header; transparent-hero pages manage their own top spacing. #}}

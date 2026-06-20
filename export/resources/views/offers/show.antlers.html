@@ -1,10 +1,7 @@
-{{#
-    Offer detail (design offer-detail.html) — hero band, summary + body, linked
-    rooms, and a sticky CTA card with the coupon code (copied to clipboard via a
-    tiny Alpine handler). Prices stay live in Resrv; offers are editorial.
-#}}
+{{# Offer detail — hero band, summary + body, linked rooms, and a sticky CTA card
+    with the coupon code (copied to clipboard via a tiny Alpine handler). Prices
+    stay live in Resrv. #}}
 
-{{# Hero #}}
 <section class="relative flex items-end min-h-[420px] lg:min-h-[52vh]">
     <div class="img-slot has-img absolute inset-0 rounded-none">
         {{ if image }}
@@ -44,7 +41,6 @@
         {{ /if }}
     </div>
 
-    {{# Sticky CTA card #}}
     <aside class="lg:sticky lg:top-[100px]">
         <div class="bg-white rounded-lg shadow-card p-6">
             <p class="text-xs font-semibold uppercase tracking-[0.12em] text-terracotta-dark mb-3">Limited offer</p>
@@ -64,7 +60,7 @@
             {{ if valid_to }}
                 <p class="text-sm text-muted mb-5">Valid until {{ valid_to | format('j M Y') }}.</p>
             {{ /if }}
-            <a href="/rooms" class="inline-flex items-center justify-center gap-2 w-full h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">{{ cta_label ?? 'Check dates' }}</a>
+            {{ partial:button href="/rooms" :label="cta_label ?? 'Check dates'" class="inline-flex w-full" }}
             <p class="text-sm text-muted text-center mt-3">Free cancellation · book direct</p>
         </div>
     </aside>

@@ -1,0 +1,8 @@
+{{#
+    Detail-page eyebrow + h1 (rooms/show, spa/show). The eyebrow markup varies, so
+    it's passed as {{ slot }}. `title` is read from the entry in scope.
+#}}
+<div class="mb-5 reveal">
+    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-2">{{ slot }}</p>
+    <h1 class="t-h1">{{ title }}</h1>
+</div>

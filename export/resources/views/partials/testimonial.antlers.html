@@ -6,7 +6,7 @@
 {{ if variant == 'light' }}
     <figure class="bg-white rounded-lg p-5 border border-line flex flex-col">
         {{ partial:stars :rating="rating" }}
-        <blockquote class="font-display text-[18px] leading-snug my-3 flex-1">&ldquo;{{ quote }}&rdquo;</blockquote>
+        <blockquote class="font-display text-lg leading-snug my-3 flex-1">&ldquo;{{ quote }}&rdquo;</blockquote>
         <figcaption class="text-sm text-muted"><span class="text-ink font-medium">{{ guest_name }}</span>{{ if stay_type }} · {{ stay_type }}{{ /if }} · {{ source ?? 'Verified' }}</figcaption>
     </figure>
 {{ else }}

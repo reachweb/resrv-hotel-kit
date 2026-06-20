@@ -1,7 +1,4 @@
-{{#
-    Treatment card — used in the treatments_grid block (design spa.html cards).
-    Expects a `spa_treatments` entry in scope. Links to the treatment's booking page.
-#}}
+{{# Treatment card — expects a `spa_treatments` entry in scope; links to the treatment's booking page. #}}
 <a href="{{ url }}" class="group block h-full">
     <article class="bg-white rounded-lg p-6 h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
         <div class="text-sage mb-4">
@@ -11,7 +8,7 @@
         {{ if summary }}<p class="text-sm text-muted mb-5 flex-1">{{ summary }}</p>{{ /if }}
         <div class="flex items-center justify-between pt-4 border-t border-line">
             {{ if duration_options }}<span class="text-sm text-muted">{{ duration_options }}</span>{{ /if }}
-            {{ if availability }}<span class="font-display text-[20px] text-terracotta-dark">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>{{ /if }}
+            {{ if availability }}<span class="font-display text-xl text-terracotta-dark">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>{{ /if }}
         </div>
     </article>
 </a>

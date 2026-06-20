@@ -1,15 +1,11 @@
-{{#
-    Home — the page-builder showcase. Driven by the `home` entry's builder:
-    hero (with the Resrv availability search), rooms showcase, story split,
-    offers strip, experiences, reviews, location. The hero block renders
-    full-bleed because the home hero has show_search:true, and the entry sets
-    transparent_nav so the header floats over it. A newsletter band closes it.
-#}}
+{{# Home — the page-builder showcase, plus a closing newsletter band. The home
+    hero is full-bleed (show_search) and the entry sets transparent_nav so the
+    header floats over it. #}}
 {{ builder }}
     {{ partial src="blocks/{type}" }}
 {{ /builder }}
 
-{{# Newsletter band (design: "Quiet notes from the coast") #}}
+{{# Newsletter band #}}
 <section class="section-sm">
     <div class="container-rsv">
         <div class="bg-sand rounded-xl px-7 py-12 lg:px-16 lg:py-16 text-center reveal">
@@ -22,7 +18,7 @@
                 {{ else }}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <input type="email" name="email" required placeholder="Email address" class="input flex-1" value="{{ old:email }}">
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta shrink-0">Subscribe</button>
+                        {{ partial:button tag="button" type="submit" label="Subscribe" focus="true" class="inline-flex shrink-0" }}
                     </div>
                     {{ if errors }}<p class="text-error text-sm mt-3">{{ errors }}{{ value }} {{ /errors }}</p>{{ /if }}
                 {{ /if }}

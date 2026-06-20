@@ -1,24 +1,14 @@
-{{#
-    Room detail — gallery + lightbox, specs/amenities, extras tease, reviews,
-    and the sticky Resrv booking panel (range search + per-rate results).
-    Extras/options are only teased here; real selection happens at checkout.
-#}}
+{{# Room detail — gallery, specs/amenities, extras tease, reviews, and the sticky
+    Resrv booking panel. Extras/options are only teased here; selection is at checkout. #}}
 <div x-data="lightbox([
     {{ if hero_image }}{{ hero_image }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /hero_image }}{{ /if }}
     {{ if gallery }}{{ gallery }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /gallery }}{{ /if }}
 ])">
 
-    {{# Breadcrumb #}}
-    <nav class="container-rsv pt-6 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-ink transition-colors">Home</a><span aria-hidden="true">/</span>
-        <a href="/rooms" class="hover:text-ink transition-colors">Rooms</a><span aria-hidden="true">/</span>
-        <span class="text-ink">{{ title }}</span>
-    </nav>
+    {{ partial:breadcrumb section_url="/rooms" section_label="Rooms" }}
 
-    {{# Gallery — hero + two stacked thumbs (desktop), hero-only + "+N photos"
-        button (mobile). Each tile carries its own aspect-ratio + rounding (house
-        pattern, §0.4) so nothing collapses and every corner rounds consistently.
-        The lightbox (bottom of file) browses the full image set. #}}
+    {{# Gallery — hero + stacked thumbs (desktop), hero-only + "+N photos" (mobile);
+        each tile carries its own aspect-ratio + rounding so nothing collapses. #}}
     <section class="container-rsv pt-5">
         <div class="relative grid gap-3 lg:grid-cols-[1.6fr_1fr]">
             {{ if hero_image }}
@@ -53,21 +43,15 @@
         </div>
     </section>
 
-    {{# Main two-column #}}
     <section class="container-rsv py-10 lg:py-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
 
-        {{# LEFT: content #}}
         <div>
-            <div class="mb-5 reveal">
-                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-2">{{ view_type }}{{ if view_type && floor }} · {{ /if }}{{ floor }}</p>
-                <h1 class="t-h1">{{ title }}</h1>
-            </div>
+            {{ partial:detail-header }}{{ view_type }}{{ if view_type && floor }} · {{ /if }}{{ floor }}{{ /partial:detail-header }}
 
             {{ if intro }}
                 <div class="reading text-lg leading-relaxed text-ink/85 space-y-5 mb-10 reveal">{{ intro | markdown }}</div>
             {{ /if }}
 
-            {{# Specs #}}
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 reveal">
                 {{ if size_sqm }}
                 <div class="bg-white rounded-lg p-4 border border-line">
@@ -96,7 +80,6 @@
             </div>
             <hr class="border-line mb-10" />
 
-            {{# Amenities & features #}}
             <h2 class="t-h2 mb-6 reveal">In this room</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-12 reveal">
                 {{ amenities }}
@@ -120,7 +103,7 @@
                             </div>
                             <div class="flex-1">
                                 <div class="font-medium text-[15px]">{{ name }}</div>
-                                <div class="text-sm text-muted">{{ booking:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</div>
+                                <div class="text-sm text-muted">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</div>
                             </div>
                         </div>
                     {{ /extras }}
@@ -128,7 +111,6 @@
                 <hr class="border-line mb-10" />
             {{ /if }}
 
-            {{# Reviews #}}
             <h2 class="t-h2 mb-6 reveal">What guests say</h2>
             <div class="grid sm:grid-cols-2 gap-5 reveal">
                 {{ collection:reviews limit="2" sort="date:desc" }}
@@ -137,17 +119,9 @@
             </div>
         </div>
 
-        {{# RIGHT: sticky booking panel #}}
         <aside class="lg:sticky lg:top-[100px]" id="book">
             <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
-                {{ if availability }}
-                <div class="flex items-baseline gap-2 mb-1">
-                    <span class="text-sm text-muted">from</span>
-                    <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>
-                    <span class="text-sm text-muted">/ night</span>
-                </div>
-                <p class="text-sm text-muted mb-5">Pick your dates for live rates &amp; availability.</p>
-                {{ /if }}
+                {{ partial:booking-price-header unit="/ night" note="Pick your dates for live rates &amp; availability." }}
 
                 {{ livewire:availability-search calendar="range" resetOnBoot="true" view="availability-search-panel" }}
 
@@ -155,42 +129,24 @@
                     {{ livewire:availability-results :entry="id" rates="true" }}
                 </div>
 
-                {{ resrv:cutoff }}
-                    {{ if has_cutoff_rules }}
-                        <div class="flex items-center justify-center gap-1.5 mt-4 text-sm text-warning">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                            Last booking for tonight by {{ cutoff_time }}
-                        </div>
-                    {{ /if }}
-                {{ /resrv:cutoff }}
+                {{ partial:booking-cutoff word="tonight" }}
             </div>
-            <p class="text-sm text-muted text-center mt-3 flex items-center justify-center gap-1.5">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
-                No card needed to reserve flexible rates
-            </p>
+            {{ partial:booking-trust label="No card needed to reserve flexible rates" }}
         </aside>
     </section>
 
-    {{# You may also like #}}
-    <section class="section-sm bg-sand">
-        <div class="container-rsv">
-            <h2 class="t-h2 mb-8 reveal">You may also like</h2>
-            <div class="grid gap-6 md:grid-cols-3">
-                {{ collection:rooms id:not="{id}" limit="3" sort="title" }}
-                    <div class="reveal">{{ partial:room-card }}</div>
-                {{ /collection:rooms }}
-            </div>
-        </div>
-    </section>
+    {{ partial:related-section heading="You may also like" grid="gap-6 md:grid-cols-3" }}
+        {{ collection:rooms id:not="{id}" limit="3" sort="title" }}
+            <div class="reveal">{{ partial:room-card }}</div>
+        {{ /collection:rooms }}
+    {{ /partial:related-section }}
 
-    {{# Mobile sticky CTA #}}
     <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line p-4 flex items-center justify-between gap-4 shadow-raised">
         <div>
-            {{ if availability }}<span class="font-display text-[22px] text-terracotta-dark">{{ booking:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
+            {{ if availability }}<span class="font-display text-[22px] text-terracotta-dark">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
         </div>
-        <a href="#book" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark flex-1 max-w-[220px]">Check availability</a>
+        {{ partial:button href="#book" label="Check availability" class="inline-flex flex-1 max-w-[220px]" }}
     </div>
 
-    {{# Lightbox — open a tile (or "+N photos"), then browse with the arrows or ← / → keys #}}
     {{ partial:lightbox }}
 </div>

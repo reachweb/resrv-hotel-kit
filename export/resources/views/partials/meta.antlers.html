@@ -1,6 +1,6 @@
 {{#
-    SEO meta — basic free meta + JSON-LD (Phase 5 Layout). No paid SEO addon.
-    Page-level `title` / `meta_description` / `og_image` win, falling back to the `seo` global.
+    SEO meta — basic free meta + JSON-LD (no paid SEO addon). Page-level
+    `title` / `meta_description` / `og_image` win, falling back to the `seo` global.
 #}}
 <title>{{ if title }}{{ title | sanitize }}{{ seo:title_suffix | sanitize }}{{ else }}{{ site:brand_name | sanitize }} — {{ site:tagline | sanitize }}{{ /if }}</title>
 <meta name="description" content="{{ (meta_description ?? seo:meta_description) | sanitize }}">
@@ -19,7 +19,7 @@
 {{ /if }}
 <meta name="twitter:card" content="summary_large_image">
 
-{{# JSON-LD — Hotel (basic, free) #}}
+{{# JSON-LD — Hotel #}}
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",

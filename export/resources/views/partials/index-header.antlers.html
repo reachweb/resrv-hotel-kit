@@ -1,0 +1,11 @@
+{{#
+    Listing-page header (rooms/index, journal/index): eyebrow + h1 + lead.
+    Params: overline, title, description, pad_bottom (default 'pb-8').
+#}}
+<header class="container-rsv pt-12 lg:pt-16 {{ pad_bottom ?? 'pb-8' }}">
+    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-3 reveal">{{ overline }}</p>
+    <div class="flex flex-wrap items-end justify-between gap-4 reveal">
+        <h1 class="t-h1 max-w-[18ch]">{{ title }}</h1>
+        <p class="text-base leading-relaxed text-muted max-w-[40ch]">{{ description }}</p>
+    </div>
+</header>

@@ -1,7 +1,4 @@
-{{#
-    404 — "drifted out to sea" (design 404.html). The image degrades to a
-    graceful named slot.
-#}}
+{{# 404 — the image degrades to a graceful named slot. #}}
 <div class="min-h-[70vh] flex items-center">
     <div class="container-rsv grid lg:grid-cols-2 gap-12 items-center py-16">
         <div>
@@ -9,8 +6,8 @@
             <h1 class="t-display-xl mb-5">This page drifted out to sea.</h1>
             <p class="text-lg leading-relaxed text-muted mb-8 max-w-[44ch]">The page you're after doesn't exist — or has moved. Let's get you back to the coast.</p>
             <div class="flex flex-wrap gap-3">
-                <a href="/" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">Back to home</a>
-                <a href="/rooms" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white">Browse rooms</a>
+                {{ partial:button href="/" label="Back to home" class="inline-flex" }}
+                {{ partial:button href="/rooms" label="Browse rooms" variant="secondary" class="inline-flex" }}
             </div>
         </div>
         <div class="img-slot rounded-xl" style="aspect-ratio: 4/3;"><span class="slot-label">404 illustration · 4:3</span></div>

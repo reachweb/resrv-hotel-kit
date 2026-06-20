@@ -1,32 +1,76 @@
 title: Site
-fields:
-  -
-    handle: brand_name
-    field: { type: text, display: 'Brand name', default: 'Resrv Hotel', validate: [required] }
-  -
-    handle: tagline
-    field: { type: text, display: Tagline, default: 'Wake to the sound of the sea' }
-  -
-    handle: logo
-    field: { type: assets, display: Logo, container: assets, folder: brand, max_files: 1, mode: list }
-  -
-    handle: phone
-    field: { type: text, display: Phone, width: 50, default: '+30 28210 00000' }
-  -
-    handle: email
-    field: { type: text, display: Email, width: 50, default: 'stay@resrv-hotel.test' }
-  -
-    handle: address
-    field: { type: textarea, display: Address, default: 'Akti Mediterranean, Chania, Crete 73100, Greece' }
-  -
-    handle: map_embed
-    field: { type: textarea, display: 'Map embed (iframe/URL)', instructions: 'Google Maps embed URL or iframe.' }
-  -
-    handle: social_instagram
-    field: { type: text, display: Instagram, width: 50, default: 'https://instagram.com/resrvhotel' }
-  -
-    handle: social_facebook
-    field: { type: text, display: Facebook, width: 50, default: 'https://facebook.com/resrvhotel' }
-  -
-    handle: footer_blurb
-    field: { type: textarea, display: 'Footer blurb', default: 'An intimate coastal-luxury resort on the Mediterranean. Book direct in under a minute.' }
+tabs:
+  general:
+    display: General
+    sections:
+      -
+        fields:
+          -
+            handle: brand_name
+            field: { type: text, display: 'Brand name', default: 'Resrv Hotel', validate: [required] }
+          -
+            handle: tagline
+            field: { type: text, display: Tagline, default: 'Wake to the sound of the sea' }
+          -
+            handle: logo
+            field: { type: assets, display: Logo, container: assets, folder: brand, max_files: 1, mode: list }
+          -
+            handle: phone
+            field: { type: text, display: Phone, width: 50, default: '+30 28210 00000' }
+          -
+            handle: email
+            field: { type: text, display: Email, width: 50, default: 'stay@resrv-hotel.test' }
+          -
+            handle: address
+            field: { type: textarea, display: Address, default: 'Akti Mediterranean, Chania, Crete 73100, Greece' }
+          -
+            handle: map_embed
+            field: { type: textarea, display: 'Map embed (iframe/URL)', instructions: 'Google Maps embed URL or iframe.' }
+          -
+            handle: social_instagram
+            field: { type: text, display: Instagram, width: 50, default: 'https://instagram.com/resrvhotel' }
+          -
+            handle: social_facebook
+            field: { type: text, display: Facebook, width: 50, default: 'https://facebook.com/resrvhotel' }
+          -
+            handle: footer_blurb
+            field: { type: textarea, display: 'Footer blurb', default: 'An intimate coastal-luxury resort on the Mediterranean. Book direct in under a minute.' }
+  announcement:
+    display: Announcement
+    sections:
+      -
+        fields:
+          -
+            handle: announcement_enabled
+            field:
+              type: toggle
+              display: 'Show announcement bar'
+              default: true
+              instructions: 'Slim dismissable strip pinned above the header — use it for offers, news, or seasonal notes. Visitors who close it stay closed for 24 hours.'
+          -
+            handle: announcement_text
+            field:
+              type: text
+              display: Message
+              instructions: 'Keep it short — it shows on a single line above the header.'
+              if:
+                announcement_enabled: 'equals true'
+          -
+            handle: announcement_link
+            field:
+              type: text
+              display: 'Link URL'
+              width: 50
+              instructions: 'Optional. Where the call-to-action points, e.g. /offers'
+              if:
+                announcement_enabled: 'equals true'
+          -
+            handle: announcement_link_text
+            field:
+              type: text
+              display: 'Link label'
+              width: 50
+              default: 'Learn more'
+              instructions: 'Optional call-to-action label, shown when a link is set.'
+              if:
+                announcement_enabled: 'equals true'

@@ -1,13 +1,11 @@
 {{#
-    Site footer — design `partials/footer`.
-    Links come from {{ nav:footer }} + {{ nav:legal }}; brand/contact from the `site` global.
-    Never hardcode nav items.
+    Site footer — links from {{ nav:footer }} + {{ nav:legal }}, brand/contact
+    from the `site` global. Never hardcode nav items.
 #}}
 <footer class="bg-teal text-white">
     <div class="container-rsv py-16 lg:py-20">
         <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr_1fr]">
 
-            {{# Brand · blurb · social #}}
             <div>
                 <a href="/" class="font-display text-3xl font-medium tracking-tight">{{ site:brand_name }}<span class="text-terracotta">.</span></a>
                 <p class="text-base leading-relaxed text-sage-light/90 mt-4 max-w-[34ch]">{{ site:footer_blurb }}</p>
@@ -25,7 +23,6 @@
                 </div>
             </div>
 
-            {{# Explore — nav:footer #}}
             <div>
                 <h4 class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">Explore</h4>
                 <ul class="space-y-2.5">
@@ -35,7 +32,6 @@
                 </ul>
             </div>
 
-            {{# Contact — site global #}}
             <div>
                 <h4 class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">Contact</h4>
                 <ul class="space-y-2.5 text-sm text-sage-light/90">

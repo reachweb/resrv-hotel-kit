@@ -1,0 +1,12 @@
+{{#
+    Resrv cutoff notice for the booking panel. Param: word (tonight|today).
+    Renders nothing unless the entry has cutoff rules.
+#}}
+{{ resrv:cutoff }}
+    {{ if has_cutoff_rules }}
+        <div class="flex items-center justify-center gap-1.5 mt-4 text-sm text-warning">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            Last booking for {{ word ?? 'today' }} by {{ cutoff_time }}
+        </div>
+    {{ /if }}
+{{ /resrv:cutoff }}

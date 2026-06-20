@@ -1,0 +1,12 @@
+{{#
+    Booking-panel price header: 'from {symbol}{cheapest} [unit]' + a note line.
+    Only renders inside {{ if availability }}. Params: unit (optional), note.
+#}}
+{{ if availability }}
+<div class="flex items-baseline gap-2 mb-1">
+    <span class="text-sm text-muted">from</span>
+    <span class="font-display text-[34px] text-terracotta-dark leading-none">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>
+    {{ if unit }}<span class="text-sm text-muted">{{ unit }}</span>{{ /if }}
+</div>
+<p class="text-sm text-muted mb-5">{{ note }}</p>
+{{ /if }}

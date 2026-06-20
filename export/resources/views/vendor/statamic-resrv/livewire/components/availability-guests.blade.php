@@ -1,4 +1,13 @@
-@props(['maxAdults' => 5, 'maxChildren' => 3, 'maxInfants' => 2, 'variant' => 'card'])
+@props(['maxAdults' => null, 'maxChildren' => null, 'maxInfants' => null, 'variant' => 'card'])
+
+@php
+    // Picker limits come from the Booking global (CP: Globals → Booking), falling back to
+    // the stock maxima. An explicit prop on the tag still wins over the global.
+    $bookingGlobal = \Statamic\Facades\GlobalSet::findByHandle('booking')?->inCurrentSite();
+    $maxAdults ??= (int) ($bookingGlobal?->get('max_adults') ?? 5);
+    $maxChildren ??= (int) ($bookingGlobal?->get('max_children') ?? 3);
+    $maxInfants ??= (int) ($bookingGlobal?->get('max_infants') ?? 2);
+@endphp
 
 {{-- Restyled to the design's guests popover (step-btn steppers, "2 guests" summary).
      Same Alpine `guests` component contract as stock — binds to data.customer.* on the
@@ -41,6 +50,10 @@
         </button>
     @endif
 
+    {{-- Teleported to <body> so an ancestor's overflow-hidden can't clip it — the compact
+         sticky-bar variant wraps its fields in a rounded `overflow-hidden` pill, which
+         otherwise hides this popup entirely. x-anchor keeps it pinned to the button. --}}
+    <template x-teleport="body">
     <div
         x-show="guestsPopup"
         x-transition:enter="transition ease-out duration-200"
@@ -109,6 +122,7 @@
             </div>
         </div>
     </div>
+    </template>
 </div>
 
 

@@ -1,13 +1,9 @@
-{{#
-    Checkout complete — resrv_checkout_redirect resolves the gateway return into
-    success / pending / failed. Offline payments land on `pending` with
-    bank-transfer instructions (the kit's default gateway).
-#}}
+{{# Checkout complete — resrv_checkout_redirect resolves the gateway return into
+    success / pending / failed (offline payments land on pending). #}}
 <section class="container-rsv py-10 lg:py-16">
     <div class="max-w-[720px] mx-auto">
         {{ resrv_checkout_redirect }}
 
-            {{# Icon + headline #}}
             <div class="text-center mb-10">
                 {{ if status == 'success' }}
                     <div class="w-20 h-20 rounded-full grid place-items-center mx-auto mb-6 bg-success/10 text-success">
@@ -29,7 +25,6 @@
                 <p class="text-lg leading-relaxed text-muted max-w-[52ch] mx-auto">{{ message }}</p>
             </div>
 
-            {{# Reservation card #}}
             {{ if reservation:reference }}
                 <div class="bg-white rounded-lg shadow-card overflow-hidden mb-8">
                     <div class="p-6 lg:p-8">
@@ -77,13 +72,12 @@
                         {{ /get_content }}
                         <div class="flex items-baseline justify-between pt-4 border-t border-line">
                             <span class="font-medium">{{ if status == 'success' }}Total paid{{ else }}Total due{{ /if }}</span>
-                            <span class="font-display text-[26px] tabular-nums">{{ booking:currency_symbol }}{{ reservation:total }}</span>
+                            <span class="font-display text-[26px] tabular-nums">{{ config:resrv-config:currency_symbol }}{{ reservation:total }}</span>
                         </div>
                     </div>
                 </div>
             {{ /if }}
 
-            {{# Offline / bank-transfer instructions #}}
             {{ if status == 'pending' }}
                 <div class="rounded-lg border border-line bg-sand/60 p-6 lg:p-8 mb-8">
                     <h3 class="t-h4 mb-3">How to complete your booking</h3>
@@ -92,14 +86,13 @@
                 </div>
             {{ /if }}
 
-            {{# Actions #}}
             <div class="flex flex-wrap items-center justify-center gap-3">
                 {{ if status == 'failed' }}
-                    <a href="/rooms" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">Try booking again</a>
-                    <a href="/contact" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white">Contact us</a>
+                    {{ partial:button href="/rooms" label="Try booking again" class="inline-flex" }}
+                    {{ partial:button href="/contact" label="Contact us" variant="secondary" class="inline-flex" }}
                 {{ else }}
-                    <a href="/" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-teal text-[15px] font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white">Back to the hotel</a>
-                    <a href="/experiences" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark">Plan your days</a>
+                    {{ partial:button href="/" label="Back to the hotel" variant="secondary" class="inline-flex" }}
+                    {{ partial:button href="/experiences" label="Plan your days" class="inline-flex" }}
                 {{ /if }}
             </div>
 

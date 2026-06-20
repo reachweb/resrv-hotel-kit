@@ -4,22 +4,13 @@
 
 /*
  * Content sources Tailwind scans for utility classes.
- * - ../views          → our Antlers templates + published Resrv Blade overrides
- *                       (resources/views/vendor/statamic-resrv/**)
- * - ../../content     → class names referenced in entry/markdown content
- * - vendor/...resrv   → Resrv's own Blade views, so any class used by a component
- *                       we have NOT overridden still compiles (else checkout is unstyled).
- *                       An explicit @source overrides Tailwind's gitignore skip of vendor/.
  */
 @source "../views";
 @source "../../content";
 @source "../../vendor/reachweb/statamic-resrv/resources/views/**/*.blade.php";
 
 /*
- * Brand tokens — mirrored 1:1 from DESIGN.md §4 / the design handoff `tokens.css`.
- * These generate utilities like bg-teal, text-terracotta, font-display, rounded-lg.
- * Naming note: the handoff's `--border` token (#DCD5C7) is `--color-line` here, so the
- * utility reads `border-line`; the @layer components classes below reference it as such.
+ * Brand tokens
  */
 @theme {
   --color-ink:             #1B2B28;
@@ -46,15 +37,13 @@
   --radius-xl:   24px;
   --radius-pill: 9999px;
 
-  /* Warm, low, diffuse shadows (DESIGN §4.3). */
+  /* Warm, low, diffuse shadows */
   --shadow-card:   0 1px 2px rgba(27,43,40,.04), 0 8px 24px rgba(27,43,40,.06);
   --shadow-raised: 0 12px 40px rgba(27,43,40,.12);
 }
 
 /*
  * Booking-calendar theming (@reachweb/alpine-calendar reads these CSS variables).
- * Declared at :root; the plugin's defaults are zero-specificity so these win.
- * Mapped to brand tokens per DESIGN.md §4.6.
  */
 :root {
   --color-calendar-bg:                  #FFFFFF;
@@ -86,7 +75,7 @@
 }
 
 /* ============================================================
-   BASE — global resets/defaults ported from tokens.css (§4)
+   BASE — global resets/defaults 
    ============================================================ */
 @layer base {
   html { scroll-behavior: smooth; }
@@ -113,10 +102,9 @@
 }
 
 /* ============================================================
-   COMPONENTS — reusable classes ported from the design handoff
-   `tokens.css` (+ inline page styles for .seg / .pay-method /
-   .filter-chip). Design vars are mapped onto the @theme tokens
-   above so @theme stays the single source of truth.
+   COMPONENTS — reusable classes (+ inline page styles for
+   .seg / .pay-method). Design vars are mapped onto the @theme
+   tokens above so @theme stays the single source of truth.
    ============================================================ */
 /* Fluid display/heading type kept as @utility (clamp() doesn't inline cleanly).
    Fixed-size type (t-overline→text-xs font-semibold uppercase tracking-[0.12em];
@@ -137,7 +125,7 @@
      (chip: inline-flex items-center gap-1.5 h-7.5 px-3 rounded-full bg-sage-light text-ink text-[13px] font-medium ·
       badge: inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none + bg/text). */
 
-  /* ---- Form controls (§5.12) ---- */
+  /* ---- Form controls ---- */
   .field-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-ink); margin-bottom: 7px; }
   .input, .select, .textarea {
     width: 100%; height: 48px; padding: 0 14px; background: #fff; color: var(--color-ink);
@@ -159,7 +147,7 @@
   /* Cards/surfaces/dividers are inlined as utilities in the markup
      (bg-white rounded-lg shadow-card · bg-sand/-shell/-teal · h-px bg-line border-0). */
 
-  /* ---- Image slots (§0.4) — graceful placeholder w/ ratio + label ---- */
+  /* ---- Image slots — graceful placeholder w/ ratio + label ---- */
   .img-slot {
     position: relative; overflow: hidden; border-radius: inherit;
     background:
@@ -179,34 +167,6 @@
   .img-slot .slot-mark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(46,74,71,.32); }
   .zoom-on-hover:hover .img-slot > img { transform: scale(1.04); filter: brightness(1.03); }
 
-  /* ---- Calendar / date picker (§4.6) ----
-     Reference markup for the optional /styleguide (mirrors components.html).
-     The LIVE Resrv booking calendar is the bundled alpine-calendar, themed via the
-     :root --color-calendar-* vars above — NOT these classes. */
-  .cal { background: var(--color-calendar-bg); border-radius: var(--radius-calendar); padding: 18px; box-shadow: var(--shadow-raised); width: 320px; }
-  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .cal-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
-  .cal-nav { width: 34px; height: 34px; border-radius: var(--radius-pill); border: 1px solid var(--color-line); background: #fff; cursor: pointer; display: grid; place-items: center; color: var(--color-ink); }
-  .cal-nav:hover { background: var(--color-sage-light); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--color-muted); padding-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
-  .cal-day {
-    aspect-ratio: 1/1.18; border-radius: var(--radius-calendar-day); border: 0; background: transparent;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; cursor: pointer;
-    color: var(--color-calendar-text); font-size: 14px; font-weight: 500; line-height: 1; position: relative;
-  }
-  .cal-day .px { font-size: 9.5px; font-weight: 500; color: var(--color-muted); }
-  .cal-day .avdot { width: 4px; height: 4px; border-radius: 50%; background: var(--color-calendar-available); position: absolute; bottom: 5px; }
-  .cal-day:hover:not(.is-disabled):not(.is-selected) { background: var(--color-calendar-hover); }
-  .cal-day.in-range { background: var(--color-calendar-range); border-radius: 0; }
-  .cal-day.is-selected { background: var(--color-calendar-primary); color: var(--color-calendar-primary-text); }
-  .cal-day.is-selected .px, .cal-day.is-selected .avdot { color: #fff; background: #fff; opacity: .85; }
-  .cal-day.range-start { border-top-left-radius: var(--radius-calendar-day); border-bottom-left-radius: var(--radius-calendar-day); }
-  .cal-day.range-end   { border-top-right-radius: var(--radius-calendar-day); border-bottom-right-radius: var(--radius-calendar-day); }
-  .cal-day.is-disabled { color: var(--color-calendar-disabled); cursor: not-allowed; }
-  .cal-day.is-disabled .px, .cal-day.is-disabled .avdot { display: none; }
-  .cal-day.is-empty { pointer-events: none; }
-
   /* ---- Layout helpers ---- */
   .container-rsv { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
   @media (min-width: 1024px) { .container-rsv { padding-inline: 40px; } }
@@ -215,10 +175,6 @@
   @media (min-width: 1024px) { .section { padding-block: 104px; } }
   .section-sm { padding-block: 48px; }
   @media (min-width: 1024px) { .section-sm { padding-block: 72px; } }
-
-  /* hide scrollbar for horizontal rails */
-  .no-bar::-webkit-scrollbar { display: none; }
-  .no-bar { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* ---- Navigation states (header partial mirrors these on #siteNav) ---- */
   #siteNav.is-solid { background: rgba(243,238,230,.88); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
@@ -269,9 +225,7 @@
   .sw-field:hover { background: var(--color-shell); }
   .sw-div { width: 1px; align-self: stretch; background: var(--color-line); margin: 10px 0; }
 
-  /* ---- Accordion (FAQ block) ---- */
-  .acc-panel { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-  .acc-item.open .acc-panel { max-height: 320px; }
+  /* ---- Accordion (FAQ icon rotation; the panel collapses via Alpine x-collapse) ---- */
   .acc-item.open .acc-icon { transform: rotate(45deg); }
   .acc-icon { transition: transform .25s ease; }
 
@@ -289,16 +243,11 @@
   .pm-radio { width: 18px; height: 18px; border-radius: var(--radius-pill); border: 2px solid var(--color-muted); display: inline-grid; place-items: center; flex-shrink: 0; }
   .pay-method.is-on .pm-radio { border-color: var(--color-terracotta); }
   .pay-method.is-on .pm-radio::after { content: ''; width: 9px; height: 9px; border-radius: var(--radius-pill); background: var(--color-terracotta); }
-
-  /* ---- Filter chip (gallery category filter) ---- */
-  .filter-chip { height: 38px; padding: 0 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; color: var(--color-ink); font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s ease; }
-  .filter-chip:hover { border-color: var(--color-ink); }
-  .filter-chip.is-on { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
 }
 
 /* ============================================================
-   MOTION (§4.4) — reveal-on-scroll (toggled by a small Alpine
-   observer). Kept outside @layer components so the reduced-motion
+   MOTION — reveal-on-scroll (toggled by a small IntersectionObserver
+   in site.js). Kept outside @layer components so the reduced-motion
    reset reliably wins.
    ============================================================ */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
@@ -307,3 +256,18 @@
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .img-slot > img { transition: none; }
 }
+
+/* ============================================================
+   ANNOUNCEMENT BAR — slim promo strip above the header. The bar is
+   `fixed` at top:0; when it's open, JS adds `.has-promo` to <body> and
+   these rules push the fixed header + page content down by --promo-h.
+   Kept OUTSIDE @layer (like .reveal above) so the header `top` offset and
+   body padding beat Tailwind's `top-0`/`transition-all` utilities, which
+   would otherwise win on cascade-layer order regardless of specificity.
+   Keep --promo-h in sync with the bar's `h-10` (partials/announcement-bar).
+   ============================================================ */
+:root { --promo-h: 2.5rem; }
+body.has-promo { padding-top: var(--promo-h); }
+body.has-promo #siteNav { top: var(--promo-h); }
+/* Header animates its colour/blur states only — never slide it into the offset. */
+#siteNav { transition-property: background-color, border-color, color, backdrop-filter, -webkit-backdrop-filter, text-shadow; }

@@ -1,8 +1,12 @@
 brand_name: 'Resrv Hotel'
 tagline: 'Wake to the sound of the sea'
 phone: '+30 28210 00000'
-email: 'stay@resrv-hotel.test'
-address: 'Akti Mediterranean, Chania, Crete 73100, Greece'
+email: stay@resrv-hotel.test
+address: 'Akti Mediterranean, Kos, 85300, Greece'
 social_instagram: 'https://instagram.com/resrvhotel'
 social_facebook: 'https://facebook.com/resrvhotel'
 footer_blurb: 'An intimate coastal-luxury resort on the Mediterranean. Book direct in under a minute.'
+announcement_enabled: true
+announcement_text: 'Summer by the sea — save 15% on direct stays of 4 nights or more.'
+announcement_link: /offers
+announcement_link_text: 'View offers'

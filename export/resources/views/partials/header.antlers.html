@@ -1,9 +1,7 @@
 {{#
-    Site header — design `partials/header`.
-    Driven by {{ nav:main }} + the `site` global (never hardcode nav items).
-    Transparent→solid-on-scroll + mobile sheet are small Alpine components
-    (the Alpine that Livewire 4 bundles — do NOT add a second one).
-    Reuses the #siteNav / .nav-link / .brand state classes from site.css.
+    Site header — driven by {{ nav:main }} + the `site` global (never hardcode
+    nav items). Transparent→solid-on-scroll + mobile sheet are small Alpine
+    components — the Alpine that Livewire 4 bundles, do NOT add a second one.
     Pages with a full-bleed hero set `transparent_nav: true` in the cascade.
 #}}
 <header
@@ -24,14 +22,13 @@
         </nav>
 
         <div class="flex items-center gap-3">
-            <a href="/rooms" class="hidden sm:inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-transparent text-sm font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">Book Now</a>
+            {{ partial:button href="/rooms" label="Book Now" size="sm" focus="true" class="hidden sm:inline-flex" }}
             <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" @click="sheet = true">
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
             </button>
         </div>
     </div>
 
-    {{# Mobile slide-in sheet #}}
     <div id="navSheet" class="fixed inset-0 z-[60] lg:hidden" x-show="sheet" x-transition.opacity x-cloak>
         <div class="absolute inset-0 bg-ink/40 backdrop-blur-sm" @click="sheet = false"></div>
         <div
@@ -49,7 +46,7 @@
                     <a href="{{ url }}" class="t-h3 font-display py-2.5 border-b border-line/70 {{ if is_current || is_parent }}text-terracotta{{ /if }}" @click="sheet = false">{{ title }}</a>
                 {{ /nav:main }}
             </nav>
-            <a href="/rooms" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta w-full mt-8" @click="sheet = false">Book Now</a>
+            {{ partial:button href="/rooms" label="Book Now" focus="true" class="inline-flex w-full mt-8" attrs='@click="sheet = false"' }}
             <div class="mt-auto pt-8 text-muted text-sm space-y-1">
                 <p>{{ site:phone }}</p>
                 <p>{{ site:email }}</p>
