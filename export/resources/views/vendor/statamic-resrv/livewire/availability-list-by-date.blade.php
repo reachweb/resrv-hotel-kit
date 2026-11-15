@@ -53,9 +53,10 @@
             <p class="text-sm text-muted mt-0.5">{{ trans('statamic-resrv::frontend.tryAdjustingYourSearch') }}</p>
         </div>
     @else
-        <div class="py-2">
-            <p class="font-medium">{{ trans('statamic-resrv::frontend.pleaseSelectStartDate') }}</p>
-        </div>
+        {{-- No date yet: the results panel above already asks for one, so the day
+             browser stays empty instead of repeating the prompt. The marker lets the
+             wrapping card hide itself too (has-[[data-awaiting-date]]:hidden). --}}
+        <div data-awaiting-date></div>
     @endif
 
     @if ($errors->has('availability') && $data->hasDates())

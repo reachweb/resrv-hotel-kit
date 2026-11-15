@@ -3,10 +3,9 @@
  *
  * Small, one-off stateful UI (mobile sheet, accordion) stays inline in the
  * templates — the Alpine that Livewire 4 bundles. Centralised here: the
- * reveal-on-scroll observer, the dismissable announcement-bar store, and the
- * `lightbox` Alpine component shared by the room gallery and the page-builder
- * gallery grid (registered on `alpine:init`, which is why site.js loads in
- * <head>, before {{ livewire:scripts }}).
+ * reveal-on-scroll observer and the `lightbox` Alpine component shared by the
+ * room gallery and the page-builder gallery grid (registered on `alpine:init`,
+ * which is why site.js loads in <head>, before {{ livewire:scripts }}).
  */
 
 function initReveal(root = document) {
@@ -42,43 +41,7 @@ if (document.readyState === 'loading') {
     initReveal();
 }
 
-// Announcement-bar dismissal is remembered in localStorage for 24h.
-const ANNOUNCEMENT_TTL = 24 * 60 * 60 * 1000; // 24 hours
-
 document.addEventListener('alpine:init', () => {
-    /**
-     * Announcement bar visibility — shared by the bar partial (x-show), the fixed
-     * header offset, and the body padding. `sync()` toggles `.has-promo` on <body>
-     * (which site.css reads via --promo-h) and no-ops when no bar is rendered, so
-     * disabled pages are untouched.
-     */
-    Alpine.store('announcement', {
-        open: true,
-        init() {
-            let dismissedAt = 0;
-            try {
-                dismissedAt = Number(localStorage.getItem('announcementDismissedAt')) || 0;
-            } catch (e) {
-                // localStorage unavailable (private mode) — keep the bar visible.
-            }
-            this.open = (Date.now() - dismissedAt) > ANNOUNCEMENT_TTL;
-            this.sync();
-        },
-        dismiss() {
-            this.open = false;
-            try {
-                localStorage.setItem('announcementDismissedAt', String(Date.now()));
-            } catch (e) {
-                // Ignore — dismissal just won't persist across reloads.
-            }
-            this.sync();
-        },
-        sync() {
-            if (!document.getElementById('announcementBar')) return;
-            document.body.classList.toggle('has-promo', this.open);
-        },
-    });
-
     /**
      * Shared gallery lightbox. Callers render `{{ partial:lightbox }}` inside an
      * `x-data="lightbox([...])"` root and pass an array of `{ s: <full-size url>,
@@ -99,8 +62,5 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 
-// Re-scan reveals + re-apply the body offset after Livewire SPA navigations.
-document.addEventListener('livewire:navigated', () => {
-    initReveal();
-    window.Alpine?.store('announcement')?.sync();
-});
+// Re-scan reveals after Livewire SPA navigations.
+document.addEventListener('livewire:navigated', () => initReveal());

@@ -3,8 +3,6 @@ id: offer-coastal-escape
 blueprint: offer
 title: 'Coastal Escape · 10% off'
 summary: 'Use code COASTAL10 for 10% off a spring or autumn escape.'
-valid_from: '2026-01-01 00:00'
-valid_to: '2026-12-31 00:00'
 linked_coupon_code: COASTAL10
 cta_label: 'Book with COASTAL10'
 linked_rooms:

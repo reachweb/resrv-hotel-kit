@@ -5,6 +5,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        {{# Favicons — the arch "r." icon on a shell tile (masters in brand/) #}}
+        <link rel="icon" href="/favicon.ico" sizes="32x32">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
         {{# SEO title/meta + JSON-LD #}}
         {{ partial:meta }}
 
@@ -27,19 +32,24 @@
     </head>
     <body class="min-h-screen flex flex-col">
 
-        {{# Offers / news strip above the header — Site global ▸ Announcement tab #}}
-        {{ if site:announcement_enabled && site:announcement_text }}
-            {{ partial:announcement-bar }}
+        {{# Templates opt into the booking flow's minimal chrome with `minimal_chrome: true`
+            in their YAML front matter (checkout.antlers.html), read here as view:minimal_chrome. #}}
+        {{ if view:minimal_chrome }}
+            {{ partial:checkout-header }}
+        {{ else }}
+            {{ partial:header }}
         {{ /if }}
-
-        {{ partial:header }}
 
         {{# Solid-nav pages clear the fixed header; transparent-hero pages manage their own top spacing. #}}
         <main class="flex-1 w-full {{ unless transparent_nav }}pt-18 lg:pt-21{{ /unless }}">
             {{ template_content }}
         </main>
 
-        {{ partial:footer }}
+        {{ if view:minimal_chrome }}
+            {{ partial:checkout-footer }}
+        {{ else }}
+            {{ partial:footer }}
+        {{ /if }}
 
         {{# Resrv frontend JS (alpine-calendar + day.js) must load before Livewire scripts so its Alpine plugin registers #}}
         <script src="/vendor/statamic-resrv/frontend/js/resrv-frontend.js"></script>

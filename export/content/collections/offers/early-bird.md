@@ -3,8 +3,6 @@ id: offer-early-bird
 blueprint: offer
 title: 'Early Bird · Save 12%'
 summary: 'Book at least 30 days ahead and take 12% off every night of your stay.'
-valid_from: '2026-01-01 00:00'
-valid_to: '2026-12-31 00:00'
 cta_label: 'See available dates'
 linked_rooms:
   - sea-view-suite

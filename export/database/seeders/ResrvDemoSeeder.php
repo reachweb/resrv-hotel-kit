@@ -53,7 +53,7 @@ class ResrvDemoSeeder extends Seeder
      * Rooms keyed by slug. `base` = nightly reference price (the figure stored in the
      * Best Flexible availability rows; every other rate derives its displayed price from
      * it). `allotment` = the single shared inventory pool — Best Flexible owns the rows
-     * and Advance Saver, Bed & Breakfast and Last-Minute all draw down the same count.
+     * and Advance Saver and Bed & Breakfast draw down the same count.
      */
     private array $rooms = [
         'garden-view-double' => ['base' => 180, 'allotment' => 4],
@@ -217,19 +217,20 @@ class ResrvDemoSeeder extends Seeder
 
     /**
      * The rate plans for the `rooms` collection. A single independent base rate (Best
-     * Flexible) owns the inventory pool; three child rates share it (availability_type
+     * Flexible) owns the inventory pool; two child rates share it (availability_type
      * 'shared', base_rate_id -> Best Flexible) so the room can never be oversold across
      * rates. Between them they exercise independent + relative pricing (both percent and
-     * fixed modifiers), shared availability, targeted vs apply-to-all rates, the free and
-     * non-refundable cancellation states, and the full restriction set (date window,
-     * min/max stay, min/max days before).
+     * fixed modifiers), shared availability, targeted vs apply-to-all rates, and the free
+     * and non-refundable cancellation states.
      */
     private function seedRates(): void
     {
-        // Retired in the rate-model revision: the former 'shared-allotment' (Partner
-        // Allotment) rate. Force-remove it and its pivots on re-seed so existing demo
-        // databases converge to the four-rate structure below.
+        // Retired rates: the former 'shared-allotment' (Partner Allotment) and the
+        // restricted 'last-minute-seasonal' (Last-Minute Escape), whose 2-night minimum
+        // and 3-month window showed as "No availability" on most searches. Remove them
+        // on re-seed so existing demo databases converge to the three rates below.
         $this->removeRetiredRate('rooms', 'shared-allotment');
+        $this->removeRetiredRate('rooms', 'last-minute-seasonal');
 
         // 1) Best Flexible — independent pricing, independent availability, free cancellation 7d.
         //    The single shared inventory pool every other rate draws from.
@@ -298,38 +299,8 @@ class ResrvDemoSeeder extends Seeder
             ]
         );
 
-        // 4) Last-Minute / Seasonal — relative (-12%), SHARED availability (child of Best
-        //    Flexible), restricted: seasonal date window, 2–14 night stays, booked 1–21
-        //    days before arrival. Non-refundable.
-        $this->rates['last-minute-seasonal'] = Rate::updateOrCreate(
-            ['collection' => 'rooms', 'slug' => 'last-minute-seasonal'],
-            [
-                'title' => 'Last-Minute Escape',
-                'description' => 'A limited seasonal rate for near-term stays — non-refundable.',
-                'apply_to_all' => false,
-                'pricing_type' => 'relative',
-                'base_rate_id' => $baseId,
-                'modifier_type' => 'percent',
-                'modifier_operation' => 'decrease',
-                'modifier_amount' => 12,
-                'availability_type' => 'shared',
-                'date_start' => Carbon::today()->startOfDay(),
-                'date_end' => Carbon::today()->addMonths(3)->endOfDay(),
-                'min_stay' => 2,
-                'max_stay' => 14,
-                'min_days_before' => 1,
-                'max_days_before' => 21,
-                'refundable' => false,
-                'cancellation_policy' => 'non_refundable',
-                'free_cancellation_period' => null,
-                'order' => 4,
-                'published' => true,
-            ]
-        );
-
         // Targeted rate -> room assignments (apply_to_all = false rates only).
         $this->assignRateToRooms('bed-breakfast', ['garden-view-double', 'sea-view-suite', 'coastal-family-room']);
-        $this->assignRateToRooms('last-minute-seasonal', ['garden-view-double', 'sea-view-suite', 'terracotta-villa']);
     }
 
     private function assignRateToRooms(string $rateSlug, array $roomSlugs): void
@@ -345,9 +316,12 @@ class ResrvDemoSeeder extends Seeder
     }
 
     /**
-     * Force-remove a rooms rate retired from the demo, along with its pivots, price
-     * overrides and any availability rows, so re-seeding an existing demo database
-     * converges to the current rate set. No-op when the rate was never seeded.
+     * Remove a rate retired from the demo so re-seeding an existing demo database
+     * converges to the current rate set: its availability rows, fixed pricing, price
+     * overrides, entry pivots and dynamic-pricing assignments go first (the same clean-up
+     * as the CP's delete). The rate itself is force-deleted, unless a reservation still
+     * points at it — then it is soft-deleted like a CP delete, so booking history keeps
+     * its rate (Reservation::rate() reads withTrashed). No-op when it was never seeded.
      */
     private function removeRetiredRate(string $collection, string $slug): void
     {
@@ -357,18 +331,34 @@ class ResrvDemoSeeder extends Seeder
             return;
         }
 
-        Availability::where('rate_id', $rate->id)->delete();
-        DB::table('resrv_rate_entries')->where('rate_id', $rate->id)->delete();
-        DB::table('resrv_rate_prices')->where('rate_id', $rate->id)->delete();
-        $rate->forceDelete();
+        DB::transaction(function () use ($rate) {
+            $rate->availabilities()->delete();
+            $rate->fixedPricing()->delete();
+            $rate->ratePrices()->delete();
+            DB::table('resrv_rate_entries')->where('rate_id', $rate->id)->delete();
+            DB::table('resrv_dynamic_pricing_assignments')
+                ->where('dynamic_pricing_assignment_type', Rate::class)
+                ->where('dynamic_pricing_assignment_id', (string) $rate->id)
+                ->delete();
+
+            if ($rate->reservations()->exists() || $rate->childReservations()->exists()) {
+                if (! $rate->trashed()) {
+                    $rate->delete();
+                }
+
+                return;
+            }
+
+            $rate->forceDelete();
+        });
     }
 
     /**
      * Rolling availability. Best Flexible is the only independent rooms rate, so it is the
-     * only one with its own rows — it owns the shared inventory pool. The three child rates
-     * (Advance Saver, Bed & Breakfast, Last-Minute) read these rows and apply their modifier
-     * at query time, so they are not seeded; any rows left under a child rate id by an
-     * earlier independent-structure seed are cleared first.
+     * only one with its own rows — it owns the shared inventory pool. The two child rates
+     * (Advance Saver, Bed & Breakfast) read these rows and apply their modifier at query
+     * time, so they are not seeded; any rows left under a child rate id by an earlier
+     * independent-structure seed are cleared first.
      */
     private function seedAvailability(): void
     {
@@ -428,40 +418,40 @@ class ResrvDemoSeeder extends Seeder
     }
 
     /**
-     * Extra categories + extras, including one conditional extra (Late Check-out,
-     * shown only for stays of 2+ nights) and an uncategorised extra. Every extra is
-     * mass-assigned to every room via the resrv_entry_extra pivot.
+     * Two extra categories + six extras, including one conditional extra (Late
+     * Check-out, shown only for stays of 2+ nights). Every extra is mass-assigned to
+     * every room via the resrv_entry_extra pivot.
      */
     private function seedExtras(): void
     {
         $categories = [];
-        foreach (['Transfers', 'Dining', 'Wellness', 'Experiences'] as $i => $name) {
+        foreach (['Your stay', 'Experiences'] as $i => $name) {
             $categories[$name] = ExtraCategory::updateOrCreate(
                 ['slug' => Str::slug($name)],
                 ['name' => $name, 'order' => $i + 1, 'published' => true],
             );
         }
 
-        // [slug => attributes]. category null = uncategorised (still a valid extra).
+        // [slug => attributes]
         $extras = [
             'airport-transfer' => [
                 'name' => 'Airport Transfer', 'price' => 55, 'price_type' => 'fixed',
-                'category' => 'Transfers', 'allow_multiple' => false, 'maximum' => null,
+                'category' => 'Your stay', 'allow_multiple' => false, 'maximum' => null,
                 'description' => 'Private transfer between the airport and the resort.',
             ],
             'breakfast-hamper' => [
                 'name' => 'Breakfast Hamper', 'price' => 18, 'price_type' => 'perday',
-                'category' => 'Dining', 'allow_multiple' => false, 'maximum' => null,
+                'category' => 'Your stay', 'allow_multiple' => false, 'maximum' => null,
                 'description' => 'A daily basket of local pastries, fruit and coffee delivered to your door.',
             ],
             'champagne-on-arrival' => [
                 'name' => 'Champagne on Arrival', 'price' => 45, 'price_type' => 'fixed',
-                'category' => 'Dining', 'allow_multiple' => true, 'maximum' => 5,
-                'description' => 'A chilled bottle of champagne waiting in your room.',
+                'category' => 'Your stay', 'allow_multiple' => true, 'maximum' => 5,
+                'description' => 'A chilled bottle of champagne waiting for you on arrival.',
             ],
             'in-room-spa-treatment' => [
                 'name' => 'In-room Spa Treatment', 'price' => 90, 'price_type' => 'fixed',
-                'category' => 'Wellness', 'allow_multiple' => true, 'maximum' => 4,
+                'category' => 'Experiences', 'allow_multiple' => true, 'maximum' => 4,
                 'description' => 'A 60-minute massage or facial in the comfort of your room.',
             ],
             'private-boat-tour' => [
@@ -469,10 +459,10 @@ class ResrvDemoSeeder extends Seeder
                 'category' => 'Experiences', 'allow_multiple' => true, 'maximum' => 3,
                 'description' => 'A half-day private boat tour of the nearby coves.',
             ],
-            // Conditional + uncategorised: only offered for stays of 2+ nights.
+            // Conditional: only offered for stays of 2+ nights.
             'late-check-out' => [
                 'name' => 'Late Check-out (until 16:00)', 'price' => 40, 'price_type' => 'fixed',
-                'category' => null, 'allow_multiple' => false, 'maximum' => null,
+                'category' => 'Your stay', 'allow_multiple' => false, 'maximum' => null,
                 'description' => 'Keep your room until 16:00 on your day of departure.',
             ],
         ];
@@ -486,7 +476,7 @@ class ResrvDemoSeeder extends Seeder
                     'name' => $attr['name'],
                     'price' => $attr['price'],
                     'price_type' => $attr['price_type'],
-                    'category_id' => $attr['category'] ? $categories[$attr['category']]->id : null,
+                    'category_id' => $categories[$attr['category']]->id,
                     'allow_multiple' => $attr['allow_multiple'],
                     'maximum' => $attr['maximum'],
                     'description' => $attr['description'],
@@ -495,6 +485,8 @@ class ResrvDemoSeeder extends Seeder
                 ],
             );
         }
+
+        $this->removeRetiredExtraCategories();
 
         // Conditional rule for Late Check-out: show only when reservation duration >= 2 nights.
         DB::table('resrv_extra_conditions')->updateOrInsert(
@@ -522,6 +514,23 @@ class ResrvDemoSeeder extends Seeder
                 );
             }
         }
+    }
+
+    /**
+     * Drop the four-category structure earlier seeds created (Transfers, Dining,
+     * Wellness — "Experiences" is kept, updated in place by slug) once the extras have
+     * been reassigned, so re-seeding an existing install converges to the two categories.
+     * Any other extra still in a retired category is left uncategorised, as the CP's
+     * category delete does.
+     */
+    private function removeRetiredExtraCategories(): void
+    {
+        ExtraCategory::whereIn('name', ['Transfers', 'Dining', 'Wellness'])
+            ->get()
+            ->each(function (ExtraCategory $category) {
+                Extra::withTrashed()->where('category_id', $category->id)->update(['category_id' => null]);
+                $category->delete();
+            });
     }
 
     /**

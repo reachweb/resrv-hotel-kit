@@ -33,14 +33,8 @@ tabs:
       -
         fields:
           -
-            handle: valid_from
-            field: { type: date, display: 'Valid from', width: 50 }
-          -
-            handle: valid_to
-            field: { type: date, display: 'Valid to', width: 50 }
-          -
             handle: linked_coupon_code
-            field: { type: text, display: 'Coupon code', instructions: 'e.g. COASTAL10 — matches a Resrv dynamic-pricing coupon.', width: 50 }
+            field: { type: text, display: 'Coupon code', instructions: 'e.g. COASTAL10 — matches a Resrv dynamic-pricing coupon. The discount and its validity live in Resrv → Dynamic pricing.', width: 50 }
           -
             handle: cta_label
             field: { type: text, display: 'CTA label', default: 'Book this offer', width: 50 }

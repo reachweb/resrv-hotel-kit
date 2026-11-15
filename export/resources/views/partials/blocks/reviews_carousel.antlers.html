@@ -3,7 +3,6 @@
     <div class="container-rsv">
         <div class="grid lg:grid-cols-[0.9fr_1.6fr] gap-12 lg:gap-16 items-center">
             <div class="reveal">
-                {{ if overline }}<p class="text-xs font-semibold uppercase tracking-[0.12em] text-sage mb-4">{{ overline }}</p>{{ /if }}
                 {{ if heading }}<h2 class="t-display text-white mb-5 text-balance">{{ heading | widont }}</h2>{{ /if }}
                 {{ if show_aggregate }}
                     {{ partial:stars :rating="5" class="text-terracotta" }}

@@ -25,7 +25,8 @@ edge (Glide serves `width=1600` and downsizes responsively).
 | `hero/home.jpg` | 16:9 | Home full-bleed hero (behind the search card) |
 | `hero/<page-slug>.jpg` | 16:9 | Any page using the hero block with an image (dining, spa, …) |
 | `hero/404.jpg` | 4:3 | The 404 page illustration |
-| `<page-slug>.jpg` | 4:3 | `image_text_split` blocks (About story, taverna split, …) |
+| `<page-slug>.jpg` | 4:3 | `image_text_split` blocks (About story, Dining split, …) |
+| `home/<tile>.jpg` | 3:2 | Home "Dining, spa and sea" tiles (`feature_tiles` block — attach per tile on the Home entry) |
 | `map-location.jpg` | 21:9 | Contact page map slot |
 
 ## Rooms (4 entries)
@@ -33,6 +34,7 @@ edge (Glide serves `width=1600` and downsizes responsively).
 | Slot | Ratio | Where it appears |
 | --- | --- | --- |
 | `rooms/<slug>.jpg` | 3:2 | Room card (index, showcase, "you may also like") + detail hero |
+| `rooms/<slug>.jpg` | 16:9 | Checkout order summary (same file, cropped; hidden when empty) |
 | `rooms/<slug>-gallery-1.jpg` | 3:2 | Room detail gallery, second image |
 | `rooms/<slug>-gallery-2.jpg` | 3:2 | Room detail gallery, third image |
 
@@ -44,28 +46,26 @@ Room slugs: `garden-view-double`, `sea-view-suite`, `terracotta-villa`,
 | Slot | Ratio | Where it appears |
 | --- | --- | --- |
 | `spa/<treatment-slug>.jpg` | 3:2 | Treatment page editorial image |
-| `spa/<treatment-slug>.jpg` | 16:9 | Checkout order summary (same file, cropped) |
-| `dining/la-marea.jpg` | 16:9 | Checkout summary for table reservations |
+| `spa/<treatment-slug>.jpg` | 16:9 | Checkout order summary (same file, cropped; hidden when empty) |
+| `dining/la-marea.jpg` | 16:9 | Checkout summary for table reservations (hidden when empty) |
 
 Treatment slugs: `mediterranean-massage`, `sea-salt-body-polish`,
 `garden-botanicals-facial`, `couples-ritual`, `morning-stretch-steam`,
 `in-room-treatment`.
 
-## Offers, experiences, journal
+## Offers & journal
 
 | Slot | Ratio | Where it appears |
 | --- | --- | --- |
 | `offers/<slug>.jpg` | 3:2 | Offer cards |
 | `offers/<slug>.jpg` | 21:9 | Offer detail hero band |
-| `experiences/<slug>.jpg` | 3:2 | Experience tiles (bento grid) |
-| `experiences/<slug>.jpg` | 21:9 | Experience detail hero |
 | `journal/<slug>.jpg` | 3:2 / 16:9 | Journal cards / article hero (journal module) |
 
-## Gallery page
+## Dining gallery
 
-The gallery block renders attached assets as a masonry grid; until populated it shows
-eight placeholder slots (ratios 3:2 · 3:4 · 4:5 · 16:9 · 3:2 · 3:4 · 4:3 · 1:1). Attach
-any number of images in the CP — the mixed ratios are only the placeholder rhythm.
+The gallery block (used on Dining) renders attached assets as a masonry grid; until
+populated it shows four placeholder slots (ratios 3:2 · 3:4 · 3:4 · 3:2). Attach any
+number of images in the CP — the mixed ratios are only the placeholder rhythm.
 
 ## Brand
 

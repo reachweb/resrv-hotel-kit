@@ -37,11 +37,8 @@ tabs:
                       icon: assets
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, instructions: 'Small eyebrow above the heading.', width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: lead
                           field: { type: textarea, display: 'Lead copy' }
@@ -69,11 +66,8 @@ tabs:
                       icon: text
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: content
                           field: prose.body
@@ -86,11 +80,8 @@ tabs:
                       icon: 'layout-grid'
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: text
                           field:
@@ -139,11 +130,8 @@ tabs:
                       icon: hammer
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro }
@@ -165,11 +153,8 @@ tabs:
                       icon: hammer
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro }
@@ -185,11 +170,8 @@ tabs:
                       icon: hammer
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro }
@@ -206,11 +188,8 @@ tabs:
                       icon: tags
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro }
@@ -226,11 +205,8 @@ tabs:
                       icon: star
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: show_aggregate
                           field: { type: toggle, display: 'Show aggregate rating', default: true }
@@ -240,14 +216,12 @@ tabs:
                             type: entries
                             display: Reviews
                             collections: [reviews]
-                            instructions: 'Leave empty to show featured reviews automatically.'
-                    experiences_grid:
-                      display: 'Experiences grid'
+                            instructions: 'Leave empty to show the latest reviews automatically.'
+                    feature_tiles:
+                      display: 'Feature tiles'
+                      instructions: 'A bento row of image tiles; the first tile spans wider.'
                       icon: 'layout-grid'
                       fields:
-                        -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
                         -
                           handle: heading
                           field: { type: text, display: Heading, width: 50 }
@@ -255,18 +229,32 @@ tabs:
                           handle: intro
                           field: { type: textarea, display: Intro }
                         -
-                          handle: experiences
+                          handle: tiles
                           field:
-                            type: entries
-                            display: Experiences
-                            collections: [experiences]
-                            instructions: 'Leave empty to show all experiences.'
-                        -
-                          handle: cta_label
-                          field: { type: text, display: 'Button label', width: 50 }
-                        -
-                          handle: cta_url
-                          field: { type: text, display: 'Button URL', width: 50 }
+                            type: grid
+                            display: Tiles
+                            mode: stacked
+                            add_row: 'Add tile'
+                            max_rows: 6
+                            fields:
+                              -
+                                handle: image
+                                field:
+                                  type: assets
+                                  display: Image
+                                  container: assets
+                                  max_files: 1
+                                  mode: grid
+                                  instructions: 'Recommended ratio 3:2.'
+                              -
+                                handle: title
+                                field: { type: text, display: Title, validate: [required], width: 50 }
+                              -
+                                handle: link
+                                field: { type: text, display: 'Link URL', instructions: 'Optional, e.g. /dining. Leave empty for a tile that does not link.', width: 50 }
+                              -
+                                handle: text
+                                field: { type: textarea, display: 'Short text' }
                     cta_band:
                       display: 'CTA band'
                       icon: bullhorn
@@ -291,11 +279,8 @@ tabs:
                       icon: list
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro }
@@ -306,29 +291,13 @@ tabs:
                             display: FAQs
                             collections: [faqs]
                             instructions: 'Leave empty to show all FAQs grouped by category.'
-                    availability_search_band:
-                      display: 'Availability search band'
-                      icon: calendar
-                      fields:
-                        -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
-                          handle: heading
-                          field: { type: text, display: Heading, width: 50 }
-                        -
-                          handle: intro
-                          field: { type: textarea, display: Intro }
                     map_contact:
                       display: 'Map + contact'
                       icon: 'map-pin'
                       fields:
                         -
-                          handle: overline
-                          field: { type: text, display: Overline, width: 50 }
-                        -
                           handle: heading
-                          field: { type: text, display: Heading, width: 50 }
+                          field: { type: text, display: Heading }
                         -
                           handle: intro
                           field: { type: textarea, display: Intro, instructions: 'Contact details come from the Site global; this is supporting copy.' }

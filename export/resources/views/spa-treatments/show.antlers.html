@@ -6,7 +6,7 @@
 <section class="container-rsv py-8 lg:py-12 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
 
     <div>
-        {{ partial:detail-header }}Spa &amp; Wellness{{ if duration_options }} · {{ duration_options }}{{ /if }}{{ /partial:detail-header }}
+        {{ partial:detail-header }}{{ duration_options }}{{ /partial:detail-header }}
 
         {{ partial:image-slot :asset="image" label="Treatment image · 3:2" ratio="3/2" class="rounded-xl mb-8 reveal" :alt="title" }}
 
@@ -29,27 +29,16 @@
     </div>
 
     <aside class="lg:sticky lg:top-[100px]" id="book">
-        <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
-            {{ partial:booking-price-header note="Pick a day to see times &amp; prices — the calendar shows live availability." }}
+        <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
+            {{ partial:booking-price-header note="Pick a day for live prices &amp; availability." }}
 
-            {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
-                scroll-mt clears the fixed header (h-18/lg:h-21). #}}
-            <div data-resrv-booking-top class="scroll-mt-28">
-                {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" resetOnBoot="true" view="availability-search-panel" }}
-            </div>
+            {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
 
             <div class="mt-4">
                 {{ livewire:availability-results :entry="id" rates="true" }}
             </div>
 
             {{ partial:booking-cutoff word="today" }}
-        </div>
-
-        {{# Next available dates — a day browser; clicking a day reloads the panel above
-            (date only, so both durations stay visible). Using the date-grouped view +
-            selectDate(date) avoids the advanced→single results morph that races Alpine. #}}
-        <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-4">
-            {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
         </div>
 
         {{ partial:booking-trust label="Free cancellation up to a day before" }}

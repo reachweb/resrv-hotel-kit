@@ -1,28 +1,5 @@
-{{# Home — the page-builder showcase, plus a closing newsletter band. The home
-    hero is full-bleed (show_search) and the entry sets transparent_nav so the
-    header floats over it. #}}
+{{# Home — the page-builder showcase. The home hero is full-bleed (show_search) and
+    the entry sets transparent_nav so the header floats over it. #}}
 {{ builder }}
     {{ partial src="blocks/{type}" }}
 {{ /builder }}
-
-{{# Newsletter band #}}
-<section class="section-sm">
-    <div class="container-rsv">
-        <div class="bg-sand rounded-xl px-7 py-12 lg:px-16 lg:py-16 text-center reveal">
-            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">Stay in touch</p>
-            <h2 class="t-h2 max-w-[20ch] mx-auto mb-4">Quiet notes from the coast</h2>
-            <p class="text-base leading-relaxed text-muted max-w-[46ch] mx-auto mb-8">Seasonal offers and slow-travel letters, a few times a year. No noise.</p>
-            {{ form:create handle="newsletter" class="max-w-[480px] mx-auto" }}
-                {{ if success }}
-                    <p class="text-success font-medium">Thanks — you're on the list.</p>
-                {{ else }}
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" name="email" required placeholder="Email address" class="input flex-1" value="{{ old:email }}">
-                        {{ partial:button tag="button" type="submit" label="Subscribe" focus="true" class="inline-flex shrink-0" }}
-                    </div>
-                    {{ if errors }}<p class="text-error text-sm mt-3">{{ errors }}{{ value }} {{ /errors }}</p>{{ /if }}
-                {{ /if }}
-            {{ /form:create }}
-        </div>
-    </div>
-</section>

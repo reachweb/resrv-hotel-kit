@@ -13,9 +13,17 @@
 {{ __("Reservation code") }} **{{ $reservation->id }}**<br>
 {{ __("Date") }}: **{{ $reservation->updated_at->format('d-m-Y H:i') }}**<br>
 {{ __("Booking reference") }}: **{{ $reservation->reference }}**<br>
-{{ __("Email") }}: **{{ $reservation->customer->email }}** 
+{{ __("Email") }}: **{{ $reservation->customer->email }}**
 @endcomponent
 
+@php($manageUrl = $reservation->customerStatusUrl())
+@if ($manageUrl)
+@component('mail::button', ['url' => $manageUrl])
+{{ __("Manage your booking") }}
+@endcomponent
+@endif
+
+@php($resrvEntry = $reservation->entry())
 @component('mail::table')
 |{{ __("Reservation details") }}||
 | :------------------------------------------------ |:--------------------------------------------------------------------------|
@@ -23,7 +31,7 @@
 | {{ __("Pick-up date") }}      | {{ $reservation->date_start->format('d-m-Y H:i') }} |
 | {{ __("Drop-off date") }}     | {{ $reservation->date_end->format('d-m-Y H:i') }} |
 @endif
-| {{ __("Property") }}   | {{ $reservation->entry()->title }} |
+| {{ __("Property") }}   | {{ is_array($resrvEntry) ? ($resrvEntry['title'] ?? '') : $resrvEntry->title }} |
 @if ($reservation->type !== 'parent')
 @if (config('resrv-config.maximum_quantity') > 1)
 | {{ __("Quantity") }}  | x {{ $reservation->quantity }} |
@@ -63,7 +71,7 @@
 @if (is_array($value) || $value == null)
     @continue
 @endif
-| {{ $reservation->checkoutFormFieldsArray($reservation->entry()->id)[$field] ?? $field }}      | {{ $value }} |
+| {{ $reservation->checkoutFormFieldsArray(is_array($resrvEntry) ? null : $resrvEntry->id)[$field] ?? $field }}      | {{ $value }} |
 @endforeach
 @endcomponent
 @endif
@@ -78,12 +86,13 @@
 @endcomponent
 @endif
 
-@if ($reservation->options()->get()->count() > 0)
+@php($reservationOptions = $reservation->optionsForEmail())
+@if ($reservationOptions->count() > 0)
 @component('mail::table')
 |{{ __("Options") }}||
-| :------------------------------------------------ |:--------------------------------------------------------------------------| 
-@foreach ($reservation->options()->get() as $option)
-| {{ $option->name }} | {{ $option->values->find($option->pivot->value)->name }} |
+| :------------------------------------------------ |:--------------------------------------------------------------------------|
+@foreach ($reservationOptions as $option)
+| {{ $option->name }} | {{ $option->values->find($option->pivot->value)?->name }} |
 @endforeach
 @endcomponent
 @endif
@@ -91,8 +100,8 @@
 @component('mail::table')
 |{{ __("Payment information") }}||
 | :----------------------------- |:----------------| 
-@if (config('resrv-config.payment') !== 'everything' && $reservation->status !== 'partner')
-| {{ __("Already paid by credit card") }}    | {{ config('resrv-config.currency_symbol') }} {{ $reservation->payment->format() }} |
+@if ((config('resrv-config.payment') !== 'everything' || $reservation->payment->lessThan($reservation->total)) && $reservation->status !== 'partner')
+| {{ $reservation->amountPaidOnline()->isZero() ? __("Amount already paid") : __("Already paid by credit card") }}    | {{ config('resrv-config.currency_symbol') }} {{ $reservation->payment->format() }} |
 | {{ __("Remaining amount") }} | {{ config('resrv-config.currency_symbol') }} {{ $reservation->amountRemaining() }} |
 @endif
 @if (! $reservation->payment_surcharge->isZero())

@@ -9,14 +9,14 @@ checkout**, demo data included.
 
 - **Three bookable products** on one Resrv install: nightly room stays (range calendar),
   spa appointments and restaurant table sittings (single-date calendar + party size).
-- **Four rooms / four rate plans** spanning Resrv's rate capabilities — a Best Flexible base
-  (independent pricing, owns the inventory pool) plus three rates that **share its availability**:
-  a non-refundable Advance Saver (−18%), a Bed & Breakfast (+€25/night), and a restricted
-  Last-Minute rate (seasonal window, min/max stay, booking lead time) — plus extras (incl. one
-  conditional), per-room options, two dynamic-pricing campaigns, a `COASTAL10` coupon and a demo affiliate.
+- **Four rooms / three rate plans** spanning Resrv's rate capabilities — a Best Flexible base
+  (independent pricing, owns the inventory pool) plus two rates that **share its availability**:
+  a non-refundable Advance Saver (−18%) and a Bed & Breakfast (+€25/night) targeted to some
+  rooms — plus categorised extras (incl. one conditional), per-room options, two
+  dynamic-pricing campaigns, a `COASTAL10` coupon and a demo affiliate.
 - **Rolling 12-month availability** seeded relative to install day — the demo never goes stale.
-- A complete marketing site: page-builder driven pages (14 block types), offers,
-  experiences, FAQs, reviews, optional journal — all Antlers + Tailwind v4 + the
+- A complete marketing site: page-builder driven pages (13 block types), offers,
+  FAQs, reviews, optional journal — all Antlers + Tailwind v4 + the
   Livewire-bundled Alpine.
 - Restyled Resrv checkout, search, calendar and result components (Blade overrides —
   Livewire structure untouched).
@@ -24,7 +24,7 @@ checkout**, demo data included.
 ## Requirements
 
 - PHP 8.4+ · Composer
-- Statamic **6** (Pro recommended) · Laravel 13
+- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.1+**
 - Node 20+ (Tailwind v4 via Vite)
 - A [Resrv license](https://statamic.com/addons/reach-web/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your
@@ -40,7 +40,7 @@ The installer prompts per module:
 
 | Module | Default | What it installs |
 | --- | --- | --- |
-| `demo_content` | yes | All demo entries (pages, rooms, spa, restaurant, offers, FAQs, experiences) + the database seeder (rates, extras, options, pricing, coupon, affiliate, 12-month availability) |
+| `demo_content` | yes | All demo entries (pages, rooms, spa, restaurant, offers, FAQs) + the database seeder (rates, extras, options, pricing, coupon, affiliate, 12-month availability) |
 | `payments` | offline | `offline` (keyless, instant demo) · `stripe` (single gateway) · `both` (gateway picker at checkout) |
 | `reviews` | yes | Demo guest reviews/testimonials entries |
 | `journal` | no | Journal/blog collection, taxonomies, templates and a demo article or two |
@@ -84,6 +84,15 @@ renders a graceful labelled placeholder until you drop the real file in.
   idempotent and refreshes the rolling availability window (it also prunes past dates).
   Optional demo reservations for the CP reports/abandoned-recovery demo:
   `RESRV_SEED_DEMO_RESERVATIONS=true` before seeding.
+- **Scheduler:** `routes/console.php` schedules `resrv:cancel-lapsed-holds` (every 15
+  minutes) and `resrv:housekeeping` (daily). In production, add the standard Laravel cron
+  entry (`* * * * * php artisan schedule:run`). Without it, unpaid reservations created
+  from the CP stay **Awaiting payment** past their deadline and keep holding availability.
+- **Logo:** the "resrv." wordmark is inline SVG in `resources/views/partials/logo.antlers.html`
+  (it inherits the header's colour switch via `currentColor`). Changing the `site` global's
+  brand name updates titles and the logo's accessible label, not the artwork: to rebrand,
+  replace that partial plus `public/favicon.ico`, `public/favicon.svg` and
+  `public/apple-touch-icon.png`.
 - The demo CP user is **not** created by the kit — make one with
   `php please make:user --super`.
 

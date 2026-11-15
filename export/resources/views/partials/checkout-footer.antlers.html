@@ -1,0 +1,25 @@
+{{#
+    Checkout footer — slim stand-in for the full footer while booking: a help
+    line from the `site` global + {{ nav:legal }}. Legal pages open in a new tab
+    so reading the terms never costs the guest their half-filled checkout.
+#}}
+<footer class="border-t border-line">
+    <div class="container-rsv py-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-sm text-muted">
+        {{ if site:phone || site:email }}
+            <p>
+                Questions about your booking?
+                {{ if site:phone }}
+                    Call <a href="tel:{{ site:phone }}" class="font-medium text-ink whitespace-nowrap underline-offset-2 hover:underline">{{ site:phone }}</a>
+                {{ /if }}
+                {{ if site:email }}
+                    {{ if site:phone }}or email{{ else }}Email{{ /if }} <a href="mailto:{{ site:email }}" class="font-medium text-ink whitespace-nowrap underline-offset-2 hover:underline">{{ site:email }}</a>
+                {{ /if }}
+            </p>
+        {{ /if }}
+        <nav aria-label="Legal" class="flex flex-wrap gap-x-5 gap-y-2">
+            {{ nav:legal }}
+                <a href="{{ url }}" target="_blank" rel="noopener" class="underline-offset-2 hover:text-ink hover:underline">{{ title }}<span class="sr-only"> (opens in a new tab)</span></a>
+            {{ /nav:legal }}
+        </nav>
+    </div>
+</footer>

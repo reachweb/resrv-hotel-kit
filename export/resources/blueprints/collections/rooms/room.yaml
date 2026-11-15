@@ -78,14 +78,6 @@ tabs:
               taxonomies: [amenities]
               mode: select
               create: false
-          -
-            handle: room_features
-            field:
-              type: terms
-              display: 'Room features'
-              taxonomies: [room_features]
-              mode: select
-              create: false
   booking:
     display: Booking
     sections:

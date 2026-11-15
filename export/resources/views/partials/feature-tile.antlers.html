@@ -1,0 +1,17 @@
+{{# Feature tile — image with a gradient and the title + short text overlaid.
+    Expects a `feature_tiles` row in scope (image, title, text, link); renders as a
+    link only when `link` is set. The first tile spans wider (bento). #}}
+<{{ link ? 'a' : 'div' }}{{ if link }} href="{{ link }}"{{ /if }} class="block rounded-xl{{ if link }} zoom-on-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-terracotta{{ /if }}{{ if first }} md:col-span-2 lg:row-span-2{{ /if }}">
+    <div class="img-slot {{ if image }}has-img{{ /if }} rounded-xl h-full min-h-[260px]">
+        {{ if image }}
+            {{ image }}<img src="{{ glide:url width='1600' }}" alt="" loading="lazy">{{ /image }}
+        {{ else }}
+            <span class="slot-label top-3 bottom-auto">Tile image · 3:2</span>
+        {{ /if }}
+        <div class="absolute inset-0 bg-linear-to-b from-transparent from-40% to-ink/75"></div>
+        <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+            <h3 class="t-h3 text-white">{{ title }}</h3>
+            {{ if text }}<p class="text-sm text-white/85 mt-1 max-w-[38ch]">{{ text }}</p>{{ /if }}
+        </div>
+    </div>
+</{{ link ? 'a' : 'div' }}>

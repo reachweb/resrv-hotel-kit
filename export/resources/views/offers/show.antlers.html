@@ -43,9 +43,8 @@
 
     <aside class="lg:sticky lg:top-[100px]">
         <div class="bg-white rounded-lg shadow-card p-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-terracotta-dark mb-3">Limited offer</p>
             {{ if linked_coupon_code }}
-                <div x-data="{ copied: false }" class="mb-4">
+                <div x-data="{ copied: false }" class="mb-5">
                     <p class="text-sm text-muted mb-2">Use this code at checkout:</p>
                     <button
                         type="button"
@@ -56,9 +55,8 @@
                         <span class="text-xs font-sans font-semibold text-muted" x-text="copied ? 'Copied!' : 'Copy'"></span>
                     </button>
                 </div>
-            {{ /if }}
-            {{ if valid_to }}
-                <p class="text-sm text-muted mb-5">Valid until {{ valid_to | format('j M Y') }}.</p>
+            {{ else }}
+                <p class="text-sm text-muted mb-5">Applied automatically at checkout once your dates qualify.</p>
             {{ /if }}
             {{ partial:button href="/rooms" :label="cta_label ?? 'Check dates'" class="inline-flex w-full" }}
             <p class="text-sm text-muted text-center mt-3">Free cancellation · book direct</p>

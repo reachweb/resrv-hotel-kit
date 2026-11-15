@@ -19,15 +19,16 @@
     {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
         scroll-mt clears the fixed header (h-18/lg:h-21). #}}
     <div data-resrv-booking-top class="scroll-mt-28">
-        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" resetOnBoot="true" }}
+        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" }}
     </div>
 
     <div class="mt-5">
         {{ livewire:availability-results :entry="id" rates="true" }}
     </div>
 
-    {{# Browse other days — clicking a day reloads the sittings panel above #}}
-    <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-5">
+    {{# Browse other days — clicking a day reloads the sittings panel above. Hidden
+        until a date is picked (the list then renders only a data-awaiting-date marker). #}}
+    <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-5 has-[[data-awaiting-date]]:hidden">
         {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
     </div>
 

@@ -26,16 +26,3 @@ tabs:
           -
             handle: source
             field: { type: text, display: Source, instructions: 'e.g. Verified stay, Google.', default: 'Verified stay', width: 50 }
-          -
-            handle: avatar
-            field:
-              type: assets
-              display: Avatar
-              container: assets
-              folder: brand
-              max_files: 1
-              mode: list
-              instructions: 'Optional. Recommended ratio 1:1.'
-          -
-            handle: featured
-            field: { type: toggle, display: 'Featured on home', default: false }

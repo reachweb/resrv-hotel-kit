@@ -1,7 +1,8 @@
 {{-- Restyled to the design's extra card (checkout.html): name + description, price
-     label with per-night/each suffix, brand toggle (teal), and the quantity stepper
-     for allow_multiple extras. All wire: directives (toggleExtra, hiddenExtras,
-     requiredExtras) are stock — markup/classes only. --}}
+     label with a "for your stay"/each suffix (a per-day extra's price is already
+     multiplied by the nights, so it is never a nightly rate), brand toggle (teal),
+     and the quantity stepper for allow_multiple extras. All wire: directives
+     (toggleExtra, hiddenExtras, requiredExtras) are stock — markup/classes only. --}}
 <div
     wire:key="extra-{{ $extra->id }}"
     wire:loading.class="opacity-50 pointer-events-none"
@@ -44,7 +45,7 @@
     </div>
     <div class="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-line">
         <span class="text-sm font-semibold text-terracotta-dark">
-            {{ config('resrv-config.currency_symbol') }}{{ $extra->price }}@if ($extra->price_type === 'perday')<span class="font-normal text-muted"> / night</span>@elseif ($extra->allow_multiple)<span class="font-normal text-muted"> each</span>@endif
+            {{ config('resrv-config.currency_symbol') }}{{ $extra->price }}@if ($extra->price_type === 'perday')<span class="font-normal text-muted"> for your stay</span>@elseif ($extra->allow_multiple)<span class="font-normal text-muted"> each</span>@endif
         </span>
         @if ($extra->allow_multiple)
             @include('statamic-resrv::livewire.components.partials.extra-quantity')

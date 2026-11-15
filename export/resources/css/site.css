@@ -107,8 +107,7 @@
    tokens above so @theme stays the single source of truth.
    ============================================================ */
 /* Fluid display/heading type kept as @utility (clamp() doesn't inline cleanly).
-   Fixed-size type (t-overline→text-xs font-semibold uppercase tracking-[0.12em];
-   t-small→text-sm; t-body→text-base leading-relaxed; t-body-l→text-lg leading-relaxed;
+   Fixed-size type (t-small→text-sm; t-body→text-base leading-relaxed; t-body-l→text-lg leading-relaxed;
    t-h4→text-xl font-semibold; tabular→tabular-nums) is inlined in the markup;
    font-display is a @theme utility, font-body→font-sans. */
 @utility t-display-xl { font-family: var(--font-display); font-weight: 500; font-size: clamp(40px, 6.2vw, 72px); line-height: 1.05; letter-spacing: -0.02em; }
@@ -189,7 +188,9 @@
   /* The header keeps a static `is-solid` class as a no-JS fallback, so Alpine's
      `is-transparent` must explicitly clear the solid bar's background/border/blur —
      otherwise white links sit on the light Shell bar (the real low-contrast bug). */
-  #siteNav.is-transparent { background: transparent; border-bottom-color: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  /* Unprefixed only: with an explicit -webkit- twin, the minifier drops the standard
+     `backdrop-filter: none` and the hero blurs under the transparent bar. */
+  #siteNav.is-transparent { background: transparent; border-bottom-color: transparent; backdrop-filter: none; }
   /* Transparent-state scrim + text-shadow — keeps the white logo/links AA-readable
      over any hero image; both fade out when the bar solidifies on scroll. */
   #siteNav::before {
@@ -199,13 +200,15 @@
   }
   #siteNav.is-transparent::before { opacity: 1; }
   #siteNav.is-transparent.scrolled::before { opacity: 0; }
-  #siteNav.is-transparent .brand, #siteNav.is-transparent .nav-link, #siteNav.is-transparent #navBurger { text-shadow: 0 1px 2px rgba(0,0,0,.28); }
-  #siteNav.is-transparent.scrolled .brand, #siteNav.is-transparent.scrolled .nav-link, #siteNav.is-transparent.scrolled #navBurger { text-shadow: none; }
+  #siteNav.is-transparent .nav-link, #siteNav.is-transparent #navBurger { text-shadow: 0 1px 2px rgba(0,0,0,.28); }
+  #siteNav.is-transparent.scrolled .nav-link, #siteNav.is-transparent.scrolled #navBurger { text-shadow: none; }
+  /* The logo is an SVG (partials/logo), which text-shadow can't reach — same shadow as a filter. */
+  #siteNav.is-transparent .brand svg { filter: drop-shadow(0 1px 2px rgba(0,0,0,.28)); }
+  #siteNav.is-transparent.scrolled .brand svg { filter: none; }
   .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .25s ease; opacity: .85; }
   .nav-link:hover::after { transform: scaleX(1); }
   .nav-link.is-active { color: var(--color-terracotta) !important; }
   .nav-link.is-active::after { transform: scaleX(1); background: var(--color-terracotta); }
-  .brand-dot { font-family: var(--font-display); }
 
   /* ---- Guests stepper ---- */
   .step-btn {
@@ -256,18 +259,3 @@
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .img-slot > img { transition: none; }
 }
-
-/* ============================================================
-   ANNOUNCEMENT BAR — slim promo strip above the header. The bar is
-   `fixed` at top:0; when it's open, JS adds `.has-promo` to <body> and
-   these rules push the fixed header + page content down by --promo-h.
-   Kept OUTSIDE @layer (like .reveal above) so the header `top` offset and
-   body padding beat Tailwind's `top-0`/`transition-all` utilities, which
-   would otherwise win on cascade-layer order regardless of specificity.
-   Keep --promo-h in sync with the bar's `h-10` (partials/announcement-bar).
-   ============================================================ */
-:root { --promo-h: 2.5rem; }
-body.has-promo { padding-top: var(--promo-h); }
-body.has-promo #siteNav { top: var(--promo-h); }
-/* Header animates its colour/blur states only — never slide it into the offset. */
-#siteNav { transition-property: background-color, border-color, color, backdrop-filter, -webkit-backdrop-filter, text-shadow; }

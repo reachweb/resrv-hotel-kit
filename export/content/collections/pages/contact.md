@@ -6,21 +6,16 @@ builder:
   -
     id: contact_hero
     type: hero
-    overline: 'Location & Contact'
     heading: 'Find us on the coast'
     lead: 'About 20 minutes from the airport, on a quiet stretch of the Mediterranean shore.'
   -
     id: contact_map
     type: map_contact
-    overline: 'Get in touch'
-    heading: 'We would love to hear from you'
-    intro: 'Questions about a booking, a special occasion or getting here? Send a message and we will reply personally.'
     show_map: true
     show_form: true
   -
     id: contact_directions
     type: rich_text
-    overline: 'Getting here'
     heading: 'Directions & transfers'
     width: narrow
     content:

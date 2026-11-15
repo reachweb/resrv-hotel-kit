@@ -4,7 +4,7 @@
 #}}
 <div x-data="{ open: null }">
     {{ collection:faqs category:is="{category}" sort="title" }}
-        {{ if first }}<h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-muted mb-4">{{ label }}</h3><div class="space-y-3">{{ /if }}
+        {{ if first }}<h3 class="t-h3 mb-4">{{ label }}</h3><div class="space-y-3">{{ /if }}
             {{ partial:faq-item }}
         {{ if last }}</div>{{ /if }}
     {{ /collection:faqs }}

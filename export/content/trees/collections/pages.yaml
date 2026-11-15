@@ -10,10 +10,6 @@ tree:
   -
     entry: spa
   -
-    entry: experiences
-  -
-    entry: gallery
-  -
     entry: offers
   -
     entry: contact

@@ -12,9 +12,6 @@ tree:
     entry: offers
     title: Offers
   -
-    entry: gallery
-    title: Gallery
-  -
     entry: about
     title: About
   -

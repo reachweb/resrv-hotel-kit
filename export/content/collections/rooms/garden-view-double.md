@@ -15,7 +15,6 @@ amenities:
   - coffee-machine
   - bathtub
   - room-service
-room_features:
   - king-bed
   - twin-beds
 intro: 'Our most intimate room opens onto the herb garden, where the morning smells of rosemary and warm stone. Linen drapes, a limewashed headboard and a quiet corner to read make this an easy, unhurried base for two.'

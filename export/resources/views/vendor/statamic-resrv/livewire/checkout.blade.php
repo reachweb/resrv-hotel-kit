@@ -26,7 +26,7 @@
         <div class="order-2 lg:order-1 min-w-0">
             @if ($step === 1)
                 <h1 class="t-h1 mb-2">{{ trans('statamic-resrv::frontend.extrasAndOptions') }}</h1>
-                <p class="text-base leading-relaxed text-muted mb-8">Make your stay yours &mdash; everything here is optional.</p>
+                <p class="text-base leading-relaxed text-muted mb-8">Choose your options, then add any extras you&rsquo;d like.</p>
                 <livewire:options
                     :reservation="$this->reservation"
                     :errors="$errors->get('options')"
@@ -62,9 +62,15 @@
         {{-- ORDER SUMMARY --}}
         <aside class="order-1 lg:order-2 lg:sticky lg:top-[100px] min-w-0">
             <div class="bg-white rounded-lg shadow-card overflow-hidden">
-                <div class="img-slot" style="aspect-ratio: 16/9;">
-                    <span class="slot-label">Booking image · 16:9</span>
+                {{-- The reserved entry's own image (rooms: hero_image; spa treatments and
+                     the restaurant: image). Nothing at all when it has none. --}}
+                @php($image = $this->entry->augmentedValue($this->entry->get('hero_image') ? 'hero_image' : 'image')->value())
+                @php($image = $image instanceof \Illuminate\Support\Collection ? $image->first() : $image)
+                @if ($image)
+                <div class="img-slot has-img aspect-video">
+                    <img src="{{ $image->manipulate(['w' => 800]) }}" alt="">
                 </div>
+                @endif
                 <div class="p-5 lg:p-6">
                     <x-resrv::checkout-reservation-details
                         :entry="$this->entry"
@@ -92,10 +98,8 @@
                 </div>
                 @endif
             </div>
-            <div class="hidden lg:flex items-center gap-2.5 mt-4 text-sm text-muted">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 text-success shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
-                Secure booking &middot; no account needed.
-            </div>
+            {{-- "Secure booking" already sits in the checkout header. --}}
+            <p class="hidden lg:block mt-4 text-sm text-muted">No account needed.</p>
         </aside>
     </div>
 </div>

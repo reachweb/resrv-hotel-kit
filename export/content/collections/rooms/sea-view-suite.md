@@ -17,7 +17,6 @@ amenities:
   - coffee-machine
   - bathtub
   - room-service
-room_features:
   - king-bed
   - terrace
 intro: 'Wake to the sea from a king bed dressed in soft linen, then take coffee on a private balcony as the light shifts across the water. A generous suite for those who want the view to be the first thing they see.'

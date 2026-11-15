@@ -18,7 +18,6 @@ amenities:
   - bathtub
   - beach-access
   - room-service
-room_features:
   - king-bed
   - private-pool
   - terrace

@@ -1,11 +1,11 @@
 {{# Rooms index — backed by the `rooms` pages entry (route /rooms): compact sticky
     availability-search + the live availability-collection. #}}
-{{ partial:index-header overline="Rooms &amp; Suites" title="Choose where you'll wake up" description="Pick your dates to see live availability and the best rate for each room." }}
+{{ partial:index-header title="Choose where you'll wake up" description="Pick your dates to see live availability and the best rate for each room." }}
 
 {{# Compact sticky search bar — sticks below the fixed header #}}
 <div class="sticky top-18 lg:top-21 z-40 bg-shell/92 backdrop-blur border-y border-line">
     <div class="container-rsv py-3">
-        {{ livewire:availability-search calendar="range" resetOnBoot="true" view="availability-search-compact" }}
+        {{ livewire:availability-search calendar="range" view="availability-search-compact" }}
     </div>
 </div>
 

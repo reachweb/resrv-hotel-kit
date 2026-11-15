@@ -46,38 +46,20 @@
     <section class="container-rsv py-10 lg:py-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
 
         <div>
-            {{ partial:detail-header }}{{ view_type }}{{ if view_type && floor }} · {{ /if }}{{ floor }}{{ /partial:detail-header }}
+            {{ partial:detail-header }}
 
             {{ if intro }}
                 <div class="reading text-lg leading-relaxed text-ink/85 space-y-5 mb-10 reveal">{{ intro | markdown }}</div>
             {{ /if }}
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 reveal">
-                {{ if size_sqm }}
-                <div class="bg-white rounded-lg p-4 border border-line">
-                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
-                    <div class="text-sm text-muted">Size</div><div class="font-medium">{{ size_sqm }} m²</div>
-                </div>
-                {{ /if }}
-                {{ if max_occupancy }}
-                <div class="bg-white rounded-lg p-4 border border-line">
-                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <div class="text-sm text-muted">Sleeps</div><div class="font-medium">{{ max_occupancy }} guests</div>
-                </div>
-                {{ /if }}
-                {{ if bed_configuration }}
-                <div class="bg-white rounded-lg p-4 border border-line">
-                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9V5a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v4M2 9v10M2 9h20M22 9v10M2 15h20"/></svg>
-                    <div class="text-sm text-muted">Bed</div><div class="font-medium">{{ bed_configuration }}</div>
-                </div>
-                {{ /if }}
-                {{ if view_type }}
-                <div class="bg-white rounded-lg p-4 border border-line">
-                    <svg class="w-5 h-5 text-sage mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <div class="text-sm text-muted">View</div><div class="font-medium">{{ view_type }}</div>
-                </div>
-                {{ /if }}
-            </div>
+            {{# Spec line — size · sleeps · bed · view · floor, like the room card #}}
+            <ul class="flex flex-wrap gap-x-2.5 gap-y-1 text-base text-muted mb-10 reveal [&>li+li]:before:content-['·'] [&>li+li]:before:mr-2.5 [&>li+li]:before:text-sage">
+                {{ if size_sqm }}<li>{{ size_sqm }} m²</li>{{ /if }}
+                {{ if max_occupancy }}<li>Sleeps {{ max_occupancy }}</li>{{ /if }}
+                {{ if bed_configuration }}<li>{{ bed_configuration }}</li>{{ /if }}
+                {{ if view_type }}<li>{{ view_type }} view</li>{{ /if }}
+                {{ if floor }}<li>{{ floor }}</li>{{ /if }}
+            </ul>
             <hr class="border-line mb-10" />
 
             <h2 class="t-h2 mb-6 reveal">In this room</h2>
@@ -85,9 +67,6 @@
                 {{ amenities }}
                     <div class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-sage shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</div>
                 {{ /amenities }}
-                {{ room_features }}
-                    <div class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-sage shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</div>
-                {{ /room_features }}
             </div>
             <hr class="border-line mb-10" />
 
@@ -95,19 +74,14 @@
             {{ if extras }}
                 <h2 class="t-h2 mb-2 reveal">Make it yours</h2>
                 <p class="text-base text-muted mb-6 reveal">Add extras at checkout — a few favourites:</p>
-                <div class="grid sm:grid-cols-2 gap-4 mb-12 reveal">
+                <ul class="grid sm:grid-cols-2 gap-x-8 mb-12 reveal">
                     {{ extras | values | limit:4 }}
-                        <div class="bg-white rounded-lg p-4 border border-line flex items-center gap-4">
-                            <div class="w-11 h-11 rounded-full bg-sand grid place-items-center text-teal shrink-0">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-medium text-[15px]">{{ name }}</div>
-                                <div class="text-sm text-muted">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</div>
-                            </div>
-                        </div>
+                        <li class="flex items-baseline justify-between gap-4 py-3 border-b border-line">
+                            <span class="font-medium text-[15px]">{{ name }}</span>
+                            <span class="text-sm text-muted whitespace-nowrap tabular-nums">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</span>
+                        </li>
                     {{ /extras }}
-                </div>
+                </ul>
                 <hr class="border-line mb-10" />
             {{ /if }}
 
@@ -120,10 +94,10 @@
         </div>
 
         <aside class="lg:sticky lg:top-[100px]" id="book">
-            <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6">
+            <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
                 {{ partial:booking-price-header unit="/ night" note="Pick your dates for live rates &amp; availability." }}
 
-                {{ livewire:availability-search calendar="range" resetOnBoot="true" view="availability-search-panel" }}
+                {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
 
                 <div class="mt-4">
                     {{ livewire:availability-results :entry="id" rates="true" }}

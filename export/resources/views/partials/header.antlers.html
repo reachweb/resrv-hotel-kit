@@ -3,31 +3,36 @@
     nav items). Transparent→solid-on-scroll + mobile sheet are small Alpine
     components — the Alpine that Livewire 4 bundles, do NOT add a second one.
     Pages with a full-bleed hero set `transparent_nav: true` in the cascade.
+    The sheet sits OUTSIDE <header>: the bar's backdrop-filter makes it the
+    containing block for `fixed` descendants, which would clip the sheet to it.
 #}}
-<header
-    id="siteNav"
+<div
     x-data="{ transparent: {{ if transparent_nav }}true{{ else }}false{{ /if }}, scrolled: false, sheet: false }"
     @scroll.window.passive="scrolled = (window.pageYOffset || document.documentElement.scrollTop) > 40"
     @keydown.escape.window="sheet = false"
-    :class="transparent ? (scrolled ? 'is-transparent scrolled' : 'is-transparent') : 'is-solid'"
-    class="fixed top-0 inset-x-0 z-50 transition-all duration-300 is-solid"
 >
-    <div class="container-rsv flex items-center justify-between h-18 lg:h-21">
-        <a href="/" class="brand font-display text-2xl font-medium tracking-tight leading-none">{{ site:brand_name }}<span class="brand-dot text-terracotta">.</span></a>
+    <header
+        id="siteNav"
+        :class="transparent ? (scrolled ? 'is-transparent scrolled' : 'is-transparent') : 'is-solid'"
+        class="fixed top-0 inset-x-0 z-50 transition-all duration-300 is-solid"
+    >
+        <div class="container-rsv flex items-center justify-between h-18 lg:h-21">
+            <a href="/" class="brand shrink-0">{{ partial:logo class="block h-6 lg:h-7 w-auto" }}</a>
 
-        <nav class="hidden lg:flex items-center gap-7">
-            {{ nav:main }}
-                <a href="{{ url }}" class="nav-link relative px-1 py-1 text-sm font-medium transition-colors {{ if is_current || is_parent }}is-active{{ /if }}">{{ title }}</a>
-            {{ /nav:main }}
-        </nav>
+            <nav class="hidden lg:flex items-center gap-7">
+                {{ nav:main }}
+                    <a href="{{ url }}" class="nav-link relative px-1 py-1 text-sm font-medium transition-colors {{ if is_current || is_parent }}is-active{{ /if }}">{{ title }}</a>
+                {{ /nav:main }}
+            </nav>
 
-        <div class="flex items-center gap-3">
-            {{ partial:button href="/rooms" label="Book Now" size="sm" focus="true" class="hidden sm:inline-flex" }}
-            <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" @click="sheet = true">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-            </button>
+            <div class="flex items-center gap-3">
+                {{ partial:button href="/rooms" label="Book Now" size="sm" focus="true" class="hidden sm:inline-flex" }}
+                <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" @click="sheet = true">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
 
     <div id="navSheet" class="fixed inset-0 z-[60] lg:hidden" x-show="sheet" x-transition.opacity x-cloak>
         <div class="absolute inset-0 bg-ink/40 backdrop-blur-sm" @click="sheet = false"></div>
@@ -36,7 +41,7 @@
             :class="sheet ? 'translate-x-0' : 'translate-x-full'"
         >
             <div class="flex items-center justify-between mb-8">
-                <span class="font-display text-2xl">{{ site:brand_name }}<span class="text-terracotta">.</span></span>
+                <span class="text-ink">{{ partial:logo class="block h-6 w-auto" }}</span>
                 <button type="button" class="grid place-items-center w-11 h-11 rounded-full hover:bg-sand" aria-label="Close menu" @click="sheet = false">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
@@ -53,4 +58,4 @@
             </div>
         </div>
     </div>
-</header>
+</div>

@@ -4,10 +4,12 @@ blueprint: page
 title: 'Privacy Policy'
 builder:
   -
+    id: privacy_hero
+    type: hero
+    heading: 'Privacy Policy'
+  -
     id: privacy_body
     type: rich_text
-    overline: 'Legal'
-    heading: 'Privacy Policy'
     width: narrow
     content:
       -

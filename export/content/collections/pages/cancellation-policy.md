@@ -4,10 +4,12 @@ blueprint: page
 title: 'Cancellation Policy'
 builder:
   -
+    id: cancellation_hero
+    type: hero
+    heading: 'Cancellation Policy'
+  -
     id: cancellation_body
     type: rich_text
-    overline: 'Legal'
-    heading: 'Cancellation Policy'
     width: narrow
     content:
       -

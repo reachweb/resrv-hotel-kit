@@ -13,6 +13,9 @@ pruned). Each piece exists to demonstrate a specific Resrv capability.
 | Terracotta Villa | 640 | 1 | Single-unit scarcity (sells out first) |
 | Coastal Family Room | 290 | 3 | Has the connecting-room option |
 
+Room details such as beds, terrace and private pool are terms in the one **Amenities**
+taxonomy (there is no separate room-features taxonomy).
+
 Weekend nights (Fri/Sat) carry a +15% uplift; two blackout nights ~3 weeks out
 demonstrate sold-out handling.
 
@@ -21,7 +24,9 @@ demonstrate sold-out handling.
 | **Best Flexible** | Independent pricing + inventory, free cancellation (7 days), applies to all rooms — owns the single inventory pool every other rate shares |
 | **Advance Saver** (−18%) | Relative **percentage** pricing, **shared availability** (child of Best Flexible), **non-refundable** |
 | **Bed & Breakfast** (+€25/night) | Relative **fixed** per-night pricing, shared availability, free cancellation (3 days), **targeted to a subset** of rooms (not apply-to-all) |
-| **Last-Minute Escape** (−12%) | Shared availability + the full restriction set: 3-month seasonal window, 2–14 night stays, bookable 1–21 days before arrival, non-refundable |
+
+No rate carries stay-length or date restrictions, so every rate a room offers is
+bookable on any search outside the blackout nights.
 
 ## Spa & restaurant (single-date products)
 
@@ -38,14 +43,17 @@ demonstrate sold-out handling.
 
 ## Extras
 
+Grouped at checkout into two **categories**: *Your stay* (transfer, hamper,
+champagne, late check-out) and *Experiences* (spa treatment, boat tour).
+
 | Extra | Demonstrates |
 | --- | --- |
 | Airport Transfer (€55) | Fixed price, single |
 | Breakfast Hamper (€18) | **Per-day** pricing |
 | Champagne on Arrival (€45) | Multiples (up to 5) + **cross-product** — also attached to La Marea (a table booking takes it at its fixed price) |
-| In-room Spa Treatment (€90) | Multiples, category Wellness |
+| In-room Spa Treatment (€90) | Multiples (up to 4) |
 | Private Boat Tour (€220) | High-value experience extra |
-| Late Check-out (€40) | **Conditional** — only shown for stays of 2+ nights — and uncategorised |
+| Late Check-out (€40) | **Conditional** — only shown for stays of 2+ nights |
 
 ## Options (per room, stored in DB)
 
@@ -60,6 +68,11 @@ transfer is an **extra**, not an option.
 | Stay 7+ nights — Save 10% | Condition on **reservation duration** |
 | Early Bird — 30+ days ahead, Save 12% | Condition on **days to reservation** |
 | `COASTAL10` — 10% off, expires +6 months | **Coupon** (dynamic pricing with a code), the checkout "Have a code?" flow |
+
+The three **Offers** entries are the marketing pages for these: *Stay 7, Save 10%*,
+*Early Bird · Save 12%* and *Coastal Escape · 10% off* (code `COASTAL10`). They carry
+no dates of their own. The discount, its conditions and the coupon's expiry all live
+in Resrv, so an offer page can't drift out of date.
 
 ## Affiliate
 

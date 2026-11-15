@@ -4,10 +4,12 @@ blueprint: page
 title: 'Terms & Conditions'
 builder:
   -
+    id: terms_hero
+    type: hero
+    heading: 'Terms & Conditions'
+  -
     id: terms_body
     type: rich_text
-    overline: 'Legal'
-    heading: 'Terms & Conditions'
     width: narrow
     content:
       -

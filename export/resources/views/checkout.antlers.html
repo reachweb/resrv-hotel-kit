@@ -1,5 +1,10 @@
+---
+minimal_chrome: true
+---
 {{# Checkout — the Resrv Livewire checkout serves rooms, spa treatments and
-    restaurant; steps/summary/payment live in the component's published views. #}}
+    restaurant; steps/summary/payment live in the component's published views.
+    `minimal_chrome` (front matter above) swaps the layout's header + footer for
+    partials/checkout-header + checkout-footer: no nav or Book Now mid-booking. #}}
 <div class="container-rsv py-8 lg:py-12">
     {{ livewire:checkout }}
 </div>
