@@ -1,5 +1,8 @@
 {
     "name": "reachweb/resrv-hotel-kit",
+    "description": "A coastal-luxury hotel starter kit for Statamic 6 showcasing the Resrv reservations addon: rooms, spa and restaurant bookings through one checkout.",
+    "license": "MIT",
+    "keywords": ["statamic", "starter-kit", "resrv", "hotel", "reservations", "booking"],
     "extra": {
         "statamic": {
             "name": "Resrv Hotel",
