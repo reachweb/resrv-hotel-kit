@@ -54,7 +54,8 @@
             >
                 @if ($variant === 'compact')
                     {{-- Compact bar field: icon + label + combined range --}}
-                    <div class="relative h-full hover:bg-shell transition-colors has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-terracotta-dark">
+                    {{-- The ring is rounded to the pill's corners: square, the pill's overflow-hidden clipped it. --}}
+                    <div class="relative h-full hover:bg-shell transition-colors has-[input:focus-visible]:rounded-md has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-terracotta-dark">
                         <div class="flex items-center gap-2.5 px-4 py-2.5 h-full text-left" x-bind:class="!isDatesEmpty && 'pe-10'">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="hidden sm:block size-4.5 text-sage shrink-0" aria-hidden="true"><path d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
                             <span class="min-w-0">

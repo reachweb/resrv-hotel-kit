@@ -32,7 +32,7 @@
             x-ref="guestsButton"
             aria-haspopup="dialog"
             x-bind:aria-expanded="guestsPopup.toString()"
-            class="w-full h-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-shell text-left transition-colors cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-terracotta-dark"
+            class="w-full h-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-shell text-left transition-colors cursor-pointer focus-visible:rounded-md focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-terracotta-dark"
         >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="hidden sm:block size-4.5 text-sage shrink-0" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
             <span class="min-w-0">
