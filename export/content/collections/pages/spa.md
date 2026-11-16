@@ -7,7 +7,7 @@ builder:
     id: spa_hero
     type: hero
     heading: 'Quiet, cut into the cliff'
-    lead: 'An adults-only spa with sea-facing treatment rooms, a steam room and a cold plunge. Choose a treatment, then pick a day that suits you.'
+    lead: 'An adults-only spa with sea-facing treatment rooms, a steam room and a cold plunge.'
   -
     id: spa_treatments
     type: treatments_grid

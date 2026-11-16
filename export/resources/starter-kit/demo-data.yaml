@@ -1,0 +1,4 @@
+# Starter-kit demo-data marker. The post-install hook seeds Resrv's demo
+# availability, rates and extras only when this file is present (module
+# selections are not exposed to hooks), then removes resources/starter-kit.
+seed: true

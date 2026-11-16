@@ -36,18 +36,29 @@ checkout**, demo data included.
 statamic new my-hotel reachweb/resrv-hotel-kit
 ```
 
-The installer prompts per module:
+The installer asks a question per module. A non-interactive install
+(`--no-interaction`) takes the defaults.
 
 | Module | Default | What it installs |
 | --- | --- | --- |
-| `demo_content` | yes | All demo entries (pages, rooms, spa, restaurant, offers, FAQs) + the database seeder (rates, extras, options, pricing, coupon, affiliate, 12-month availability) |
+| `demo_content` | yes | The demo pages, rooms, offers and FAQs, plus the database seeder. The three questions below are asked only after a yes |
+| ↳ `spa` | yes | The six spa treatments, the `/spa` page and the spa FAQ |
+| ↳ `restaurant` | yes | La Marea and the `/dining` page |
+| ↳ `resrv_data` | yes | Fills Resrv with the demo data: rates, extras, options, pricing campaigns, coupon, affiliate and 12-month availability. Say no to start with Resrv empty |
 | `payments` | offline | `offline` (keyless, instant demo) · `stripe` (single gateway) · `both` (gateway picker at checkout) |
 | `reviews` | yes | Demo guest reviews/testimonials entries |
-| `journal` | no | Journal/blog collection, taxonomies, templates and a demo article or two |
+| `journal` | no | Journal/blog collection, taxonomies, templates and a demo article or two (add `/journal` to a nav yourself) |
 
 The post-install hook runs the migrations, seeds the demo data (when chosen) and applies
 your payment choice — `stripe`/`both` rewrite `config/resrv-config.php` and add
 `RESRV_STRIPE_*` placeholders to `.env` (see `STRIPE.md`).
+
+Leaving out the spa or the restaurant: their collections, blueprints and templates
+still install, empty, so you can add your own later. The hook removes the demo
+content's links to the page you left out (the home tile, the About page's La Marea
+button, the nav items), and the seeder skips that venue. Without the demo data, the
+hook registers the demo entries with Resrv instead, so you can add availability and
+rates to them in the CP; the seeder still ships if you want the demo data later.
 
 After install:
 
@@ -82,6 +93,7 @@ renders a graceful labelled placeholder until you drop the real file in.
   search and checkout.
 - **Re-seeding:** `php artisan db:seed --class="Database\Seeders\ResrvDemoSeeder"` is
   idempotent and refreshes the rolling availability window (it also prunes past dates).
+  It also fills an install made without the demo data.
   Optional demo reservations for the CP reports/abandoned-recovery demo:
   `RESRV_SEED_DEMO_RESERVATIONS=true` before seeding.
 - **Guest self-service pages:** `/manage-booking` (Resrv's reservation status page)

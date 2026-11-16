@@ -35,6 +35,10 @@ use Statamic\Support\Str;
  *   -> affiliate -> single-date bookables (spa treatments + restaurant, Appendix J),
  *   which reuse the same helpers parameterised by collection.
  *
+ * The rooms are required. The spa and the restaurant are optional starter-kit
+ * modules: when none of a venue's demo entries is installed, the seeder skips that
+ * venue (with the in-room spa extra and the demo spa appointment for the spa).
+ *
  * Availability is generated relative to today() so installs always have future
  * dates — a rolling 12-month window, with past rows pruned so re-running the seeder
  * on a long-lived demo keeps the table tidy. Optionally (RESRV_SEED_DEMO_RESERVATIONS=true)
@@ -118,6 +122,12 @@ class ResrvDemoSeeder extends Seeder
     /** Resolved Statamic entry ids, keyed by room slug, populated by ensureEntryMappings(). */
     private array $roomIds = [];
 
+    /** Whether the spa treatments were installed, resolved at the start of run(). */
+    private bool $hasSpa = false;
+
+    /** Whether La Marea was installed, resolved at the start of run(). */
+    private bool $hasRestaurant = false;
+
     /**
      * Force the optional demo reservations on regardless of RESRV_SEED_DEMO_RESERVATIONS.
      * Set by the `demo:reset` command so the public demo always has sample bookings.
@@ -126,6 +136,9 @@ class ResrvDemoSeeder extends Seeder
 
     public function run(): void
     {
+        $this->hasSpa = $this->hasAnyEntry('spa_treatments', array_keys($this->treatments));
+        $this->hasRestaurant = $this->hasAnyEntry('restaurant', ['la-marea']);
+
         $this->pruneStaleAvailability();
         $this->ensureEntryMappings();
         $this->seedRates();
@@ -136,8 +149,13 @@ class ResrvDemoSeeder extends Seeder
         $this->seedAffiliate();
 
         // Appendix J — single-date bookables sharing the same checkout as rooms.
-        $this->seedSpaTreatments();
-        $this->seedRestaurant();
+        if ($this->hasSpa) {
+            $this->seedSpaTreatments();
+        }
+
+        if ($this->hasRestaurant) {
+            $this->seedRestaurant();
+        }
 
         // Optional demo reservations (reports + abandoned-recovery showcase). Off by
         // default — they add CP noise and re-seeding resets the availability counts
@@ -156,6 +174,18 @@ class ResrvDemoSeeder extends Seeder
     private function pruneStaleAvailability(): void
     {
         Availability::where('date', '<', Carbon::today()->toDateString())->delete();
+    }
+
+    /**
+     * Whether any of these demo entries is installed. A venue with none of them was
+     * left out at install and is skipped; one with only some of them still fails in
+     * ensureMappingsFor(), like a missing room does.
+     *
+     * @param  list<string>  $slugs
+     */
+    private function hasAnyEntry(string $collection, array $slugs): bool
+    {
+        return Entry::query()->where('collection', $collection)->whereIn('slug', $slugs)->count() > 0;
     }
 
     private function ensureEntryMappings(): void
@@ -466,6 +496,11 @@ class ResrvDemoSeeder extends Seeder
                 'description' => 'Keep your room until 16:00 on your day of departure.',
             ],
         ];
+
+        // A hotel installed without the spa offers no spa treatment as a room extra.
+        if (! $this->hasSpa) {
+            unset($extras['in-room-spa-treatment']);
+        }
 
         $extraModels = [];
         $order = 1;
@@ -833,9 +868,6 @@ class ResrvDemoSeeder extends Seeder
             );
         }
 
-        $spaRate = Rate::where('collection', 'spa_treatments')->where('slug', '90-min')->firstOrFail();
-        $massageId = Entry::query()->where('collection', 'spa_treatments')->where('slug', 'mediterranean-massage')->first()->id();
-
         $reservations = [
             // A completed past stay — populates the reports/revenue views.
             'DEMO01' => [
@@ -864,10 +896,10 @@ class ResrvDemoSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(5),
             ],
             // A confirmed single-date spa appointment — multi-product reporting.
-            'DEMO03' => [
+            ...($this->hasSpa ? ['DEMO03' => [
                 'status' => 'confirmed',
-                'item_id' => $massageId,
-                'rate' => $spaRate,
+                'item_id' => Entry::query()->where('collection', 'spa_treatments')->where('slug', 'mediterranean-massage')->first()->id(),
+                'rate' => Rate::where('collection', 'spa_treatments')->where('slug', '90-min')->firstOrFail(),
                 'date_start' => Carbon::today()->addDays(10),
                 'date_end' => Carbon::today()->addDays(11),
                 'quantity' => 2,
@@ -875,7 +907,7 @@ class ResrvDemoSeeder extends Seeder
                 'customer' => $customers['sofia'],
                 'created_at' => Carbon::now()->subDays(3),
                 'updated_at' => Carbon::now()->subDays(3),
-            ],
+            ]] : []),
             // EXPIRED + customer data + abandoned_email_sent_at NULL + stale updated_at:
             // the row resrv:send-abandoned-emails picks up.
             'DEMO04' => [

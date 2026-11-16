@@ -1,16 +1,28 @@
-{{# Treatments grid — chosen treatments, or the whole spa menu. Without a heading an
-    sr-only one keeps the outline (h1 → h2 → the cards' h3). #}}
+{{# Treatments grid — the spa menu with live availability. A one-day Resrv search
+    (the rooms index's compact bar, live) drives Resrv's availability-collection through
+    the kit's treatments view: before a day is picked every treatment is a card with its
+    "from" price; after, the treatments free that day show each duration's live price
+    and the appointment times (availability-collection-treatments explains the rest).
+    The page opens on a day when the session already has one, or from a ?date= link
+    (the home card's Treatment tab with "Any treatment"). Chosen treatments, or the
+    whole menu. Without a heading an sr-only one keeps the outline (h1 → h2 → the
+    cards' h3).
+    Rates stay on for the listing so each duration has its label. A rate left in the
+    shared session can't narrow it: this search has no rate control, so it clears the
+    rate when it mounts, before the listing below reads the session. #}}
 <section class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="treatments" data-hides-book-bar>
     <div class="container-rsv">
         {{ partial:section-header :heading="heading" :intro="intro" class="mb-10" }}
         {{ unless heading }}<h2 class="sr-only">Treatments</h2>{{ /unless }}
-        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {{ if treatments }}
-                {{ treatments }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /treatments }}
-            {{ else }}
-                {{ collection:spa_treatments sort="title" }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /collection:spa_treatments }}
-            {{ /if }}
+        <div class="max-w-xs mb-5">
+            {{ livewire:availability-search calendar="single" view="availability-search-compact" }}
         </div>
+        {{ if treatments }}
+            {{ treatment_ids = treatments | raw }}
+            {{ livewire:availability-collection collection="spa_treatments" :entries="treatment_ids" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" }}
+        {{ else }}
+            {{ livewire:availability-collection collection="spa_treatments" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" }}
+        {{ /if }}
     </div>
 </section>
 

@@ -4,6 +4,17 @@ Everything below is created by `database/seeders/ResrvDemoSeeder.php` (idempoten
 re-run any time to refresh the rolling 12-month availability window; past dates are
 pruned). Each piece exists to demonstrate a specific Resrv capability.
 
+The installer runs the seeder when you answer yes to the demo data. If you said no,
+Resrv starts empty and you can run it later:
+
+```bash
+php artisan db:seed --class="Database\Seeders\ResrvDemoSeeder"
+```
+
+If you left out the spa or the restaurant, the seeder skips it: no treatment or
+sitting rates, and without the spa no In-room Spa Treatment extra or demo spa
+appointment.
+
 ## Rooms & rate plans
 
 | Room | Base €/night | Allotment | Notes |
@@ -84,7 +95,7 @@ affiliate in the CP and reports.
 
 Set `RESRV_SEED_DEMO_RESERVATIONS=true` and re-seed to add four reservations
 (references `DEMO01`–`DEMO04`): a past confirmed stay and an upcoming one, a confirmed
-spa appointment (multi-product reports), and one **expired** checkout with customer
+spa appointment (multi-product reports; only when the spa is installed), and one **expired** checkout with customer
 data left unsent — run `php artisan resrv:send-abandoned-emails` to watch the
 abandoned-recovery flow pick it up. Off by default because re-seeding resets the
 availability counts their holds consumed.

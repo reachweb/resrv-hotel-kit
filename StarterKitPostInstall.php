@@ -1,5 +1,7 @@
 <?php
 
+use Statamic\Facades\YAML;
+
 /**
  * Resrv Hotel — starter kit post-install hook.
  *
@@ -9,24 +11,64 @@
  * Non-namespaced on purpose: Statamic's Hook::find() requires this file and
  * instantiates the bare class name, then calls handle($console) with only the
  * installer's console command. Module selections are NOT readable here (they
- * live on the Installer's protected $modules), so choices are read from
- * markers instead: the demo seeder file gates seeding, and the payments
+ * live on the Installer's protected $modules), so choices are read from the
+ * files they installed instead: the demo seeder file means demo content, a
+ * resources/starter-kit/demo-data.yaml marker means "fill Resrv with demo
+ * data", the spa and dining page files mean those venues, and the payments
  * option exports a marker under resources/starter-kit/payments/.
  */
 class StarterKitPostInstall
 {
+    /**
+     * Demo pages whose module can be declined (spa, restaurant), keyed by entry id,
+     * with the URL the rest of the demo content links them by.
+     *
+     * @var array<string, string>
+     */
+    private const OPTIONAL_PAGES = [
+        'spa' => '/spa',
+        'dining' => '/dining',
+    ];
+
+    /**
+     * The home tiles section's heading names both venues. When only one of them
+     * was installed, it takes that venue's heading instead.
+     *
+     * @var array<string, string>
+     */
+    private const SINGLE_VENUE_HEADINGS = [
+        'spa' => 'An hour at the spa',
+        'dining' => 'Dinner at La Marea',
+    ];
+
+    private const BOTH_VENUES_HEADING = 'La Marea and the spa';
+
     public function handle($console)
     {
+        // Content edits first, so nothing below indexes the content before them.
+        if ($trimmed = $this->trimMissingVenues(base_path())) {
+            $console->info('Removed the links to the spa or restaurant pages you left out from: '.implode(', ', $trimmed).'.');
+        }
+
         // Resrv's tables — `php artisan resrv:install` does NOT run migrations.
         // These MUST run in a subprocess: the installer's PHP process booted
         // before composer required the addon, so its autoloader/providers can't
         // see Resrv's migrations or models ($console->call() silently runs the
         // app-only migrations and the seeder fatals on the missing model class).
         $migrated = $this->artisan('migrate --force', $console);
+        $seeded = false;
 
         if ($migrated && $this->demoContentSelected()) {
-            if ($this->artisan('db:seed --class="Database\\Seeders\\ResrvDemoSeeder" --force', $console)) {
-                $console->info('Resrv Hotel demo data seeded (rolling 12-month availability — re-run the seeder any time to refresh it).');
+            if ($this->demoDataSelected()) {
+                $seeded = $this->artisan('db:seed --class="Database\\Seeders\\ResrvDemoSeeder" --force', $console);
+
+                if ($seeded) {
+                    $console->info('Resrv Hotel demo data seeded (rolling 12-month availability — re-run the seeder any time to refresh it).');
+                }
+            } else {
+                // The seeder is what registers the demo entries with Resrv. Without it,
+                // the control panel can't manage their availability, rates or extras.
+                $this->artisan('resrv:import-entries', $console);
             }
         }
 
@@ -45,8 +87,10 @@ class StarterKitPostInstall
             $console->line('  → Payments: offline gateway is active (no keys needed). To take card payments later, see STRIPE.md.');
         }
 
-        if ($this->demoContentSelected()) {
+        if ($seeded) {
             $console->line('  → Demo reservations for the CP reports/abandoned-recovery demo: set RESRV_SEED_DEMO_RESERVATIONS=true and re-seed.');
+        } elseif ($this->demoContentSelected() && ! $this->demoDataSelected()) {
+            $console->line('  → Resrv is empty: add availability and rates in the CP, or fill it with the demo data any time (see DEMO-DATA.md).');
         }
 
         $this->cleanUpMarkers();
@@ -78,6 +122,165 @@ class StarterKitPostInstall
     private function demoContentSelected(): bool
     {
         return file_exists(base_path('database/seeders/ResrvDemoSeeder.php'));
+    }
+
+    /**
+     * The resrv_data module (nested in demo_content) exports only this marker.
+     */
+    private function demoDataSelected(): bool
+    {
+        return file_exists(base_path('resources/starter-kit/demo-data.yaml'));
+    }
+
+    /**
+     * Remove what the demo content links to a declined venue's page: home tiles,
+     * buttons, and nav and page-tree items. Without it, a hotel-only install would
+     * keep tiles and buttons that lead to a 404. The content stays as the control
+     * panel would save it, so the page builder shows no tiles the site never renders.
+     * Returns the paths it changed, relative to the content folder.
+     *
+     * @return list<string>
+     */
+    public function trimMissingVenues(string $root): array
+    {
+        $pagesDir = "{$root}/content/collections/pages";
+
+        if (! file_exists("{$pagesDir}/home.md")) {
+            return [];
+        }
+
+        $missing = array_filter(
+            self::OPTIONAL_PAGES,
+            fn (string $url, string $id) => ! file_exists("{$pagesDir}/{$id}.md"),
+            ARRAY_FILTER_USE_BOTH,
+        );
+
+        if ($missing === []) {
+            return [];
+        }
+
+        $changed = [];
+
+        foreach (glob("{$pagesDir}/*.md") ?: [] as $path) {
+            $data = YAML::file($path)->parse();
+            $content = $data['content'] ?? null;
+            unset($data['content']);
+
+            $builder = $this->trimBuilder($data['builder'] ?? [], $missing);
+
+            if ($builder !== ($data['builder'] ?? [])) {
+                $data['builder'] = $builder;
+                file_put_contents($path, YAML::dumpFrontMatter($data, $content));
+                $changed[] = 'collections/pages/'.basename($path);
+            }
+        }
+
+        $trees = array_merge(
+            ["{$root}/content/trees/collections/pages.yaml"],
+            glob("{$root}/content/trees/navigation/*.yaml") ?: [],
+        );
+
+        foreach ($trees as $path) {
+            if (! file_exists($path)) {
+                continue;
+            }
+
+            $data = YAML::file($path)->parse();
+            $tree = $this->trimTree($data['tree'] ?? [], $missing);
+
+            if ($tree !== ($data['tree'] ?? [])) {
+                $data['tree'] = $tree;
+                file_put_contents($path, YAML::dump($data));
+                $changed[] = 'trees/'.basename(dirname($path)).'/'.basename($path);
+            }
+        }
+
+        return $changed;
+    }
+
+    /**
+     * Page-builder sets: feature tiles lose the tiles that link to a missing page
+     * (and the section goes when none is left); a button that links to one is dropped.
+     *
+     * @param  array<int, array<string, mixed>>  $sets
+     * @param  array<string, string>  $missing
+     * @return array<int, array<string, mixed>>
+     */
+    private function trimBuilder(array $sets, array $missing): array
+    {
+        $trimmed = [];
+
+        foreach ($sets as $set) {
+            if (($set['type'] ?? null) === 'feature_tiles' && isset($set['tiles'])) {
+                $tiles = array_values(array_filter(
+                    $set['tiles'],
+                    fn (array $tile) => ! $this->linksToMissingPage($tile['link'] ?? null, $missing),
+                ));
+
+                if ($tiles === []) {
+                    continue;
+                }
+
+                if (count($tiles) < count($set['tiles']) && ($set['heading'] ?? null) === self::BOTH_VENUES_HEADING) {
+                    $remaining = array_diff_key(self::SINGLE_VENUE_HEADINGS, $missing);
+                    $set['heading'] = count($remaining) === 1 ? reset($remaining) : $set['heading'];
+                }
+
+                $set['tiles'] = $tiles;
+            }
+
+            if ($this->linksToMissingPage($set['cta_url'] ?? null, $missing)) {
+                unset($set['cta_label'], $set['cta_url']);
+            }
+
+            $trimmed[] = $set;
+        }
+
+        return $trimmed;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $nodes
+     * @param  array<string, string>  $missing
+     * @return array<int, array<string, mixed>>
+     */
+    private function trimTree(array $nodes, array $missing): array
+    {
+        $trimmed = [];
+
+        foreach ($nodes as $node) {
+            if (isset($missing[$node['entry'] ?? '']) || $this->linksToMissingPage($node['url'] ?? null, $missing)) {
+                continue;
+            }
+
+            if (isset($node['children'])) {
+                $node['children'] = $this->trimTree($node['children'], $missing);
+            }
+
+            $trimmed[] = $node;
+        }
+
+        return $trimmed;
+    }
+
+    /**
+     * True for a missing page's URL itself or anything under it (/spa, /spa#treatments).
+     *
+     * @param  array<string, string>  $missing
+     */
+    private function linksToMissingPage(mixed $url, array $missing): bool
+    {
+        if (! is_string($url)) {
+            return false;
+        }
+
+        foreach ($missing as $pageUrl) {
+            if ($url === $pageUrl || preg_match('#^'.preg_quote($pageUrl, '#').'[/?\#]#', $url)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -201,6 +404,8 @@ PHP;
         foreach (glob("{$dir}/payments/*.yaml") ?: [] as $file) {
             @unlink($file);
         }
+
+        @unlink("{$dir}/demo-data.yaml");
 
         @rmdir("{$dir}/payments");
         @rmdir($dir);

@@ -60,14 +60,12 @@ dependencies:
   reachweb/statamic-resrv: ^6.5.2
 modules:
   demo_content:
-    prompt: 'Install demo content (pages, rooms, spa & restaurant, offers, FAQs) and seed availability/rates/extras?'
+    prompt: 'Install the demo content (pages, rooms, offers and FAQs)?'
     default: true
     export_paths:
       - content/collections/pages/home.md
       - content/collections/pages/rooms.md
       - content/collections/pages/about.md
-      - content/collections/pages/dining.md
-      - content/collections/pages/spa.md
       - content/collections/pages/offers.md
       - content/collections/pages/contact.md
       - content/collections/pages/faq.md
@@ -80,12 +78,37 @@ modules:
       - content/collections/pages/pay.md
       - content/trees/collections/pages.yaml
       - content/collections/rooms
-      - content/collections/spa_treatments
-      - content/collections/restaurant
       - content/collections/offers
-      - content/collections/faqs
+      - content/collections/faqs/airport-transfer.md
+      - content/collections/faqs/can-i-hold-a-room.md
+      - content/collections/faqs/cancellation-policy.md
+      - content/collections/faqs/do-i-need-an-account.md
+      - content/collections/faqs/how-do-i-book.md
+      - content/collections/faqs/is-breakfast-included.md
+      - content/collections/faqs/non-refundable-rates.md
+      - content/collections/faqs/payment-methods.md
+      - content/collections/faqs/when-am-i-charged.md
       - content/taxonomies/amenities
       - database/seeders/ResrvDemoSeeder.php
+    modules:
+      spa:
+        prompt: 'Include the spa and its bookable treatments?'
+        default: true
+        export_paths:
+          - content/collections/spa_treatments
+          - content/collections/pages/spa.md
+          - content/collections/faqs/spa-and-pool.md
+      restaurant:
+        prompt: 'Include the La Marea restaurant and its table bookings?'
+        default: true
+        export_paths:
+          - content/collections/restaurant
+          - content/collections/pages/dining.md
+      resrv_data:
+        prompt: 'Fill Resrv with demo availability, rates and extras?'
+        default: true
+        export_paths:
+          - resources/starter-kit/demo-data.yaml
   payments:
     prompt: 'Which payment gateway should be enabled?'
     skip_option: false

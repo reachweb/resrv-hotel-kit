@@ -106,7 +106,14 @@ hide_book_bar: true
                     {{ partial:button href="/contact" label="Contact us" variant="secondary" class="inline-flex" }}
                 {{ else }}
                     {{ partial:button href="/" label="Back to the hotel" variant="secondary" class="inline-flex" }}
-                    {{ partial:button href="/spa" label="Book a spa treatment" class="inline-flex" }}
+                    {{# The next booking on offer: the spa, else La Marea, else none (both are optional at install) #}}
+                    {{ spa_count = {collection:count from="spa_treatments"} }}
+                    {{ venue_count = {collection:count from="restaurant"} }}
+                    {{ if spa_count }}
+                        {{ partial:button href="/spa" label="Book a spa treatment" class="inline-flex" }}
+                    {{ elseif venue_count }}
+                        {{ partial:button href="/dining#reserve" label="Reserve a table" class="inline-flex" }}
+                    {{ /if }}
                 {{ /if }}
             </div>
 
