@@ -2,7 +2,7 @@ name: 'Resrv Hotel'
 address1: 'Akti Koundourou 12'
 zip_city: '72100 Agios Nikolaos'
 country: Greece
-phone: '+30 28410 00000'
+phone: '+30 28210 00000'
 mail: stay@resrv-hotel.test
 enable_time: false
 enable_affiliates: true

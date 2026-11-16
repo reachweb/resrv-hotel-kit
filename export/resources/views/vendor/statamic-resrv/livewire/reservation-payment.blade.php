@@ -1,15 +1,22 @@
-{{-- Restyled to the kit's booking surfaces: the state heading is the page's h1 (as on
-     checkout, whose restyled checkout-payment view this component mounts after Pay),
-     state notices use the brand tints, and the reservation sits in checkout-complete's
-     summary card. A broken link gets the neutral "unavailable" heading so the page is
-     never headless. Every wire: directive, state and condition is stock — markup and
-     classes only. The Pay button is the kit's shared <x-resrv::kit-cta>. --}}
+{{-- Restyled to the kit's booking surfaces. While there is something to pay, the state
+     heading is the page's h1 (as on checkout, whose restyled checkout-payment view this
+     component mounts after Pay). Every outcome (paid, processing, link expired, no
+     longer payable, broken link) opens with checkout-complete's status header
+     (<x-resrv::kit-outcome>) and ends with a way forward, so a guest who pays by link
+     lands on the same confirmation as one who books through checkout. The reservation
+     sits in checkout-complete's summary card; an online payment adds the amount paid.
+     Every wire: directive, state and condition is stock — markup and classes only. The
+     buttons are the kit's shared <x-resrv::kit-cta>. --}}
 <div class="w-full">
     @if ($linkFailed || $this->reservation === null)
-        <h1 class="t-h1 mb-6">{{ trans('statamic-resrv::frontend.paymentHeadingUnavailable') }}</h1>
-        <div class="flex flex-col gap-2 rounded-lg border border-warning/30 bg-warning/5 p-5" role="status">
-            <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentLinkFailed') }}</p>
-            @include('statamic-resrv::livewire.components.partials.business-contact')
+        <x-resrv::kit-outcome tone="neutral" :heading="trans('statamic-resrv::frontend.paymentHeadingUnavailable')">
+            <p>{{ trans('statamic-resrv::frontend.paymentLinkFailed') }}</p>
+            <div class="mt-4 space-y-1">
+                @include('statamic-resrv::livewire.components.partials.business-contact')
+            </div>
+        </x-resrv::kit-outcome>
+        <div class="flex justify-center">
+            <x-resrv::kit-cta variant="secondary" href="/">Back to the hotel</x-resrv::kit-cta>
         </div>
     @else
         @php($reservation = $this->reservation)
@@ -18,31 +25,31 @@
         @php($payable = in_array($state, ['awaiting', 'instructions'], true))
         @php($isStay = Statamic\Facades\Entry::find($reservation->item_id)?->collectionHandle() === 'rooms')
         @php($currency = config('resrv-config.currency_symbol'))
-        <h1 class="t-h1 mb-6">{{ $this->heading }}</h1>
+        @php([$outcomeTone, $outcomeMessage] = match ($state) {
+            'paid' => ['success', 'paymentAlreadyCompleted'],
+            'processing' => ['pending', 'paymentProcessing'],
+            'deadline_passed' => ['warning', 'paymentLinkExpired'],
+            'arrival_passed' => ['warning', 'paymentArrivalPassed'],
+            'unavailable' => ['neutral', 'paymentUnavailable'],
+            default => [null, null],
+        })
+        {{-- Paid online through a gateway: not confirmed by hand, not booked through a partner. --}}
+        @php($paidOnline = $state === 'paid'
+            && $reservation->status === Reach\StatamicResrv\Enums\ReservationStatus::CONFIRMED->value
+            && $reservation->hasGatewayPayment()
+            && ! $reservation->paymentGatewaySupportsManualConfirmation())
 
-        @if ($state === 'paid')
-            <div class="rounded-lg border border-success/30 bg-success/5 p-5 mb-6" role="status">
-                <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentAlreadyCompleted') }}</p>
-            </div>
-        @elseif ($state === 'processing')
-            <div class="rounded-lg border border-sage bg-sage-light/30 p-5 mb-6" role="status">
-                <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentProcessing') }}</p>
-            </div>
-        @elseif ($state === 'deadline_passed')
-            <div class="flex flex-col gap-2 rounded-lg border border-warning/30 bg-warning/5 p-5 mb-6" role="status">
-                <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentLinkExpired') }}</p>
-                @include('statamic-resrv::livewire.components.partials.business-contact')
-            </div>
-        @elseif ($state === 'arrival_passed')
-            <div class="flex flex-col gap-2 rounded-lg border border-warning/30 bg-warning/5 p-5 mb-6" role="status">
-                <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentArrivalPassed') }}</p>
-                @include('statamic-resrv::livewire.components.partials.business-contact')
-            </div>
-        @elseif ($state === 'unavailable')
-            <div class="flex flex-col gap-2 rounded-lg border border-line bg-sand/60 p-5 mb-6" role="status">
-                <p class="text-sm text-ink">{{ trans('statamic-resrv::frontend.paymentUnavailable') }}</p>
-                @include('statamic-resrv::livewire.components.partials.business-contact')
-            </div>
+        @if ($outcomeTone)
+            <x-resrv::kit-outcome :tone="$outcomeTone" :heading="$this->heading">
+                <p>{{ trans('statamic-resrv::frontend.'.$outcomeMessage) }}</p>
+                @if (in_array($state, ['deadline_passed', 'arrival_passed', 'unavailable'], true))
+                <div class="mt-4 space-y-1">
+                    @include('statamic-resrv::livewire.components.partials.business-contact')
+                </div>
+                @endif
+            </x-resrv::kit-outcome>
+        @else
+            <h1 class="t-h1 mb-6">{{ $this->heading }}</h1>
         @endif
 
         <div class="bg-white rounded-lg shadow-card p-6 lg:p-8">
@@ -134,6 +141,20 @@
                     </div>
                     @endif
                 </div>
+            @elseif ($paidOnline)
+                <div class="flex items-baseline justify-between gap-4 pt-4 mt-6 border-t border-line">
+                    <span class="font-medium">Amount paid</span>
+                    <span class="font-display text-3xl tabular-nums">{{ $currency }}{{ $this->amountDue }}</span>
+                </div>
+                @if ($this->balanceDue !== null)
+                <div class="flex justify-between gap-4 pt-3 text-sm">
+                    <span>
+                        <span class="block text-muted">{{ trans('statamic-resrv::frontend.remainingBalance') }}</span>
+                        <span class="block text-xs text-muted">{{ trans('statamic-resrv::frontend.remainingBalanceNote') }}</span>
+                    </span>
+                    <span class="font-medium tabular-nums">{{ $currency }}{{ $this->balanceDue }}</span>
+                </div>
+                @endif
             @endif
         </div>
 
@@ -186,6 +207,16 @@
                 <p class="mt-3 text-sm text-muted text-center">
                     {{ trans('statamic-resrv::frontend.paymentMethodIs', ['method' => $this->gatewayLabel]) }}
                 </p>
+                @endif
+            </div>
+        @endif
+
+        @if ($outcomeTone)
+            @php($statusUrl = $state === 'paid' ? $reservation->customerStatusUrl() : null)
+            <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+                <x-resrv::kit-cta variant="secondary" href="/">Back to the hotel</x-resrv::kit-cta>
+                @if ($statusUrl)
+                <x-resrv::kit-cta :href="$statusUrl">Manage your booking</x-resrv::kit-cta>
                 @endif
             </div>
         @endif

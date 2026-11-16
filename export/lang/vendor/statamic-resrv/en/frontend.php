@@ -14,6 +14,9 @@
  * searches). Checkout step 2 is "Your details" in the step strip, its heading
  * and the button that leads to it; stock used three names for it.
  * `startNewSearch` is the kit's way forward from a checkout with no booking.
+ * `paymentAlreadyCompleted` is the lead under "Reservation confirmed" on the pay
+ * page, which is also where a guest lands straight after paying by link, so it
+ * no longer says "already".
  */
 return [
     'quantityLabel' => 'Guests',
@@ -27,4 +30,5 @@ return [
     'personalDetails' => 'Your details',
     'optionsDescription' => 'You can customise your booking with the options below.',
     'startNewSearch' => 'Start a new search',
+    'paymentAlreadyCompleted' => 'Thank you. We look forward to welcoming you.',
 ];
