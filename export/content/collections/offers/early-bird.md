@@ -5,7 +5,9 @@ title: 'Early Bird · Save 12%'
 summary: 'Book at least 30 days ahead and take 12% off every night of your stay.'
 cta_label: 'Check availability'
 linked_rooms:
+  - garden-view-double
   - sea-view-suite
+  - coastal-family-room
   - terracotta-villa
 body:
   -

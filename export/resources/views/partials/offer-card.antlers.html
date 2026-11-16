@@ -14,7 +14,7 @@
             {{ /if }}
         </div>
         <div class="p-6 flex flex-col flex-1">
-            <h3 class="t-h3 mb-2">{{ title }}</h3>
+            <h3 class="t-h3 mb-2 text-balance">{{ title | replace(' · ', '&nbsp;· ') }}</h3>
             {{ if summary }}<p class="text-sm text-muted mb-5">{{ summary }}</p>{{ /if }}
             <span class="text-sm font-semibold text-teal group-hover:text-terracotta-dark transition mt-auto inline-flex items-center gap-1.5">
                 View offer

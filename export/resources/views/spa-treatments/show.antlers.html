@@ -21,7 +21,7 @@
 
     <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
         <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
-            {{ partial:booking-price-header note="Pick a day for live prices &amp; availability." }}
+            {{ partial:booking-price-header }}
 
             {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
 

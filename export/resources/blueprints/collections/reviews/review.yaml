@@ -26,3 +26,12 @@ tabs:
           -
             handle: source
             field: { type: text, display: Source, instructions: 'e.g. Verified stay, Google.', default: 'Verified stay', width: 50 }
+          -
+            handle: room
+            field:
+              type: entries
+              display: Room
+              instructions: 'The room this review is about, if it names one. Room pages show their own reviews first, then reviews with no room, never another room''s.'
+              collections: [rooms]
+              max_items: 1
+              mode: select

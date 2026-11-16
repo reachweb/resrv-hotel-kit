@@ -72,7 +72,7 @@
 
         <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
             <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
-                {{ partial:booking-price-header unit="/ night" note="Pick your dates for live rates &amp; availability." }}
+                {{ partial:booking-price-header unit="/ night" }}
 
                 {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
 
@@ -111,12 +111,19 @@
                 <hr class="border-line mb-10" />
             {{ /if }}
 
-            <h2 class="t-h2 mb-6 reveal">What guests say</h2>
-            <div class="grid sm:grid-cols-2 gap-5 reveal">
-                {{ collection:reviews limit="2" sort="date:desc" }}
-                    {{ partial:testimonial variant="light" }}
-                {{ /collection:reviews }}
-            </div>
+            {{# This room's reviews first, then reviews that name no room, never a review of
+                another room (a review's optional `room` field says which room it's about). #}}
+            {{ room_reviews = {collection:reviews room:is="{id}" sort="date:desc" limit="2"} }}
+            {{ general_reviews = {collection:reviews room:doesnt_exist="true" sort="date:desc" limit="2"} }}
+            {{ shown_reviews = room_reviews | merge:general_reviews | limit:2 }}
+            {{ if shown_reviews }}
+                <h2 class="t-h2 mb-6 reveal">What guests say</h2>
+                <div class="grid sm:grid-cols-2 gap-5 reveal">
+                    {{ shown_reviews }}
+                        {{ partial:testimonial variant="light" }}
+                    {{ /shown_reviews }}
+                </div>
+            {{ /if }}
         </div>
     </section>
 

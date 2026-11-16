@@ -1,6 +1,8 @@
 {{#
-    Booking-panel price header: 'from {symbol}{cheapest} [unit]' + a note line.
-    Only renders inside {{ if availability }}. Params: unit (optional), note.
+    Booking-panel price header: 'from {symbol}{cheapest} [unit]' + an optional note.
+    Only renders inside {{ if availability }}. Params: unit, note (both optional). The
+    room and treatment panels pass no note: the empty results box under the fields
+    already asks for dates (or a day), so a note here said it twice.
     Hides itself once live rate rows render: the booking panel carries
     `group/booking` and the Resrv results rate list is marked role="list".
 #}}
@@ -11,6 +13,6 @@
         <span class="font-display text-4xl text-terracotta-dark leading-none">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span>
         {{ if unit }}<span class="text-sm text-muted">{{ unit }}</span>{{ /if }}
     </div>
-    <p class="text-sm text-muted">{{ note }}</p>
+    {{ if note }}<p class="text-sm text-muted">{{ note }}</p>{{ /if }}
 </div>
 {{ /if }}

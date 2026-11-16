@@ -7,9 +7,24 @@
  * for the spa / restaurant single-date widgets, where it means people.
  * `selectDate` names the date field that opens the calendar; the range form
  * matches the visible Check-in / Check-out labels.
+ *
+ * The empty booking panel asks for what that search needs: dates for a room
+ * (`pleaseSelectDates`), one day for a treatment or a table (`pleaseSelectDay`,
+ * a kit key the restyled availability-results view picks for single-date
+ * searches). Checkout step 2 is "Your details" in the step strip, its heading
+ * and the button that leads to it; stock used three names for it.
+ * `startNewSearch` is the kit's way forward from a checkout with no booking.
  */
 return [
     'quantityLabel' => 'Guests',
     'date' => 'Date',
     'selectDate' => 'Choose a date|Choose check-in and check-out dates',
+    'pleaseSelectDates' => 'Choose your dates to see live rates.',
+    'pleaseSelectDay' => 'Choose a day to see live prices.',
+    'pleaseSelectRateToBook' => 'Choose a rate',
+    'customerInfo' => 'Your details',
+    'continueToPersonalDetails' => 'Continue to your details',
+    'personalDetails' => 'Your details',
+    'optionsDescription' => 'You can customise your booking with the options below.',
+    'startNewSearch' => 'Start a new search',
 ];

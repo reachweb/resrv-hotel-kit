@@ -9,11 +9,16 @@
        one "Updating availability…" status lives outside it, since a screen reader may
        hold back live updates inside a busy region.
      · Errors are role="alert", so they are announced when a Livewire update adds them.
-     · Messages use <p> (stock had bare dt/dd outside a dl). --}}
+     · Messages use <p> (stock had bare dt/dd outside a dl).
+     · Rooms search a date range; spa treatments and La Marea tables search one day. The
+       summary and the empty prompt follow that (`$isStay`), so a one-day search never
+       asks for "dates". --}}
+@php($isStay = $this->entry?->collection()?->handle() === 'rooms')
+@php($selectDatesPrompt = trans($isStay ? 'statamic-resrv::frontend.pleaseSelectDates' : 'statamic-resrv::frontend.pleaseSelectDay'))
 <div class="relative">
     <div wire:loading.delay.long.attr="aria-busy">
     @if ($rates == true && (! $data->rate || $data->rate === 'any'))
-    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" />
+    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" :emptyMessage="$selectDatesPrompt" />
     @else
         @if (data_get($availability, 'message.status') === true)
             @if ($this->showOptions)
@@ -40,7 +45,7 @@
             <div class="flex flex-col pb-5">
                 <div class="font-medium mb-2">{{ trans('statamic-resrv::frontend.yourSearch') }}</div>
                 <dl class="text-sm space-y-1">
-                    @if ((int) data_get($availability, 'request.days', 0) > 1 || $this->entry->collection()->handle() === 'rooms')
+                    @if ((int) data_get($availability, 'request.days', 0) > 1 || $isStay)
                     <div class="flex flex-wrap gap-x-1.5">
                         <dt class="text-muted">{{ ucfirst(trans('statamic-resrv::frontend.from')) }}:</dt>
                         <dd class="font-medium">{{ Carbon::parse($data->dates['date_start'])->format('D d M Y') }}</dd>
@@ -82,7 +87,7 @@
         </div>
         @elseif (! $data->hasDates())
         <div class="rounded-lg bg-sand/60 p-5 text-center">
-            <p class="text-sm text-muted">{{ trans('statamic-resrv::frontend.pleaseSelectDates') }}</p>
+            <p class="text-sm text-muted">{{ $selectDatesPrompt }}</p>
         </div>
         @endif
     @endif

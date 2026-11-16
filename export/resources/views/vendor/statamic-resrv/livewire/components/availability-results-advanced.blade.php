@@ -1,6 +1,6 @@
 @use(Carbon\Carbon)
 @use(Reach\StatamicResrv\Enums\CancellationPolicy)
-@props(['availability', 'entryRates', 'dateStart' => null])
+@props(['availability', 'entryRates', 'dateStart' => null, 'emptyMessage' => null])
 
 {{-- Restyled to the design's rate-comparison rows (room-detail booking panel).
      Markup/classes only — the wire:click="checkoutRate(...)" structure and the
@@ -11,7 +11,7 @@
 <div {{ $attributes->merge(['class' => 'my-3']) }}>
     @if (count($availability) === 0)
     <div class="rounded-lg bg-sand/60 p-5 text-center">
-        <p class="text-sm text-muted">{{ trans('statamic-resrv::frontend.pleaseSelectDates') }}</p>
+        <p class="text-sm text-muted">{{ $emptyMessage ?? trans('statamic-resrv::frontend.pleaseSelectDates') }}</p>
     </div>
     @else
     <p class="text-sm font-medium text-muted">
@@ -36,7 +36,7 @@
                     @if ($perNight)
                     <span class="text-right shrink-0">
                         <span class="font-display text-xl text-terracotta-dark leading-none tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ $perNight }}</span>
-                        @if ($days > 1)<span class="text-sm text-muted">/night</span>@endif
+                        @if ($days > 1)<span class="text-sm text-muted">/ night</span>@endif
                     </span>
                     @endif
                 </div>

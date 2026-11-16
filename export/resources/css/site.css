@@ -116,6 +116,11 @@
 
   ::selection { background: var(--color-terracotta-dark); color: #fff; }
 
+  /* The browser's own surfaces take the action colour too: native controls the forms
+     plugin leaves alone, and the text caret in fields. */
+  :root { accent-color: var(--color-terracotta-dark); }
+  input, textarea { caret-color: var(--color-terracotta-dark); }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
   }

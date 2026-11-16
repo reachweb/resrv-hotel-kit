@@ -19,7 +19,9 @@
         {{ if linked_coupon_code }}
             <span class="inline-flex w-fit items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold leading-none bg-terracotta-dark text-white mb-4">Code {{ linked_coupon_code }}</span>
         {{ /if }}
-        <h1 class="t-display-xl text-white max-w-[16ch] text-balance">{{ title | widont }}</h1>
+        {{# A no-break space ties the " · " separator to the word before it, so a wrapped
+            title never starts its second line with the dot. #}}
+        <h1 class="t-display-xl text-white max-w-[16ch] text-balance">{{ title | replace(' · ', '&nbsp;· ') | widont }}</h1>
     </div>
 </section>
 

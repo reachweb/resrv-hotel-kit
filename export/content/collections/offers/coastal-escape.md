@@ -8,6 +8,8 @@ cta_label: 'Check availability'
 linked_rooms:
   - garden-view-double
   - sea-view-suite
+  - coastal-family-room
+  - terracotta-villa
 body:
   -
     type: paragraph

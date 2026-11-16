@@ -18,7 +18,13 @@
      · Narrow fields (compact bar, booking panel at 320px): the value is a short range
        (`rangeLabel()`: "16–20 Nov", "28 Nov – 2 Dec") that truncates rather than running
        under the clear button, which has room reserved (compact) or sits on the label
-       row (panel). --}}
+       row (panel).
+     · An empty one-day field reads "Add date"; only the range fields say "Add dates".
+       Chosen dates show without a leading zero ("3 Dec"), like the compact and panel
+       fields, the day list and the checkout summary. --}}
+@php
+    $emptyValue = $calendar === 'range' ? 'Add dates' : 'Add date';
+@endphp
 <div class="{{ $attributes->get('class') }}">
     <div x-data="datepicker($wire, @js($disabledDays))" class="relative w-full h-full">
 
@@ -56,8 +62,8 @@
                                 <span
                                     class="block text-sm font-medium truncate"
                                     x-bind:class="isDatesEmpty && 'text-muted'"
-                                    x-text="isDatesEmpty ? 'Add dates' : rangeLabel()"
-                                >Add dates</span>
+                                    x-text="isDatesEmpty ? @js($emptyValue) : rangeLabel()"
+                                >{{ $emptyValue }}</span>
                             </span>
                         </div>
                 @elseif ($variant === 'panel')
@@ -67,8 +73,8 @@
                         <span
                             class="block text-sm font-medium truncate mt-0.5"
                             x-bind:class="isDatesEmpty && 'text-muted'"
-                            x-text="isDatesEmpty ? 'Add dates' : rangeLabel()"
-                        >Add dates</span>
+                            x-text="isDatesEmpty ? @js($emptyValue) : rangeLabel()"
+                        >{{ $emptyValue }}</span>
                 @else
                     {{-- Hero card fields: Check-in | Check-out (or a single Date field) --}}
                     <div class="relative h-full rounded-lg hover:bg-shell transition-colors has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-terracotta-dark">
@@ -78,14 +84,14 @@
                                 <div class="sw-field min-h-15.5 min-w-0">
                                     <span class="text-xs font-semibold uppercase tracking-widest text-muted">Check-in</span>
                                     <span class="text-ui font-medium truncate" x-bind:class="!dates?.date_start && 'text-muted'">
-                                        <span x-text="dates?.date_start ? dayjs(dates.date_start).format('DD MMM') : 'Add dates'">Add dates</span><span class="hidden sm:inline" x-show="dates?.date_start" x-text="' ' + dayjs(dates?.date_start).format('YYYY')"></span>
+                                        <span x-text="dates?.date_start ? dayjs(dates.date_start).format('D MMM') : 'Add dates'">Add dates</span><span class="hidden sm:inline" x-show="dates?.date_start" x-text="' ' + dayjs(dates?.date_start).format('YYYY')"></span>
                                     </span>
                                 </div>
                                 {{-- Divider inset like .sw-div (a border-l on the rounded field curved at its ends) --}}
                                 <div class="sw-field min-h-15.5 min-w-0 relative before:absolute before:left-0 before:inset-y-2.5 before:w-px before:bg-line" x-bind:class="!isDatesEmpty && 'pe-9'">
                                     <span class="text-xs font-semibold uppercase tracking-widest text-muted">Check-out</span>
                                     <span class="text-ui font-medium truncate" x-bind:class="!dates?.date_end && 'text-muted'">
-                                        <span x-text="dates?.date_end ? dayjs(dates.date_end).format('DD MMM') : 'Add dates'">Add dates</span><span class="hidden sm:inline" x-show="dates?.date_end" x-text="' ' + dayjs(dates?.date_end).format('YYYY')"></span>
+                                        <span x-text="dates?.date_end ? dayjs(dates.date_end).format('D MMM') : 'Add dates'">Add dates</span><span class="hidden sm:inline" x-show="dates?.date_end" x-text="' ' + dayjs(dates?.date_end).format('YYYY')"></span>
                                     </span>
                                 </div>
                             </div>
@@ -95,8 +101,8 @@
                                 <span
                                     class="text-ui font-medium whitespace-nowrap"
                                     x-bind:class="isDatesEmpty && 'text-muted'"
-                                    x-text="isDatesEmpty ? 'Add dates' : dayjs(dates.date_start).format('DD MMM YYYY')"
-                                >Add dates</span>
+                                    x-text="isDatesEmpty ? @js($emptyValue) : dayjs(dates.date_start).format('D MMM YYYY')"
+                                >{{ $emptyValue }}</span>
                             </div>
                         @endif
                 @endif
