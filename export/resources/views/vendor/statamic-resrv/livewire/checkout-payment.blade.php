@@ -2,7 +2,8 @@
      hosting the Stripe Payment Element. The payment Alpine component and the whole
      Stripe flow are stock — markup/classes only. The Pay button is the kit's shared
      <x-resrv::kit-cta>, the h1 takes focus when the step opens (see checkout), and a
-     Stripe error is announced (role="alert") as plain text. --}}
+     Stripe error is announced (role="alert") as plain text. $amount is a float, so the
+     button formats it through Price, as stock does since Resrv 6.5.3 (€779.30, not €779.3). --}}
 <div>
     <div x-data="payment">
         <h1 class="t-h1 mb-2 focus:outline-none" tabindex="-1" data-step-heading="3">{{ trans('statamic-resrv::frontend.payment') }}</h1>
@@ -26,7 +27,7 @@
                         </span>
                         <span x-transition x-show="loading === false">
                             {{ trans('statamic-resrv::frontend.pay') }}
-                            <span class="font-bold">{{ config('resrv-config.currency_symbol') }}{{ $amount }}</span>
+                            <span class="font-bold">{{ config('resrv-config.currency_symbol') }}{{ \Reach\StatamicResrv\Facades\Price::create($amount)->format() }}</span>
                             {{ trans('statamic-resrv::frontend.toCompleteYourReservation') }}
                         </span>
                     </x-resrv::kit-cta>
