@@ -1,11 +1,17 @@
 {{#
-    A FAQ category group with its own accordion. Params: category (handle), label.
-    Renders nothing if the category has no FAQs.
+    A FAQ category group with its own accordion: heading in a left column (stacked
+    above on mobile), questions as a divided list on the right. Params: category
+    (handle), level (heading tag: h2 when the block has no heading, else h3).
+    The heading is the category's label from the FAQ blueprint. Renders nothing if
+    the category has no FAQs.
 #}}
-<div x-data="{ open: null }">
-    {{ collection:faqs category:is="{category}" sort="title" }}
-        {{ if first }}<h3 class="t-h3 mb-4">{{ label }}</h3><div class="space-y-3">{{ /if }}
-            {{ partial:faq-item }}
-        {{ if last }}</div>{{ /if }}
-    {{ /collection:faqs }}
-</div>
+{{ collection:faqs category:is="{category}" sort="title" as="questions" }}
+    {{ if questions }}
+        <div x-data="{ open: null }" class="grid gap-x-16 border-t border-line pt-8 pb-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:py-6">
+            <{{ level ?? 'h3' }} class="t-h3 lg:pt-4">{{ questions.0.category.label }}</{{ level ?? 'h3' }}>
+            <div class="divide-y divide-line">
+                {{ questions }}{{ partial:faq-item }}{{ /questions }}
+            </div>
+        </div>
+    {{ /if }}
+{{ /collection:faqs }}

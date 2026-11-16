@@ -1,8 +1,10 @@
 @use(Carbon\Carbon)
 
 {{-- Restyled to the design's card language — "next available dates" chips for the
-     spa / single-date products. The selectDate() wiring and data flow are stock. --}}
+     spa / single-date products. The selectDate() wiring and data flow are stock.
+     Kit hardening: aria-busy while loading, errors are role="alert". --}}
 <div class="relative">
+    <div wire:loading.delay.long.attr="aria-busy">
     @if ($availableDates->isNotEmpty())
         <div class="space-y-4">
             <div>
@@ -29,13 +31,13 @@
                                  class="flex flex-col items-start p-3 bg-white rounded-md border border-line hover:border-ink transition-colors cursor-pointer text-left"
                                  wire:click="selectDate('{{ $date }}', '{{ $rateId }}')"
                                  wire:key="{{ $rateId }}-{{ $date }}">
-                                <span class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                                <span class="text-xs font-semibold uppercase tracking-widest text-muted">
                                     {{ Carbon::parse($date)->format('D') }}
                                 </span>
-                                <span class="text-[15px] font-medium">
+                                <span class="text-ui font-medium">
                                     {{ Carbon::parse($date)->format('j M') }}
                                 </span>
-                                <span class="mt-1 text-sm font-semibold text-terracotta-dark">
+                                <span class="mt-1 text-sm font-semibold text-terracotta-dark tabular-nums">
                                     {{ config('resrv-config.currency_symbol') }}{{ $info['price'] }}
                                 </span>
                                 @if ($info['available'] <= 5)
@@ -65,15 +67,17 @@
     @endif
 
     @if ($errors->has('availability') && $data->hasDates())
-    <div class="rounded-lg border border-error/30 bg-error/5 p-4 mt-4">
+    <div role="alert" class="rounded-lg border border-error/30 bg-error/5 p-4 mt-4">
         <p class="text-sm font-medium text-error">{{ trans('statamic-resrv::frontend.searchError') }}</p>
         <p class="text-sm text-muted">{{ $errors->first('availability') }}</p>
     </div>
     @endif
 
-    <div class="absolute left-0 right-0 top-0 w-full h-full bg-white/60" wire:loading.delay.long>
+    </div>
+
+    <div class="absolute inset-0 bg-white/60" wire:loading.delay.long aria-hidden="true">
         <span class="flex items-center justify-center w-full h-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-5 h-5 text-teal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin size-5 text-teal" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
         </span>

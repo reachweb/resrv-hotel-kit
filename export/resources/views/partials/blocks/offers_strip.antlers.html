@@ -1,12 +1,15 @@
-{{# Offers strip — chosen offers, or all offers as a fallback. #}}
-<section class="section-sm bg-sand">
+{{# Offers strip — chosen offers, or all offers as a fallback. Without a heading an
+    sr-only one keeps the outline (h1 → h2 → the cards' h3). `sizes` is the 3-up card
+    photo width; it reaches the card's image slot through the partial's context. #}}
+<section class="py-16 lg:py-24 bg-sand">
     <div class="container-rsv">
         {{ partial:section-header :heading="heading" :intro="intro" }}
+        {{ unless heading }}<h2 class="sr-only">Offers</h2>{{ /unless }}
         <div class="grid gap-6 md:grid-cols-3">
             {{ if offers }}
-                {{ offers }}<div class="reveal h-full">{{ partial:offer-card }}</div>{{ /offers }}
+                {{ offers }}<div class="reveal h-full">{{ partial:offer-card sizes="(min-width: 1280px) 384px, (min-width: 768px) 31vw, 100vw" }}</div>{{ /offers }}
             {{ else }}
-                {{ collection:offers limit="6" }}<div class="reveal h-full">{{ partial:offer-card }}</div>{{ /collection:offers }}
+                {{ collection:offers limit="6" }}<div class="reveal h-full">{{ partial:offer-card sizes="(min-width: 1280px) 384px, (min-width: 768px) 31vw, 100vw" }}</div>{{ /collection:offers }}
             {{ /if }}
         </div>
     </div>

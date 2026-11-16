@@ -14,3 +14,6 @@ tree:
     entry: contact
   -
     entry: faq
+  -
+    entry: manage-booking
+    title: 'Manage booking'

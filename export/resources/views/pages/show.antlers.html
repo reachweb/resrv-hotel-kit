@@ -1,12 +1,14 @@
 {{# Page-builder renderer — one partial per Replicator set (partials/blocks/*);
-    marketing pages are assembled from these stackable blocks. #}}
+    marketing pages are assembled from these stackable blocks. Blocks space
+    themselves with vertical margins (mt-16 mb-20 lg:mt-24 lg:mb-32), so two shell
+    blocks collapse to a single gap in any order; tinted bands use padding instead. #}}
 {{ if builder }}
     {{ builder }}
         {{ partial src="blocks/{type}" }}
     {{ /builder }}
 {{ else }}
-    <section class="section">
-        <div class="container-rsv reading">
+    <section class="container-rsv pt-14 lg:pt-20 mb-20 lg:mb-32">
+        <div class="max-w-170">
             <h1 class="t-display mb-6">{{ title }}</h1>
             {{ content }}
         </div>

@@ -1,0 +1,16 @@
+---
+hide_book_bar: true
+---
+{{# Manage your booking — Resrv's reservation-status component. Guests look a booking
+    up by email + reference, or land here already signed in to it from the "Manage
+    your booking" link in the confirmation email, and cancel it when their rate
+    allows. Switched on and wired as the Reservation Status Entry in
+    resources/addons/statamic-resrv.yaml; the restyled view lives in
+    vendor/statamic-resrv/livewire/reservation-status.blade.php. #}}
+<section class="container-rsv py-10 lg:py-16">
+    <div class="max-w-2xl mx-auto">
+        {{ livewire:reservation-status }}
+
+        <p class="mt-10 pt-6 border-t border-line text-sm text-muted">Questions about your booking? Write to <a href="mailto:{{ site:email }}" class="text-teal underline underline-offset-2">{{ site:email }}</a>{{ if site:phone }} or call <a href="tel:{{ site:phone | replace(' ', '') }}" class="text-teal underline underline-offset-2">{{ site:phone }}</a>{{ /if }}.</p>
+    </div>
+</section>

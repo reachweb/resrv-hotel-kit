@@ -1,7 +1,9 @@
-{{# Treatments grid — chosen treatments, or the whole spa menu. #}}
-<section class="section-sm bg-sand" id="treatments">
+{{# Treatments grid — chosen treatments, or the whole spa menu. Without a heading an
+    sr-only one keeps the outline (h1 → h2 → the cards' h3). #}}
+<section class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="treatments" data-hides-book-bar>
     <div class="container-rsv">
         {{ partial:section-header :heading="heading" :intro="intro" class="mb-10" }}
+        {{ unless heading }}<h2 class="sr-only">Treatments</h2>{{ /unless }}
         <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {{ if treatments }}
                 {{ treatments }}<div class="reveal h-full">{{ partial:treatment-card }}</div>{{ /treatments }}
@@ -11,3 +13,14 @@
         </div>
     </div>
 </section>
+
+{{# On phones the layout's booking bar leads back to the menu, priced from the lowest
+    live treatment rate. Reading every treatment's availability is costly, so the
+    finished bar is cached for 10 minutes (partials/book-bar explains why that's safe). #}}
+{{ section:book_bar }}
+    {{ cache key="kit:from-price:spa-book-bar" for="10 minutes" }}
+        {{ treatments_from = 0 }}
+        {{ collection:spa_treatments }}{{ treatment_from = availability:cheapest }}{{ if treatment_from && (treatments_from == 0 || treatment_from < treatments_from) }}{{ treatments_from = treatment_from }}{{ /if }}{{ /collection:spa_treatments }}
+        {{ partial:book-bar href="#treatments" label="Choose a treatment" :price="treatments_from" price_label="Treatments from" until="lg" }}
+    {{ /cache }}
+{{ /section:book_bar }}

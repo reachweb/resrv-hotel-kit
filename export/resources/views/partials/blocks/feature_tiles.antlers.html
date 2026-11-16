@@ -1,10 +1,11 @@
-{{# Feature tiles — a bento row of self-contained tiles (image, title, short text,
-    optional link); the first tile spans wider. #}}
-<section class="section">
+{{# Feature tiles — self-contained image tiles (image, title, short text, optional
+    link, optional bookable entries). Three or more form a bento row where the first
+    tile spans wider; one or two sit side by side at a taller height. #}}
+<section class="mt-16 mb-20 lg:mt-24 lg:mb-32">
     <div class="container-rsv">
         {{ partial:section-header :heading="heading" :intro="intro" }}
         {{ if tiles }}
-            <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3 auto-rows-[280px]">
+            <div class="grid gap-5 md:grid-cols-2 {{ if (tiles | length) > 2 }}lg:grid-cols-3 auto-rows-[280px]{{ else }}auto-rows-[340px] lg:auto-rows-[440px]{{ /if }}">
                 {{ tiles }}{{ partial:feature-tile }}{{ /tiles }}
             </div>
         {{ /if }}

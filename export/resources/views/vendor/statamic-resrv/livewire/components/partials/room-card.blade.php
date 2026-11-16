@@ -13,7 +13,13 @@
 
      Blade sibling of resources/views/partials/room-card.antlers.html (home showcase +
      "You may also like"); kept visually in sync so the room card reads the same across
-     the site. $showRates / $data / $this->rateLabels are inherited from the component view. --}}
+     the site. $showRates / $data / $this->rateLabels are inherited from the component view.
+
+     Sold out: only the image is dimmed (desaturated and faded). The text and the
+     "Sold out" chip stay at full contrast (opacity on the whole card took Muted text
+     below AA), so the chip sits beside the slot, not inside the dimmed element.
+     "Book now" keeps its visible text first in the accessible name (WCAG 2.5.3); the
+     room and rate follow as an sr-only suffix. --}}
 
 @php($entryUrl = $entry->url())
 @php($hero = $entry->augmentedValue('hero_image')->value())
@@ -30,22 +36,24 @@
 <article
     role="listitem"
     wire:key="resrv-collection-{{ $entry->id() }}"
-    class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 hover:shadow-raised @if($available === false) opacity-80 @endif"
+    class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 hover:shadow-raised"
 >
     {{-- Image — links into the room; graceful placeholder when no hero is set (§0.4). --}}
-    <a href="{{ $entryUrl }}" class="zoom-on-hover block">
-        <div class="img-slot @if($hero) has-img @endif" style="aspect-ratio: 3/2;">
+    <a href="{{ $entryUrl }}" class="zoom-on-hover relative block">
+        {{-- Empty: the limewash slot surface, its light moved per card ($loop comes from the grid's @foreach). --}}
+        <div class="img-slot aspect-3/2 @if($hero) has-img @elseif(isset($loop)) slot-v{{ $loop->index % 3 + 1 }} @endif @if($available === false) grayscale opacity-60 @endif">
             @if ($hero)
-                <img src="{{ $hero->manipulate(['w' => 1600]) }}" alt="{{ $entry->get('title') }}" loading="lazy">
+                <img src="{{ $hero->manipulate(['w' => 1200, 'fm' => 'webp']) }}" srcset="{{ $hero->manipulate(['w' => 480, 'fm' => 'webp']) }} 480w, {{ $hero->manipulate(['w' => 800, 'fm' => 'webp']) }} 800w, {{ $hero->manipulate(['w' => 1200, 'fm' => 'webp']) }} 1200w" sizes="(min-width: 1280px) 600px, (min-width: 768px) 50vw, 100vw" alt="{{ $entry->get('title') }}" loading="lazy" decoding="async">
             @else
-                <span class="slot-label">Room image · 3:2</span>
-            @endif
-            @if ($available === false)
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-sand text-muted absolute top-3 left-3 z-10">Sold out</span>
-            @elseif ($tooSmall)
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-warning/15 text-warning absolute top-3 left-3 z-10">Sleeps up to {{ $maxOccupancy }}</span>
+                <span class="slot-label" aria-hidden="true">Room image<span>3:2</span></span>
             @endif
         </div>
+        {{-- Status chips over the image: solid White fill (DESIGN §4.1), outside the dimmed slot. --}}
+        @if ($available === false)
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-white text-error absolute top-3 left-3 z-10">Sold out</span>
+        @elseif ($tooSmall)
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-white text-warning absolute top-3 left-3 z-10">Sleeps up to {{ $maxOccupancy }}</span>
+        @endif
     </a>
 
     <div class="p-5 lg:p-6 flex flex-col flex-1">
@@ -54,7 +62,7 @@
         </h3>
 
         @if ($entry->get('intro'))
-            <p class="text-sm text-muted mb-4">{{ Str::limit(strip_tags((string) $entry->get('intro')), 96) }}</p>
+            <p class="text-sm text-muted mb-4 line-clamp-2">{{ Str::limit(strip_tags((string) $entry->get('intro')), 160) }}</p>
         @endif
 
         <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted mb-5">
@@ -77,7 +85,7 @@
                     @else
                         <span class="text-sm text-muted">Pick dates for rates</span>
                     @endif
-                    <a href="{{ $entryUrl }}" class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta shrink-0">View</a>
+                    <a href="{{ $entryUrl }}" class="inline-flex items-center justify-center gap-2 h-10 px-4.5 rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white shrink-0">View room<span class="sr-only">: {{ $entry->get('title') }}</span></a>
                 </div>
             @elseif ($available)
                 @if ($showRates)
@@ -85,47 +93,40 @@
                         @foreach ($row['rates'] as $rate)
                             @php($cancellation = data_get($rate, 'cancellation_policy'))
                             @php($cancellationLabel = $cancellation ? CancellationPolicy::labelFor($cancellation['policy'], $cancellation['period'], Carbon::parse($data->dates['date_start'])) : null)
+                            @php($freeCancellationOpen = $cancellationLabel && $cancellation['policy'] !== 'non_refundable' && CancellationPolicy::freeCancellationOpen($cancellation['period'], Carbon::parse($data->dates['date_start'])))
+                            @php($rateLabel = data_get($this->rateLabels, data_get($rate, 'rate_id'), data_get($rate, 'rateLabel')))
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <div class="text-sm font-medium">{{ data_get($this->rateLabels, data_get($rate, 'rate_id'), data_get($rate, 'rateLabel')) }}</div>
-                                    <div class="font-display text-xl text-terracotta-dark leading-none">{{ config('resrv-config.currency_symbol') }}{{ data_get($rate, 'price') }}</div>
-                                    @if ($cancellationLabel)<div class="text-sm text-success mt-0.5">{{ $cancellationLabel }}</div>@endif
+                                    <div class="text-sm font-medium">{{ $rateLabel }}</div>
+                                    <div class="font-display text-xl text-terracotta-dark leading-none tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ data_get($rate, 'price') }}</div>
+                                    @if ($cancellationLabel)<div @class(['text-sm mt-0.5', 'text-success' => $freeCancellationOpen, 'text-muted' => ! $freeCancellationOpen])>{{ $cancellationLabel }}</div>@endif
                                 </div>
-                                <button
-                                    type="button"
-                                    class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-transparent text-sm font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta shrink-0"
-                                    wire:click="select('{{ $row['id'] }}', {{ data_get($rate, 'rate_id') ?? 'null' }})"
-                                    aria-label="Book {{ data_get($this->rateLabels, data_get($rate, 'rate_id'), $entry->get('title')) }}"
-                                >{{ trans('statamic-resrv::frontend.bookNow') }}</button>
+                                <x-resrv::kit-cta size="sm" class="shrink-0" wire:click="select('{{ $row['id'] }}', {{ data_get($rate, 'rate_id') ?? 'null' }})">{{ trans('statamic-resrv::frontend.bookNow') }}<span class="sr-only">: {{ $entry->get('title') }}@if ($rateLabel), {{ $rateLabel }}@endif</span></x-resrv::kit-cta>
                             </div>
                         @endforeach
                     </div>
                 @else
                     @php($cancellation = data_get($row['from'], 'cancellation_policy'))
                     @php($cancellationLabel = $cancellation ? CancellationPolicy::labelFor($cancellation['policy'], $cancellation['period'], Carbon::parse($data->dates['date_start'])) : null)
+                    @php($freeCancellationOpen = $cancellationLabel && $cancellation['policy'] !== 'non_refundable' && CancellationPolicy::freeCancellationOpen($cancellation['period'], Carbon::parse($data->dates['date_start'])))
                     <div class="flex items-end justify-between gap-3">
                         <div>
                             <span class="text-sm text-muted">from</span>
-                            <div class="font-display text-2xl text-terracotta-dark leading-none">
+                            <div class="font-display text-2xl text-terracotta-dark leading-none tabular-nums">
                                 @if (data_get($row['from'], 'original_price'))
                                     <span class="text-base text-muted line-through mr-1">{{ config('resrv-config.currency_symbol') }}{{ data_get($row['from'], 'original_price') }}</span>
                                 @endif
                                 {{ config('resrv-config.currency_symbol') }}{{ data_get($row['from'], 'price') }}
                             </div>
-                            @if ($cancellationLabel)<div class="text-sm text-success mt-1">{{ $cancellationLabel }}</div>@endif
+                            @if ($cancellationLabel)<div @class(['text-sm mt-1', 'text-success' => $freeCancellationOpen, 'text-muted' => ! $freeCancellationOpen])>{{ $cancellationLabel }}</div>@endif
                         </div>
-                        <button
-                            type="button"
-                            class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-transparent text-sm font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta shrink-0"
-                            wire:click="select('{{ $row['id'] }}', {{ data_get($row['from'], 'rate_id') ?? 'null' }})"
-                            aria-label="Book {{ $entry->get('title') }}"
-                        >{{ trans('statamic-resrv::frontend.bookNow') }}</button>
+                        <x-resrv::kit-cta size="sm" class="shrink-0" wire:click="select('{{ $row['id'] }}', {{ data_get($row['from'], 'rate_id') ?? 'null' }})">{{ trans('statamic-resrv::frontend.bookNow') }}<span class="sr-only">: {{ $entry->get('title') }}</span></x-resrv::kit-cta>
                     </div>
                 @endif
             @else
                 <div class="flex items-center justify-between gap-3">
                     <span class="text-sm text-muted">{{ trans('statamic-resrv::frontend.noAvailability') }}</span>
-                    @if ($entryUrl)<a href="{{ $entryUrl }}" class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">View</a>@endif
+                    @if ($entryUrl)<a href="{{ $entryUrl }}" class="inline-flex items-center justify-center gap-2 h-10 px-4.5 rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal hover:bg-teal hover:text-white shrink-0">Try other dates<span class="sr-only"> for {{ $entry->get('title') }}</span></a>@endif
                 </div>
             @endif
         </div>

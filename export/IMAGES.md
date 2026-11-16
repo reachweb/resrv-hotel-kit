@@ -4,6 +4,13 @@ The kit ships **no photography**. Every image renders through a graceful *named 
 (`partials/image-slot`): when nothing is attached you see a labelled placeholder with
 the slot name and aspect ratio; attach an image and the slot renders it via Glide.
 
+Empty slots are drawn as surfaces from the hotel, so a fresh install looks finished:
+sun on a limewashed wall (rooms, sections), clay (offers), sage (spa, map), and dark
+terracotta, cypress and sea where white type sits on top (feature tiles, offer heroes).
+The home hero draws first light over the bay. Choose a surface with the partial's `tone`
+param (`limewash` · `clay` · `sage` · `sea` · `terracotta` · `cypress`); the textures
+and colours live under `.img-slot` in `resources/css/site.css`.
+
 **To fill a slot, attach an image to the entry's image field in the Control Panel.**
 The slot renders whatever you attach, regardless of filename. Each image field is
 pre-scoped to a folder in the `assets` container (e.g. rooms → `public/assets/rooms/`),
@@ -24,10 +31,12 @@ edge (Glide serves `width=1600` and downsizes responsively).
 | --- | --- | --- |
 | `hero/home.jpg` | 16:9 | Home full-bleed hero (behind the search card) |
 | `hero/<page-slug>.jpg` | 16:9 | Any page using the hero block with an image (dining, spa, …) |
-| `hero/404.jpg` | 4:3 | The 404 page illustration |
 | `<page-slug>.jpg` | 4:3 | `image_text_split` blocks (About story, Dining split, …) |
 | `home/<tile>.jpg` | 3:2 | Home "Dining, spa and sea" tiles (`feature_tiles` block — attach per tile on the Home entry) |
 | `map-location.jpg` | 21:9 | Contact page map slot |
+
+The 404 page is not a slot: it ships a drawn illustration (an arched window onto the
+sea, `partials/sea-window`), so it needs no photo.
 
 ## Rooms (4 entries)
 
@@ -63,9 +72,9 @@ Treatment slugs: `mediterranean-massage`, `sea-salt-body-polish`,
 
 ## Dining gallery
 
-The gallery block (used on Dining) renders attached assets as a masonry grid; until
-populated it shows four placeholder slots (ratios 3:2 · 3:4 · 3:4 · 3:2). Attach any
-number of images in the CP — the mixed ratios are only the placeholder rhythm.
+The gallery block (used on Dining) renders attached assets as an even grid of 4:5
+tiles (photos crop to fill the tile; the lightbox shows them whole); until populated
+it shows four 4:5 placeholder slots. Attach any number of images in the CP.
 
 ## Brand
 

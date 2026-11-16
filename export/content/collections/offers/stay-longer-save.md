@@ -3,7 +3,7 @@ id: offer-stay-longer-save
 blueprint: offer
 title: 'Stay 7, Save 10%'
 summary: 'Settle in for a week or more and take 10% off the whole stay.'
-cta_label: 'Plan a longer stay'
+cta_label: 'Find a 7-night stay'
 linked_rooms:
   - garden-view-double
   - sea-view-suite

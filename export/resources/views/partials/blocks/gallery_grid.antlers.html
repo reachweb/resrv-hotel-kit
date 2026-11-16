@@ -1,23 +1,27 @@
-{{# Gallery grid — masonry columns + Alpine lightbox; renders assets or four
-    graceful named placeholder slots. #}}
-<section class="section-sm" x-data="lightbox([
-    {{ if images }}{{ images }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt ?? title }}' },{{ /images }}{{ /if }}
+{{# Gallery grid — an even grid of 4:5 tiles (photos crop to fill; the lightbox shows
+    them whole) + Alpine lightbox; renders assets or four graceful named placeholder
+    slots. An even grid keeps any number of images tidy, where masonry columns left a
+    ragged bottom edge. Captions sit inside a JS string in an attribute, so they're
+    escaped for both (add_slashes, then entities): an apostrophe or quote in an alt
+    can't break the component. #}}
+<section class="mt-16 mb-20 lg:mt-24 lg:mb-32" x-data="lightbox([
+    {{ if images }}{{ images }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt | add_slashes | entities }}' },{{ /images }}{{ /if }}
 ])">
     <div class="container-rsv">
-        {{ if heading }}<h2 class="t-h2 mb-8 reveal">{{ heading | widont }}</h2>{{ /if }}
+        {{ if heading }}<h2 class="t-h2 mb-8 lg:mb-10 reveal">{{ heading | widont }}</h2>{{ /if }}
 
-        <div class="columns-2 {{ if columns == '2' }}lg:columns-2{{ elseif columns == '4' }}lg:columns-4{{ else }}lg:columns-3{{ /if }} gap-4 [&>*]:mb-4">
+        <div class="grid grid-cols-2 {{ if columns == '2' }}lg:grid-cols-2{{ elseif columns == '4' }}lg:grid-cols-4{{ else }}lg:grid-cols-3{{ /if }} gap-3 lg:gap-4">
             {{ if images }}
                 {{ images }}
-                    <button type="button" class="img-slot has-img rounded-lg break-inside-avoid block w-full cursor-pointer zoom-on-hover reveal [&>img]:static [&>img]:h-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta" @click="open('{{ glide:url width='1800' }}')">
-                        <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
+                    <button type="button" class="img-slot has-img rounded-lg aspect-4/5 block w-full cursor-pointer zoom-on-hover reveal" @click="open('{{ glide:url width='1800' }}')">
+                        <img src="{{ glide:url width='800' }}" srcset="{{ glide:url width='480' format='webp' }} 480w, {{ glide:url width='800' format='webp' }} 800w" sizes="(min-width: 1024px) 25vw, 50vw" alt="{{ if alt }}{{ alt | entities }}{{ else }}Photo {{ count }} of {{ total_results }}{{ /if }}" loading="lazy">
                     </button>
                 {{ /images }}
             {{ else }}
-                <div class="img-slot rounded-lg break-inside-avoid reveal aspect-3/2"><span class="slot-label">Gallery image · 3:2</span></div>
-                <div class="img-slot rounded-lg break-inside-avoid reveal aspect-3/4"><span class="slot-label">Gallery image · 3:4</span></div>
-                <div class="img-slot rounded-lg break-inside-avoid reveal aspect-3/4"><span class="slot-label">Gallery image · 3:4</span></div>
-                <div class="img-slot rounded-lg break-inside-avoid reveal aspect-3/2"><span class="slot-label">Gallery image · 3:2</span></div>
+                <div class="img-slot tone-clay rounded-lg aspect-4/5 reveal"><span class="slot-label" aria-hidden="true">Gallery image<span>4:5</span></span></div>
+                <div class="img-slot slot-v2 rounded-lg aspect-4/5 reveal"><span class="slot-label" aria-hidden="true">Gallery image<span>4:5</span></span></div>
+                <div class="img-slot tone-sage slot-v3 rounded-lg aspect-4/5 reveal"><span class="slot-label" aria-hidden="true">Gallery image<span>4:5</span></span></div>
+                <div class="img-slot tone-clay slot-v2 rounded-lg aspect-4/5 reveal"><span class="slot-label" aria-hidden="true">Gallery image<span>4:5</span></span></div>
             {{ /if }}
         </div>
     </div>

@@ -39,8 +39,8 @@ builder:
     enabled: true
   - id: home_offers
     type: offers_strip
-    heading: 'Reasons to book direct'
-    intro: 'Better rates, free cancellation on most stays, and a welcome that an OTA can never send.'
+    heading: 'Offers when you book direct'
+    intro: 'Savings you only get by booking with us. Most rates also come with free cancellation.'
     enabled: true
   - id: home_reviews
     type: reviews_carousel
@@ -50,22 +50,29 @@ builder:
   -
     id: home_tiles
     type: feature_tiles
-    heading: 'Dining, spa and sea'
-    intro: 'The best of the coast, a few steps from your room.'
+    heading: 'La Marea and the spa'
+    intro: 'A few steps from your room, and booked the same way as your stay.'
     tiles:
       -
         id: tile_dining
         title: 'La Marea'
         text: 'A sea-to-table menu that follows the morning catch.'
-        link: /dining
+        link: '/dining#reserve'
+        bookable:
+          - venue-la-marea
+        action_label: 'Reserve a table'
       -
         id: tile_spa
         title: 'Spa & Wellness'
         text: 'An adults-only spa with sea-facing treatment rooms.'
-        link: /spa
-      -
-        id: tile_beach
-        title: 'The Private Beach'
-        text: 'A sheltered cove with loungers, parasols and beach service.'
+        link: '/spa#treatments'
+        bookable:
+          - spa-couples-ritual
+          - spa-garden-botanicals-facial
+          - spa-in-room-treatment
+          - spa-mediterranean-massage
+          - spa-morning-stretch-steam
+          - spa-sea-salt-body-polish
+        action_label: 'Book a treatment'
     enabled: true
 ---

@@ -1,22 +1,25 @@
 {{-- Compact sticky-bar variant of the search (rooms.html): bordered white pill with
      icon fields, used inside the rooms-index sticky bar via view="availability-search-compact".
-     Same sub-components/wiring as the default view — markup/classes only. --}}
+     Same sub-components/wiring as the default view — markup/classes only.
+     The pill's edge is Border Strong (it identifies the control: WCAG 1.4.11), and the
+     fields are min-w-0 so their values truncate instead of running under the clear
+     button at 320px. --}}
 <div class="relative flex flex-col lg:flex-row lg:items-center gap-2">
-    <div class="flex flex-1 items-stretch rounded-md bg-white border border-line overflow-hidden text-ink">
+    <div class="flex flex-1 items-stretch rounded-md bg-white border border-line-strong overflow-hidden text-ink">
 
         <x-resrv::availability-dates
             :$calendar
             :$calendarRules
             :errors="$errors"
             variant="compact"
-            class="flex-1"
+            class="flex-1 min-w-0"
         />
 
         @if ($calendar === 'range')
         <div class="w-px bg-line my-2 shrink-0"></div>
         <x-resrv::availability-guests
             variant="compact"
-            class="flex-1"
+            class="flex-1 min-w-0"
         />
         @endif
 

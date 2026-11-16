@@ -1,17 +1,18 @@
 {{#
-    One FAQ accordion item. Expects a faq entry in scope (title = question,
-    answer = Bard) and `index` (loop position), inside an x-data="{ open: null }".
+    One FAQ accordion item — a row in a hairline-divided list (the parent adds the
+    dividers). Expects a faq entry in scope (title = question, answer = Bard) and
+    `index` (loop position), inside an x-data="{ open: null }".
     The .acc-item / .acc-icon classes (site.css) drive the icon rotation; the
     panel itself collapses via Alpine x-collapse.
 #}}
-<div class="acc-item bg-white rounded-lg border border-line overflow-hidden" :class="{ open: open === {{ index }} }">
-    <button type="button" class="w-full flex items-center justify-between gap-4 text-left p-5" @click="open = (open === {{ index }} ? null : {{ index }})">
-        <span class="font-display font-medium text-lg pr-2">{{ title }}</span>
-        <span class="acc-icon text-terracotta shrink-0">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+<div class="acc-item" :class="{ open: open === {{ index }} }">
+    <button type="button" class="group w-full flex items-center justify-between gap-6 text-left py-5 rounded-sm" @click="open = (open === {{ index }} ? null : {{ index }})" :aria-expanded="open === {{ index }}">
+        <span class="font-display font-medium text-lg group-hover:text-terracotta-dark transition-colors">{{ title }}</span>
+        <span class="acc-icon text-terracotta-dark shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         </span>
     </button>
     <div x-show="open === {{ index }}" x-collapse x-cloak>
-        <div class="px-5 pb-5 prose max-w-none prose-p:text-muted prose-li:text-muted prose-a:text-terracotta-dark">{{ answer }}</div>
+        <div class="pb-6 pr-11 prose max-w-[65ch] prose-p:text-muted prose-li:text-muted prose-a:text-terracotta-dark">{{ answer }}</div>
     </div>
 </div>

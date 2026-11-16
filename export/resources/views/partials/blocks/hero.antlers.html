@@ -2,22 +2,43 @@
     Hero block. Two modes:
       · image OR show_search  → full-bleed photo hero, white text (home / image-led)
       · otherwise             → light text header on the page background (content pages)
-    Degrades gracefully: with no image the photo branch only fires for search heroes.
+    Degrades gracefully: with no image the photo branch only fires for search heroes,
+    and the slot draws first light over the bay (tone="horizon") in place of the photo.
+    The photo is the page's LCP image, so it loads eagerly at high priority. On a
+    phone it covers a portrait box, so it renders wider than the screen: 135vw asks
+    for a little more than the screen width (about 1.3x the CSS width at 3x density)
+    without paying for the 2400w file under a scrim that hides the difference.
+
+    Spacing: blocks space themselves with vertical margins, so neighbours collapse to
+    one gap in any order. The search card straddles the hero's bottom edge (-mb-11 on
+    its wrapper); the hero's own bottom margin reserves room for that overhang.
 #}}
 {{ if image || show_search }}
-    <section class="relative flex items-end min-h-[max(560px,80svh)] pt-28 lg:pt-32">
-        {{ partial:image-slot :asset="image" label="Hero image · 16:9" fill="true" class="absolute inset-0 rounded-none" :alt="heading" }}
-        <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.5), rgba(27,43,40,.12) 38%, rgba(27,43,40,.72));"></div>
-        <div class="relative container-rsv pb-14 lg:pb-16 text-white">
-            {{ if heading }}<h1 class="t-display-xl text-white max-w-[18ch] text-balance">{{ heading | widont }}</h1>{{ /if }}
-            {{ if lead }}<p class="text-lg leading-relaxed text-white/90 mt-6 max-w-[52ch]">{{ lead }}</p>{{ /if }}
-            {{ if cta_label }}<a href="{{ cta_url ?? '#' }}" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg border-[1.5px] border-transparent text-[15px] font-semibold leading-none whitespace-nowrap transition bg-white text-ink hover:bg-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta mt-8">{{ cta_label }}</a>{{ /if }}
-            {{ if show_search }}<div class="mt-10 max-w-[1100px]">{{ livewire:availability-search calendar="range" live="false" redirectTo="/rooms" }}</div>{{ /if }}
+    <section class="relative flex items-end min-h-[max(560px,80svh)] pt-28 lg:pt-32{{ if show_search }} mb-32 lg:mb-40{{ /if }}">
+        {{ partial:image-slot :asset="image" label="Hero image" ratio="16/9" tone="horizon" fill="true" priority="true" sizes="(min-width: 768px) 100vw, 135vw" class="absolute inset-0 rounded-none" }}
+        {{ if image }}
+            {{# Scrims for the white type over a photo, darkest where the text sits. On phones
+                the text spans the width in the middle of the photo, so the middle carries the
+                weight; from md it sits bottom-left, so a side scrim backs it and the right of
+                the photo stays bright. Installers' photos vary: these hold AA over a bright sky. #}}
+            <div class="absolute inset-0 bg-linear-to-b from-ink/50 via-ink/60 via-50% to-ink/72 md:via-ink/12 md:via-38%"></div>
+            <div class="absolute inset-0 hidden md:block bg-linear-to-r from-ink/55 via-ink/30 via-45% to-transparent to-80%"></div>
+        {{ else }}
+            {{# The drawn sea of an empty slot is already dark below the horizon. #}}
+            <div class="absolute inset-0 bg-linear-to-b from-ink/30 via-transparent via-35% to-ink/20"></div>
+        {{ /if }}
+        <div class="relative w-full container-rsv text-white{{ unless show_search }} pb-14 lg:pb-16{{ /unless }}">
+            <div class="on-dark">
+                {{ if heading }}<h1 class="t-display-xl text-white max-w-[18ch] text-balance">{{ heading | widont }}</h1>{{ /if }}
+                {{ if lead }}<p class="text-lg leading-relaxed text-white mt-6 max-w-[52ch] text-pretty">{{ lead }}</p>{{ /if }}
+                {{ if cta_label && cta_url }}{{ partial:button :href="cta_url" :label="cta_label" variant="white" class="inline-flex mt-8" }}{{ /if }}
+            </div>
+            {{ if show_search }}<div class="relative z-10 mt-10 -mb-11" data-hides-book-bar>{{ partial:hero-booking }}</div>{{ /if }}
         </div>
     </section>
 {{ else }}
-    <header class="container-rsv pt-14 lg:pt-20 pb-8">
-        <div class="max-w-[680px]">
+    <header class="container-rsv pt-14 lg:pt-20 mb-8 lg:mb-12">
+        <div class="max-w-170">
             {{ if heading }}<h1 class="t-display mb-5 reveal text-balance">{{ heading | widont }}</h1>{{ /if }}
             {{ if lead }}<p class="text-lg leading-relaxed text-muted reveal">{{ lead }}</p>{{ /if }}
         </div>

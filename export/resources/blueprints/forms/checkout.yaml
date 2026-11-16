@@ -8,6 +8,7 @@ tabs:
             handle: first_name
             field:
               input_type: text
+              autocomplete: given-name
               antlers: false
               display: 'First name'
               type: text
@@ -20,6 +21,7 @@ tabs:
             handle: last_name
             field:
               input_type: text
+              autocomplete: family-name
               antlers: false
               display: 'Last name'
               type: text
@@ -31,7 +33,8 @@ tabs:
           -
             handle: email
             field:
-              input_type: text
+              input_type: email
+              autocomplete: email
               antlers: false
               display: Email
               type: text
@@ -44,7 +47,8 @@ tabs:
           -
             handle: repeat_email
             field:
-              input_type: text
+              input_type: email
+              autocomplete: email
               antlers: false
               display: 'Repeat email'
               type: text
@@ -57,8 +61,8 @@ tabs:
           -
             handle: phone
             field:
-              input_type: text
-              prepend: (optional)
+              input_type: tel
+              autocomplete: tel
               antlers: false
               display: Phone
               type: text

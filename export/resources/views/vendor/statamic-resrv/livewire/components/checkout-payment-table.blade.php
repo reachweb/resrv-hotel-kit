@@ -8,7 +8,9 @@
      the Total. The discount is Resrv's own originalPrice (coupon or dynamic-pricing
      campaign) minus the reservation price. The payment surcharge is not part of the
      Total, so it sits under it with "Payable now", as upstream. Totals logic and the
-     wire:key structure are stock. --}}
+     wire:key structure are stock. The running total is announced from checkout's own
+     polite live region: this table is re-keyed (so replaced, not updated) whenever the
+     chosen extras or options change, and a live region that is replaced stays silent. --}}
 @php($currency = config('resrv-config.currency_symbol'))
 @php($reservationTotal = $totals->get('reservationTotal'))
 @php($originalPrice = $totals->get('originalPrice'))
@@ -51,7 +53,7 @@
         <div>
             <div class="flex items-baseline justify-between gap-3 pt-4">
                 <span class="text-xl font-semibold font-display">{{ trans('statamic-resrv::frontend.total') }}</span>
-                <span class="font-display text-[28px] tabular-nums leading-none">{{ $currency }}{{ $totals->get('total')->format() }}</span>
+                <span class="font-display text-3xl tabular-nums leading-none">{{ $currency }}{{ $totals->get('total')->format() }}</span>
             </div>
             @if ($hasSurcharge)
             <div class="flex justify-between gap-3 text-sm mt-2">

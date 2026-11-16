@@ -6,15 +6,17 @@
     selecting a rate there would lock the shared session and collapse the panel). Party
     size and arrival time are picked at checkout (free Resrv Options), so the price shown
     is per table and never multiplied by headcount.
+    The venue name is the widget's heading, so the day list's "Available dates"
+    heading sits under it. Param: level (default 2; 3 when the band has its own h2).
+    The hours line lists the Hours rows marked Bookable; the line under the widget is
+    the venue's Booking note.
 #}}
 <div class="reveal">
-    {{ if tagline || hours }}
     <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-sm text-muted mb-6">
-        <span class="font-medium text-ink">{{ title }}</span>
+        <h{{ level ?? 2 }} class="font-sans font-medium text-ink">{{ title }}</h{{ level ?? 2 }}>
         {{ if tagline }}<span>{{ tagline }}</span>{{ /if }}
-        {{ hours }}{{ if label == 'Lunch' || label == 'Dinner' }}<span>{{ label }} {{ time }}</span>{{ /if }}{{ /hours }}
+        {{ hours }}{{ if bookable }}<span>{{ label }} {{ time }}</span>{{ /if }}{{ /hours }}
     </div>
-    {{ /if }}
 
     {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
         scroll-mt clears the fixed header (h-18/lg:h-21). #}}
@@ -22,7 +24,7 @@
         {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" }}
     </div>
 
-    <div class="mt-5">
+    <div class="mt-5 bg-white rounded-lg shadow-card p-5 lg:p-6">
         {{ livewire:availability-results :entry="id" rates="true" }}
     </div>
 
@@ -32,8 +34,10 @@
         {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
     </div>
 
-    <p class="text-sm text-muted text-center mt-4 flex items-center justify-center gap-1.5">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        Pick your arrival time at checkout &middot; breakfast needs no booking.
-    </p>
+    {{ if booking_note }}
+        <p class="text-sm text-muted text-center mt-4 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            {{ booking_note }}
+        </p>
+    {{ /if }}
 </div>

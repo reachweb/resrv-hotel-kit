@@ -24,7 +24,7 @@ checkout**, demo data included.
 ## Requirements
 
 - PHP 8.4+ · Composer
-- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.1+**
+- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.2+**
 - Node 20+ (Tailwind v4 via Vite)
 - A [Resrv license](https://statamic.com/addons/reach-web/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your
@@ -76,14 +76,21 @@ renders a graceful labelled placeholder until you drop the real file in.
   pricing and 500 the second search request. Don't revert them.
 - **Static caching:** if you enable Statamic's static caching, you must exclude the
   booking surfaces — they're session-driven Livewire. At minimum exclude `/checkout`,
-  `/checkout-complete`, `/rooms`, `/rooms/*`, `/spa/*`, the dining page, and the
-  Livewire endpoint `/livewire/*` is never cacheable. Half caching (`half` strategy)
+  `/checkout-complete`, `/manage-booking`, `/pay`, `/rooms`, `/rooms/*`, `/spa/*`, the
+  dining page, and the Livewire endpoint `/livewire/*` is never cacheable. Half caching (`half` strategy)
   with those exclusions is the safe option; full static caching of those URLs breaks
   search and checkout.
 - **Re-seeding:** `php artisan db:seed --class="Database\Seeders\ResrvDemoSeeder"` is
   idempotent and refreshes the rolling availability window (it also prunes past dates).
   Optional demo reservations for the CP reports/abandoned-recovery demo:
   `RESRV_SEED_DEMO_RESERVATIONS=true` before seeding.
+- **Guest self-service pages:** `/manage-booking` (Resrv's reservation status page)
+  lets guests look up a booking by email and reference, or open it from the "Manage
+  your booking" link in the confirmation email, and cancel it inside the free
+  cancellation window. Offline bookings are view only. `/pay` is the payment page for
+  reservations you create in the CP: guests reach it from the signed link in the
+  payment request email. Both are wired under **Resrv → Settings → Checkout**. Replace
+  the demo **Offline Payment Instructions** (bank details) there before going live.
 - **Scheduler:** `routes/console.php` schedules `resrv:cancel-lapsed-holds` (every 15
   minutes) and `resrv:housekeeping` (daily). In production, add the standard Laravel cron
   entry (`* * * * * php artisan schedule:run`). Without it, unpaid reservations created

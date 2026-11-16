@@ -1,13 +1,25 @@
 @props(['label' => null])
 
-{{-- Restyled to the design's primary button. wire:click / wire:loading unchanged. --}}
-<div class="{{ $attributes->get('class') }}">
-    <button
-        class="inline-flex w-full h-full min-h-12 items-center justify-center gap-2 px-7 rounded-lg border-[1.5px] border-transparent bg-terracotta text-white text-[15px] font-semibold leading-none whitespace-nowrap transition hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta disabled:opacity-50 cursor-pointer"
-        wire:click="submit()"
-        wire:loading.attr="disabled"
-    >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="w-[18px] h-[18px]"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+{{-- Restyled to the kit's primary button (<x-resrv::kit-cta>). wire:click / wire:loading unchanged.
+     Kit hardening: with no dates the click is stopped in the capture phase (before
+     wire:click sees it), so the server never answers with three "field is required"
+     errors that stock hides while the dates are empty and that then linger, stale,
+     once dates are picked. The date field shows a prompt and opens the calendar instead. --}}
+<div
+    class="{{ $attributes->get('class') }}"
+    x-data="{
+        requireDates(event) {
+            const dates = this.$wire.data.dates || {};
+            if (dates.date_start && dates.date_end) return;
+            event.stopPropagation();
+            event.preventDefault();
+            this.$dispatch('availability-dates-required', { id: this.$wire.$id });
+        },
+    }"
+    x-on:click.capture="requireDates($event)"
+>
+    <x-resrv::kit-cta full wire:click="submit()" wire:loading.attr="disabled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="size-4.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <span>{{ $label ?? trans('statamic-resrv::frontend.search') }}</span>
-    </button>
+    </x-resrv::kit-cta>
 </div>

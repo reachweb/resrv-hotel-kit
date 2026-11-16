@@ -1,6 +1,12 @@
 @use(Carbon\Carbon)
 
+{{-- Restyled "pick another day" browser (La Marea). Markup/classes only — the
+     selectDate() wiring is stock. Kit hardening: the list is aria-busy while it loads
+     (no status message of its own: the results panel on the same page announces the
+     update), errors are role="alert", and the scroll back to the panel is instant
+     under reduced motion. --}}
 <div class="relative">
+    <div wire:loading.delay.long.attr="aria-busy">
     @if ($availableDates->isNotEmpty())
         <div class="divide-y divide-line">
             <div class="pb-4">
@@ -14,19 +20,20 @@
                 @php($isSelected = $data->hasDates() && Carbon::parse($date)->isSameDay(Carbon::parse($data->dates['date_start'])))
                 @php($fromPrice = collect($rateEntries)->min(fn ($info) => (float) $info['price']))
                 {{-- x-on:click (not @click — Blade would parse @ as a directive) smoothly
-                     brings the search/results panel back into view; block:'nearest' makes it
+                     (instantly under reduced motion) brings the search/results panel back
+                     into view; block:'nearest' makes it
                      a no-op when the panel is already visible, so it only scrolls when it
                      makes sense (e.g. you're scrolled down at the list on mobile). The target
                      sits above the dynamic results/list, so its position is morph-stable. --}}
                 <button type="button"
                         wire:click="selectDate('{{ $date }}')"
                         wire:key="day-{{ $date }}"
-                        x-on:click="document.querySelector('[data-resrv-booking-top]')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })"
+                        x-on:click="document.querySelector('[data-resrv-booking-top]')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' })"
                         @if ($isSelected) aria-current="date" @endif
-                        class="group w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta">
+                        class="group w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer">
                     <span class="flex items-baseline gap-3">
                         <span class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                            <span class="block text-xs font-semibold uppercase tracking-widest text-muted">
                                 {{ Carbon::parse($date)->format('D') }}
                             </span>
                             <span class="block text-lg font-medium {{ $isSelected ? 'text-terracotta-dark' : 'group-hover:text-terracotta-dark transition-colors' }}">
@@ -38,8 +45,8 @@
                         </span>
                     </span>
                     <span class="flex items-center gap-2.5 shrink-0 text-muted">
-                        <span class="text-sm">{{ trans('statamic-resrv::frontend.from') }} {{ config('resrv-config.currency_symbol') }}{{ $fromPrice }}</span>
-                        <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        <span class="text-sm tabular-nums">{{ trans('statamic-resrv::frontend.from') }} {{ config('resrv-config.currency_symbol') }}{{ $fromPrice }}</span>
+                        <svg class="size-4 motion-safe:group-hover:translate-x-0.5 transition-transform" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </span>
                 </button>
             @endforeach
@@ -60,15 +67,17 @@
     @endif
 
     @if ($errors->has('availability') && $data->hasDates())
-    <div class="rounded-lg border border-error/30 bg-error/5 p-4 mt-4">
+    <div role="alert" class="rounded-lg border border-error/30 bg-error/5 p-4 mt-4">
         <p class="text-sm font-medium text-error">{{ trans('statamic-resrv::frontend.searchError') }}</p>
         <p class="text-sm text-muted">{{ $errors->first('availability') }}</p>
     </div>
     @endif
 
-    <div class="absolute left-0 right-0 top-0 w-full h-full bg-white/60" wire:loading.delay.long>
+    </div>
+
+    <div class="absolute inset-0 bg-white/60" wire:loading.delay.long aria-hidden="true">
         <span class="flex items-center justify-center w-full h-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-5 h-5 text-teal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin size-5 text-teal" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
         </span>

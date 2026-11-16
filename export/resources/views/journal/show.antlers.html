@@ -4,20 +4,21 @@
 {{ partial:breadcrumb section_url="/journal" section_label="Journal" }}
 
 <article class="container-rsv py-8 lg:py-12">
-    <div class="max-w-[720px] mx-auto">
+    <div class="max-w-180 mx-auto">
         <header class="mb-8 reveal">
             <h1 class="t-h1 mb-5 text-balance">{{ title | widont }}</h1>
             {{ if excerpt }}<p class="text-lg leading-relaxed text-muted">{{ excerpt | widont }}</p>{{ /if }}
-            <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted mt-5 [&>*+*]:before:content-['·'] [&>*+*]:before:mr-2.5 [&>*+*]:before:text-sage">
+            <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted mt-5 [&>*+*]:before:content-['·'] [&>*+*]:before:mr-2.5">
                 {{ journal_categories limit="1" }}<span class="text-terracotta-dark">{{ title }}</span>{{ /journal_categories }}
                 <time datetime="{{ date | format('Y-m-d') }}">{{ date | format('j F Y') }}</time>
                 {{ if author }}<span>By <span class="text-ink font-medium">{{ author }}</span></span>{{ /if }}
             </p>
         </header>
 
-        {{ partial:image-slot :asset="hero_image" label="Article image · 16:9" ratio="16/9" class="rounded-xl mb-10 reveal" :alt="title" }}
+        {{# The LCP image: loads eagerly at high priority and never waits on the reveal. #}}
+        {{ partial:image-slot :asset="hero_image" label="Article image" ratio="16/9" class="rounded-xl mb-10" priority="true" sizes="(min-width: 768px) 720px, calc(100vw - 48px)" }}
 
-        <div class="reading prose prose-lg prose-p:text-ink/85 max-w-none reveal">{{ content }}</div>
+        <div class="reading prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:text-ink prose-p:text-ink/85 prose-li:text-ink/85 prose-a:text-terracotta-dark prose-strong:text-ink reveal">{{ content }}</div>
 
         {{ if journal_tags }}
             <div class="flex flex-wrap gap-1.5 mt-10 pt-8 border-t border-line">

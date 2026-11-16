@@ -219,7 +219,7 @@ tabs:
                             instructions: 'Leave empty to show the latest reviews automatically.'
                     feature_tiles:
                       display: 'Feature tiles'
-                      instructions: 'A bento row of image tiles; the first tile spans wider.'
+                      instructions: 'Image tiles. Three or more form a bento row (the first spans wider); two sit side by side.'
                       icon: 'layout-grid'
                       fields:
                         -
@@ -255,6 +255,18 @@ tabs:
                               -
                                 handle: text
                                 field: { type: textarea, display: 'Short text' }
+                              -
+                                handle: bookable
+                                field:
+                                  type: entries
+                                  display: 'Bookable entries'
+                                  collections: [restaurant, spa_treatments]
+                                  mode: select
+                                  width: 50
+                                  instructions: 'Optional. The venue or treatments this tile books; the tile shows their lowest live price.'
+                              -
+                                handle: action_label
+                                field: { type: text, display: 'Action label', width: 50, instructions: 'Optional, e.g. "Reserve a table". Shown when the tile links.' }
                     cta_band:
                       display: 'CTA band'
                       icon: bullhorn

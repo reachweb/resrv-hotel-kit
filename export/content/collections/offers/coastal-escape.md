@@ -4,7 +4,7 @@ blueprint: offer
 title: 'Coastal Escape · 10% off'
 summary: 'Use code COASTAL10 for 10% off a spring or autumn escape.'
 linked_coupon_code: COASTAL10
-cta_label: 'Book with COASTAL10'
+cta_label: 'Check availability'
 linked_rooms:
   - garden-view-double
   - sea-view-suite

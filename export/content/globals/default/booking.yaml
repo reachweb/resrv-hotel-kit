@@ -3,3 +3,11 @@ check_out_time: '11:00'
 max_adults: 5
 max_children: 3
 max_infants: 2
+room_panel_note: 'No card needed to reserve flexible rates'
+treatment_panel_note: 'Free cancellation up to a day before'
+treatment_notes:
+  - 'Pick your appointment time at checkout — morning to early evening.'
+  - 'The spa is adults-only and closed on Tuesdays.'
+  - 'Every treatment ends with herbal tea on the quiet sun deck.'
+offer_note: 'Free cancellation on most rates'
+pending_payment_note: 'Settle by bank transfer, or pay on arrival — whichever suits you. Full details are in your confirmation email.'

@@ -69,3 +69,8 @@ comment block in the config file):
 
 Then clear the config cache (`php artisan config:clear`) and run a test booking
 with Stripe's test card `4242 4242 4242 4242`.
+
+If Stripe is your **only** gateway, clear the **Room booking panel** note in the
+Booking global (CP → Globals → Booking). It reads "No card needed to reserve flexible
+rates", which is only true while guests can pay offline. A Stripe-only install
+removes it for you.

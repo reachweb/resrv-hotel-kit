@@ -1,0 +1,58 @@
+{{#
+    Mobile booking bar — the thumb-reach booking action on phones (DESIGN.md §2.5).
+    The layout yields it as `book_bar`, so a page can swap in its own:
+
+        {{ section:book_bar }}{{ partial:book-bar href="#book" label="Check availability" :price="availability:cheapest" unit="/ night" until="lg" }}{{ /section:book_bar }}
+
+    With no `href` it's the site-wide bar: Book Now → /rooms, priced from the lowest
+    live room rate (Resrv's availability:cheapest, like the cards). It hides while any
+    booking UI marked `data-hides-book-bar` is on screen (the home search card, a detail
+    page's panel, the rooms sticky search), so it never doubles what's already in
+    view — the `bookBar` component in site.js. The footer grows by the bar's height
+    wherever the bar can show, so the bar never covers its last line.
+    Params: href, label, price, price_label (default "from"), unit,
+            until — sm (default: the header shows Book Now from sm up) | lg (pages whose
+            booking panel only becomes sticky from lg).
+    Short viewports (a phone on its side) skip it: with the header it would take a
+    third of the screen.
+#}}
+{{ if href }}
+<div
+    data-book-bar="{{ until == 'lg' ? 'lg' : 'sm' }}"
+    x-data="bookBar"
+    x-show="visible"
+    x-cloak
+    x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
+    x-transition:enter-start="translate-y-full"
+    x-transition:enter-end="translate-y-0"
+    x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
+    x-transition:leave-start="translate-y-0"
+    x-transition:leave-end="translate-y-full"
+    class="{{ until == 'lg' ? 'lg:hidden' : 'sm:hidden' }} [@media(max-height:30rem)]:hidden fixed bottom-0 inset-x-0 z-40 flex items-center justify-between gap-4 bg-white border-t border-line px-6 pt-3 pb-[max(--spacing(3),env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgb(27_43_40/0.06)]"
+>
+    <p class="min-w-0 text-sm text-muted leading-tight">
+        {{ if price }}
+            {{ price_label ?? 'from' }}
+            {{# One line; on the narrowest phones the unit gives way to the button's label. #}}
+            <span class="block whitespace-nowrap font-display text-2xl leading-none text-terracotta-dark mt-0.5">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if unit }} <span class="font-sans text-sm text-muted max-[359px]:hidden">{{ unit }}</span>{{ /if }}</span>
+        {{ /if }}
+    </p>
+    {{ partial:button :href="href" :label="label ?? 'Check availability'" class="inline-flex flex-1 max-w-55" }}
+</div>
+{{ else }}
+    {{#
+        The site-wide bar is on every page, but its price means reading every room's
+        year of Resrv availability, so the finished bar is cached for 10 minutes.
+        That's safe because the price is a teaser: search, the room page and checkout
+        always price live from Resrv. Statamic doesn't clear {{ cache }} when content
+        is saved, and Resrv's rates and availability live in the database anyway, so
+        a CP price change reaches the bar within 10 minutes (`php artisan cache:clear`
+        shows it at once). Nothing per visitor is cached: the bar is the same for
+        everyone, and its show/hide runs in the browser.
+    #}}
+    {{ cache key="kit:from-price:book-bar" for="10 minutes" }}
+        {{ rooms_from = 0 }}
+        {{ collection:rooms }}{{ room_from = availability:cheapest }}{{ if room_from && (rooms_from == 0 || room_from < rooms_from) }}{{ rooms_from = room_from }}{{ /if }}{{ /collection:rooms }}
+        {{ partial:book-bar href="/rooms" label="Book Now" :price="rooms_from" price_label="Rooms from" unit="/ night" }}
+    {{ /cache }}
+{{ /if }}

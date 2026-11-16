@@ -17,6 +17,14 @@ admin_email: admin@resrv-hotel.test
 checkout_forms_default: checkout
 checkout_entry: checkout
 checkout_completed_entry: checkout-complete
+enable_reservation_status_page: true
+enable_customer_cancellations: true
+reservation_status_entry: manage-booking
+manual_reservations_payment_entry: pay
+manual_reservations_offline_instructions: |-
+  Bank transfer to Resrv Hotel
+  IBAN: GR00 0000 0000 0000 0000 0000 000
+  BIC: DEMOGRAA
 payment: full
 minutes_to_hold: 10
 enable_abandoned_emails: true

@@ -1,10 +1,17 @@
 {{#
-    Section header — heading + optional intro. Params:
-      heading, intro, align ('center' to centre), class (wrapper)
+    Section header — heading + optional intro + optional link (DESIGN.md §5.9). Params:
+      heading, intro, align ('center' to centre), class (wrapper),
+      cta_label + cta_url (a link aligned right of the heading; hidden below sm, where
+      the block renders its own full-width button after the content)
 #}}
 {{ if heading || intro }}
-    <div class="{{ class ?? 'mb-10 lg:mb-14' }} reveal{{ if align == 'center' }} text-center max-w-[640px] mx-auto{{ /if }}">
-        {{ if heading }}<h2 class="t-h2{{ unless align == 'center' }} max-w-[22ch]{{ /unless }}">{{ heading | widont }}</h2>{{ /if }}
-        {{ if intro }}<p class="text-base leading-relaxed text-muted mt-4 max-w-[54ch]{{ if align == 'center' }} mx-auto{{ /if }}">{{ intro }}</p>{{ /if }}
+    <div class="{{ class ?? 'mb-10 lg:mb-14' }}{{ if cta_label }} flex items-end justify-between gap-6{{ /if }}{{ if align == 'center' }} text-center max-w-160 mx-auto{{ /if }}">
+        <div class="reveal">
+            {{ if heading }}<h2 class="t-h2 text-balance{{ unless align == 'center' }} max-w-[28ch]{{ /unless }}">{{ heading | widont }}</h2>{{ /if }}
+            {{ if intro }}<p class="text-base leading-relaxed text-muted mt-4 max-w-[54ch] text-pretty{{ if align == 'center' }} mx-auto{{ /if }}">{{ intro }}</p>{{ /if }}
+        </div>
+        {{ if cta_label }}
+            <a href="{{ cta_url }}" class="group/cta text-sm font-semibold text-teal hover:text-terracotta-dark transition hidden sm:inline-flex items-center gap-1.5 shrink-0 pb-1">{{ cta_label }} <svg class="size-4 transition-transform motion-safe:group-hover/cta:translate-x-0.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+        {{ /if }}
     </div>
 {{ /if }}

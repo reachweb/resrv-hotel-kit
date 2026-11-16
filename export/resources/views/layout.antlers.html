@@ -1,9 +1,15 @@
+{{# `site` here is the kit's `site` global set (content/globals/site.yaml), which shadows
+    Statamic's built-in current-site variable, so {{ site:short_locale }} renders empty.
+    Statamic's Localize middleware sets app.locale to the current site's lang per request. #}}
 <!doctype html>
-<html lang="{{ site:short_locale }}">
+<html lang="{{ config:app:locale | replace('_', '-') }}">
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {{# Marks a JS-capable browser before first paint: reveal-on-scroll sections are
+            only hidden under `.js`, so without JavaScript they simply render. #}}
+        <script>document.documentElement.classList.add('js')</script>
 
         {{# Favicons — the arch "r." icon on a shell tile (masters in brand/) #}}
         <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -16,7 +22,7 @@
         {{# Brand fonts — Newsreader (display) + Manrope (body) #}}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Manrope:wght@400;500;600;700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Manrope:wght@400;500;600;700&display=swap">
 
         {{# Compiled site assets (Tailwind v4 + JS) #}}
         {{ vite src="resources/js/site.js|resources/css/site.css" }}
@@ -30,7 +36,8 @@
             <script src="https://js.stripe.com/v3/"></script>
         {{ /if }}
     </head>
-    <body class="min-h-screen flex flex-col">
+    <body class="group/page min-h-screen flex flex-col">
+        <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-100 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink focus:shadow-raised">Skip to content</a>
 
         {{# Templates opt into the booking flow's minimal chrome with `minimal_chrome: true`
             in their YAML front matter (checkout.antlers.html), read here as view:minimal_chrome. #}}
@@ -41,7 +48,8 @@
         {{ /if }}
 
         {{# Solid-nav pages clear the fixed header; transparent-hero pages manage their own top spacing. #}}
-        <main class="flex-1 w-full {{ unless transparent_nav }}pt-18 lg:pt-21{{ /unless }}">
+        {{# tabindex="-1" lets the skip link move focus here; a container takes no ring. #}}
+        <main id="main" tabindex="-1" class="flex-1 w-full focus:outline-none {{ unless transparent_nav }}pt-18 lg:pt-21{{ /unless }}">
             {{ template_content }}
         </main>
 
@@ -50,6 +58,13 @@
         {{ else }}
             {{ partial:footer }}
         {{ /if }}
+
+        {{# Phones get a thumb-reach booking bar. A template or block can swap in its own
+            with {{ section:book_bar }}; guest-service pages opt out with
+            `hide_book_bar: true` in their front matter. #}}
+        {{ unless view:minimal_chrome || view:hide_book_bar }}
+            {{ yield:book_bar }}{{ partial:book-bar }}{{ /yield:book_bar }}
+        {{ /unless }}
 
         {{# Resrv frontend JS (alpine-calendar + day.js) must load before Livewire scripts so its Alpine plugin registers #}}
         <script src="/vendor/statamic-resrv/frontend/js/resrv-frontend.js"></script>

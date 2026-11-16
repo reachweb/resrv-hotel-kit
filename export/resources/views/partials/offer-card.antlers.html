@@ -1,16 +1,24 @@
-{{# Offer card — expects an `offers` entry in scope; coupon code (if any) shows as a badge. #}}
+{{# Offer card — expects an `offers` entry in scope. The chip says how the offer applies:
+    a coupon code to enter at checkout, or applied automatically (an offer without a
+    code is a Resrv campaign whose conditions apply it, as the offer page says). The
+    card links to the offer page, so its action names that page; the entry's
+    `cta_label` is the offer page's own button. #}}
 <a href="{{ url }}" class="group block h-full">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
         <div class="relative zoom-on-hover">
-            {{ partial:image-slot :asset="image" label="Offer image · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
-            {{ if linked_coupon_code }}<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none absolute top-3 left-3 bg-terracotta text-white">{{ linked_coupon_code }}</span>{{ /if }}
+            {{ partial:image-slot :asset="image" label="Offer image" ratio="3/2" tone="clay" class="rounded-none" :sizes="sizes ?? '(min-width: 1280px) 384px, (min-width: 768px) 31vw, 100vw'" }}
+            {{ if linked_coupon_code }}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none absolute top-3 left-3 bg-terracotta-dark text-white">Code {{ linked_coupon_code }}</span>
+            {{ else }}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none absolute top-3 left-3 bg-white text-ink">Applied automatically</span>
+            {{ /if }}
         </div>
         <div class="p-6 flex flex-col flex-1">
             <h3 class="t-h3 mb-2">{{ title }}</h3>
             {{ if summary }}<p class="text-sm text-muted mb-5">{{ summary }}</p>{{ /if }}
             <span class="text-sm font-semibold text-teal group-hover:text-terracotta-dark transition mt-auto inline-flex items-center gap-1.5">
-                {{ cta_label ?? 'View offer' }}
-                <svg class="w-4 h-4 transition-transform group-hover:translate-x-[3px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 18 6-6-6-6"/></svg>
+                View offer
+                <svg class="size-4 transition-transform motion-safe:group-hover:translate-x-0.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
             </span>
         </div>
     </article>

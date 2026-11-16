@@ -9,7 +9,7 @@
             <p>
                 Questions about your booking?
                 {{ if site:phone }}
-                    Call <a href="tel:{{ site:phone }}" class="font-medium text-ink whitespace-nowrap underline-offset-2 hover:underline">{{ site:phone }}</a>
+                    Call <a href="tel:{{ site:phone | replace(' ', '') }}" class="font-medium text-ink whitespace-nowrap underline-offset-2 hover:underline">{{ site:phone }}</a>
                 {{ /if }}
                 {{ if site:email }}
                     {{ if site:phone }}or email{{ else }}Email{{ /if }} <a href="mailto:{{ site:email }}" class="font-medium text-ink whitespace-nowrap underline-offset-2 hover:underline">{{ site:email }}</a>

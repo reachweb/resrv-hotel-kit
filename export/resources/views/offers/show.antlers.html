@@ -1,23 +1,23 @@
 {{# Offer detail — hero band, summary + body, linked rooms, and a sticky CTA card
     with the coupon code (copied to clipboard via a tiny Alpine handler). Prices
-    stay live in Resrv. #}}
+    stay live in Resrv. The note under the button is booking:offer_note. #}}
 
-<section class="relative flex items-end min-h-[420px] lg:min-h-[52vh]">
-    <div class="img-slot has-img absolute inset-0 rounded-none">
+<section class="relative flex items-end min-h-105 lg:min-h-[52vh]">
+    <div class="img-slot {{ if image }}has-img{{ else }}tone-sea{{ /if }} absolute inset-0 rounded-none">
         {{ if image }}
-            {{ image }}<img src="{{ glide:url width='2000' }}" alt="{{ alt ?? title }}" class="absolute inset-0 w-full h-full object-cover">{{ /image }}
+            {{ image }}<img src="{{ glide:url width='2000' }}" alt="{{ alt | entities }}" fetchpriority="high" class="absolute inset-0 w-full h-full object-cover">{{ /image }}
         {{ else }}
-            <span class="slot-label">Offer image · 21:9</span>
+            <span class="slot-label top-28 bottom-auto left-auto right-6 lg:right-10" aria-hidden="true">Offer image<span>21:9</span></span>
         {{ /if }}
     </div>
-    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(27,43,40,.45), rgba(27,43,40,.12) 40%, rgba(27,43,40,.72));"></div>
-    <div class="relative container-rsv py-12 text-white">
+    <div class="absolute inset-0 bg-linear-to-b {{ if image }}from-ink/45 via-ink/12 via-40% to-ink/72{{ else }}from-ink/30 via-transparent via-40% to-ink/30{{ /if }}"></div>
+    <div class="relative w-full container-rsv py-12 text-white">
         <a href="/offers" class="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white mb-5 transition-colors">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
             All offers
         </a>
         {{ if linked_coupon_code }}
-            <span class="inline-flex w-fit items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold leading-none bg-terracotta text-white mb-4">Code {{ linked_coupon_code }}</span>
+            <span class="inline-flex w-fit items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold leading-none bg-terracotta-dark text-white mb-4">Code {{ linked_coupon_code }}</span>
         {{ /if }}
         <h1 class="t-display-xl text-white max-w-[16ch] text-balance">{{ title | widont }}</h1>
     </div>
@@ -41,25 +41,31 @@
         {{ /if }}
     </div>
 
-    <aside class="lg:sticky lg:top-[100px]">
+    <aside class="lg:sticky lg:top-25">
         <div class="bg-white rounded-lg shadow-card p-6">
             {{ if linked_coupon_code }}
-                <div x-data="{ copied: false }" class="mb-5">
+                {{# The code stays plain, selectable text; the Copy button shows only where the
+                    clipboard API exists (secure contexts, JS on) and stretches over the whole
+                    box. "Copied" is set once the write succeeds and announced politely. #}}
+                <div x-data="{ copied: false, canCopy: !!(window.isSecureContext && navigator.clipboard), timer: null }" class="mb-5">
                     <p class="text-sm text-muted mb-2">Use this code at checkout:</p>
-                    <button
-                        type="button"
-                        class="w-full flex items-center justify-between gap-3 rounded-md border border-dashed border-terracotta/60 bg-terracotta/5 px-4 py-3 font-display text-[22px] tracking-wide text-terracotta-dark hover:bg-terracotta/10 transition-colors"
-                        @click="navigator.clipboard?.writeText('{{ linked_coupon_code }}'); copied = true; setTimeout(() => copied = false, 2000)"
-                    >
-                        {{ linked_coupon_code }}
-                        <span class="text-xs font-sans font-semibold text-muted" x-text="copied ? 'Copied!' : 'Copy'"></span>
-                    </button>
+                    <div class="relative flex items-center justify-between gap-3 rounded-md border border-dashed border-terracotta/60 bg-terracotta/5 px-4 py-3 transition-colors has-[button:hover]:bg-terracotta/10 has-[button:focus-visible]:outline-2 has-[button:focus-visible]:outline-offset-2 has-[button:focus-visible]:outline-terracotta-dark">
+                        <span class="font-display text-2xl tracking-wide text-terracotta-dark select-all">{{ linked_coupon_code }}</span>
+                        <button
+                            type="button"
+                            x-show="canCopy"
+                            x-cloak
+                            class="text-xs font-semibold text-muted cursor-pointer focus-visible:outline-none after:absolute after:inset-0 after:rounded-md"
+                            @click="navigator.clipboard.writeText('{{ linked_coupon_code | add_slashes | entities }}').then(() => { copied = true; clearTimeout(timer); timer = setTimeout(() => copied = false, 2000) })"
+                        ><span x-text="copied ? 'Copied' : 'Copy'">Copy</span><span class="sr-only"> code</span></button>
+                    </div>
+                    <p class="sr-only" aria-live="polite" x-text="copied ? 'Code copied' : ''"></p>
                 </div>
             {{ else }}
                 <p class="text-sm text-muted mb-5">Applied automatically at checkout once your dates qualify.</p>
             {{ /if }}
             {{ partial:button href="/rooms" :label="cta_label ?? 'Check dates'" class="inline-flex w-full" }}
-            <p class="text-sm text-muted text-center mt-3">Free cancellation · book direct</p>
+            {{ if booking:offer_note }}<p class="text-sm text-muted text-center mt-3">{{ booking:offer_note }}</p>{{ /if }}
         </div>
     </aside>
 </section>

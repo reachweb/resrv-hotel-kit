@@ -20,16 +20,29 @@
   --color-sage-light:      #C5D3CF;
   --color-shell:           #F3EEE6;
   --color-sand:            #E8DFD2;
+  /* Terracotta is the brand accent: the logo's full stop, the hero sun, stars on
+     teal, soft tints. It can't carry white text or be read as text on Shell, so
+     anything that is read or pressed (buttons, prices, links, focus rings, the
+     selected calendar day) uses the deeper clay, -dark, with -deep on hover. */
   --color-terracotta:      #C98A5E;
-  --color-terracotta-dark: #B5754A;
-  --color-muted:           #5A6B67;
-  --color-line:            #DCD5C7;
-  --color-success:         #4F7A5B;
-  --color-warning:         #C99A4E;
-  --color-error:           #B5523E;
+  --color-terracotta-dark: #984A1A; /* white on it 6.3:1 · on Shell 5.5:1 · on Sand 4.8:1 */
+  --color-terracotta-deep: #883E11;
+  --color-muted:           #536561;
+  --color-line:            #DCD5C7; /* hairline dividers and card edges only (1.5:1 on white) */
+  /* Edges that identify a control (input/select/textarea borders, the off toggle
+     track) need 3:1 against their surface (WCAG 1.4.11): 3.5:1 on White, 3.1:1 on Shell. */
+  --color-line-strong:     #928772;
+  /* Status colours are deep enough to read as text on White, Shell and their own /10 tints. */
+  --color-success:         #446F50;
+  --color-warning:         #895B16;
+  --color-error:           #AB4238;
 
   --font-display: "Newsreader", ui-serif, Georgia, serif;
   --font-sans:    "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* UI text between text-sm and text-base: buttons, field values, compact rows. */
+  --text-ui: 0.9375rem; /* 15px */
+  --text-ui--line-height: 1.5;
 
   --radius-sm:   8px;
   --radius-md:   12px;
@@ -51,19 +64,19 @@
   --color-calendar-border:              #DCD5C7; /* Border */
   --color-calendar-hover:               #C5D3CF; /* Sage Light */
   --color-calendar-overlay:             rgba(27,43,40,.30);
-  --color-calendar-primary:             #C98A5E; /* Terracotta — selected/active day */
+  --color-calendar-primary:             #984A1A; /* Terracotta Dark — selected/active day */
   --color-calendar-primary-text:        #FFFFFF;
-  --color-calendar-muted:               #5A6B67; /* Muted */
+  --color-calendar-muted:               #536561; /* Muted */
   --color-calendar-disabled:            #B7B1A4;
   --color-calendar-other-month:         #B7B1A4;
-  --color-calendar-weekday:             #5A6B67;
+  --color-calendar-weekday:             #536561;
   --color-calendar-range:               #E8DFD2; /* Sand — in-range fill */
   --color-calendar-today-ring:          #9CB4B0; /* Sage */
-  --color-calendar-focus-ring:          #C98A5E; /* Terracotta */
-  --color-calendar-available:           #4F7A5B; /* Success — availability dot/label */
+  --color-calendar-focus-ring:          #984A1A; /* Terracotta Dark */
+  --color-calendar-available:           #446F50; /* Success — availability dot/label */
   --color-calendar-available-bg:        #EAF1EA;
   --color-calendar-unavailable:         #B7B1A4;
-  --color-calendar-day-meta:            #5A6B67; /* Muted — per-day price label */
+  --color-calendar-day-meta:            #536561; /* Muted — per-day price label */
 
   --radius-calendar:                    16px;
   --radius-calendar-day:                9999px;
@@ -78,7 +91,14 @@
    BASE — global resets/defaults 
    ============================================================ */
 @layer base {
-  html { scroll-behavior: smooth; }
+  /* scroll-padding keeps anchor targets (the skip link, #book) clear of the fixed header. */
+  html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+
+  /* One focus ring everywhere: 2px Terracotta Dark, offset 2px. Dark surfaces and the
+     transparent header over the hero switch it to Sage Light. A control that needs a
+     different ring sets focus-visible:outline-* utilities, which win over this layer. */
+  :focus-visible { outline: 2px solid var(--color-terracotta-dark); outline-offset: 2px; }
+  :where(.bg-teal, .bg-ink, .on-dark, #siteNav.is-transparent:not(.scrolled)) :focus-visible { outline-color: var(--color-sage-light); }
 
   /* Hide Alpine-controlled elements until Alpine boots (loaded via livewire:scripts). */
   [x-cloak] { display: none !important; }
@@ -94,7 +114,7 @@
   /* Headings default to the display face; utilities (font-sans, etc.) still win. */
   h1, h2, h3, h4 { font-family: var(--font-display); }
 
-  ::selection { background: var(--color-terracotta); color: #fff; }
+  ::selection { background: var(--color-terracotta-dark); color: #fff; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -128,52 +148,126 @@
   .field-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-ink); margin-bottom: 7px; }
   .input, .select, .textarea {
     width: 100%; height: 48px; padding: 0 14px; background: #fff; color: var(--color-ink);
-    border: 1.5px solid var(--color-line); border-radius: var(--radius-md); font-size: 15px; font-family: var(--font-sans);
+    border: 1.5px solid var(--color-line-strong); border-radius: var(--radius-md); font-size: var(--text-ui); font-family: var(--font-sans);
     transition: border-color .2s ease, box-shadow .2s ease;
   }
   .textarea { height: auto; padding: 12px 14px; min-height: 96px; resize: vertical; line-height: 1.55; }
-  .input::placeholder, .textarea::placeholder { color: var(--color-muted); opacity: .7; }
-  .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--color-terracotta); box-shadow: 0 0 0 2px rgba(201,138,94,.35); }
+  /* Full Muted (6.2:1 on White): placeholder text is still text. */
+  .input::placeholder, .textarea::placeholder { color: var(--color-muted); opacity: 1; }
+  .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--color-terracotta-dark); box-shadow: 0 0 0 2px rgb(152 74 26 / .25); }
   .field-help { font-size: 12.5px; color: var(--color-muted); margin-top: 6px; }
   .field-error { font-size: 12.5px; color: var(--color-error); margin-top: 6px; display: flex; gap: 5px; align-items: center; }
-  .input.has-error, .select.has-error { border-color: var(--color-error); }
+  .input.has-error, .select.has-error, .textarea.has-error { border-color: var(--color-error); }
   .select {
     -webkit-appearance: none; appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6B67' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23536561' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
   }
 
   /* Cards/surfaces/dividers are inlined as utilities in the markup
      (bg-white rounded-lg shadow-card · bg-sand/-shell/-teal · h-px bg-line border-0). */
 
-  /* ---- Image slots — graceful placeholder w/ ratio + label ---- */
+  /* ---- Image slots ----
+     The kit ships no photography, so an empty slot is drawn as a surface from the
+     hotel itself: sun on a limewashed wall (the default), clay, sage, or sea. Base +
+     shade live on the element; ::before is a patch of daylight (it drifts across the
+     wall on card hover), ::after is the limewash mottling + grain. Pick a surface
+     with `tone-*` (partials/image-slot `tone` param); `slot-v2`/`slot-v3` move the
+     light so neighbouring slots in a grid don't look stamped. Photos cover it all. */
   .img-slot {
-    position: relative; overflow: hidden; border-radius: inherit;
+    --slot-from: #EFE7DA; --slot-to: #DCCDB8;
+    --slot-light: rgb(255 250 240 / .9); --slot-light-at: 30% 28%;
+    --slot-shade: rgb(111 86 58 / .16);
+    --slot-texture: 1; --slot-mottle: 0 0;
+    --slot-ink: var(--color-teal);
+    position: relative; overflow: hidden; border-radius: inherit; isolation: isolate;
     background:
-      radial-gradient(120% 120% at 30% 20%, rgba(156,180,176,.55), transparent 60%),
-      linear-gradient(135deg, var(--color-sand), var(--color-sage-light));
+      radial-gradient(85% 75% at 100% 100%, var(--slot-shade), transparent 70%),
+      linear-gradient(160deg, var(--slot-from), var(--slot-to));
   }
+  .img-slot:not(.has-img)::before, .img-slot:not(.has-img)::after { content: ''; position: absolute; z-index: -1; pointer-events: none; }
+  .img-slot:not(.has-img)::before {
+    inset: -25%;
+    background: radial-gradient(38% 34% at var(--slot-light-at), var(--slot-light), transparent 72%);
+    transition: transform 1.4s cubic-bezier(.16,1,.3,1);
+  }
+  .img-slot:not(.has-img)::after {
+    inset: 0; opacity: var(--slot-texture);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .16 0 0 0 0 .12 0 0 0 1 -.44'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .99 0 0 0 0 .96 1.7 0 0 0 -.86'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E") var(--slot-mottle) / 1100px 1100px;
+  }
+  .zoom-on-hover:hover .img-slot:not(.has-img)::before { transform: translate(9%, 5%); }
+  .img-slot.slot-v2 { --slot-light-at: 72% 22%; --slot-mottle: -420px -260px; }
+  .img-slot.slot-v3 { --slot-light-at: 48% 12%; --slot-mottle: -760px -540px; }
+
+  /* Light surfaces take Teal captions; dark ones (for white type laid over them) take Shell. */
+  .img-slot.tone-clay { --slot-from: #EBD5C1; --slot-to: #D4A684; --slot-light: rgb(255 238 220 / .85); --slot-shade: rgb(122 64 32 / .18); }
+  .img-slot.tone-sage { --slot-from: #E1E8E2; --slot-to: #B4C7C0; --slot-light: rgb(248 252 246 / .85); --slot-shade: rgb(46 74 71 / .16); }
+  .img-slot.tone-sea { --slot-from: #456A64; --slot-to: #1F3532; --slot-light: rgb(214 230 222 / .2); --slot-shade: rgb(10 20 18 / .35); --slot-texture: .55; --slot-ink: var(--color-shell); }
+  .img-slot.tone-terracotta { --slot-from: #C58A62; --slot-to: #7A4730; --slot-light: rgb(255 214 178 / .4); --slot-shade: rgb(60 28 14 / .3); --slot-texture: .25; --slot-ink: var(--color-shell); }
+  .img-slot.tone-cypress { --slot-from: #7D968E; --slot-to: #3A524C; --slot-light: rgb(232 240 232 / .3); --slot-shade: rgb(16 30 26 / .3); --slot-texture: .25; --slot-ink: var(--color-shell); }
+  /* Water isn't plaster: sea surfaces take the grain alone, without the limewash mottling. */
+  .img-slot.tone-sea::after, .img-slot.tone-horizon::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .05 0 0 0 0 .08 0 0 0 0 .07 0 0 0 1 -.44'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /* The home hero with no photo: first light over the bay. The sun is the logo's
+     terracotta full stop, half sunk behind the sea layer, with its glitter path
+     (::before) below. It rises once on load (@keyframes first-light, outside the layer). */
+  .img-slot.tone-horizon {
+    --horizon: 24%; --sun-x: 78%; --sun-r: clamp(16px, 3.4vmin, 34px);
+    --slot-texture: .55; --slot-ink: var(--color-shell);
+    background:
+      linear-gradient(180deg, transparent var(--horizon), rgb(240 214 182 / .7) var(--horizon), #4D736C calc(var(--horizon) + .3%), #33524E calc(var(--horizon) + 10%), #213935 62%, #162622),
+      radial-gradient(circle at var(--sun-x) calc(var(--horizon) + var(--sun-rise)), var(--color-terracotta) 0 var(--sun-r), transparent calc(var(--sun-r) + 1px)),
+      radial-gradient(circle at var(--sun-x) var(--horizon), rgb(226 168 120 / calc(.5 * var(--dawn))), transparent 24vmin),
+      linear-gradient(180deg, #24403C 0%, #41625B calc(var(--horizon) * .5), rgb(190 160 128 / calc(.35 + .65 * var(--dawn))) calc(var(--horizon) - .3%), #4D736C var(--horizon));
+    animation: first-light 2.4s cubic-bezier(.16,1,.3,1) .2s backwards;
+  }
+  @media (min-width: 768px) { .img-slot.tone-horizon { --horizon: 31%; --sun-x: 76%; } }
+  /* Glitter path: ruled light, broken up by a streaky noise mask so it sparkles rather than ladders. */
+  .img-slot.tone-horizon::before {
+    inset: auto; left: calc(var(--sun-x) - 7%); width: 14%; top: calc(var(--horizon) + .4%); height: 24%;
+    transition: none; opacity: var(--dawn);
+    background:
+      repeating-linear-gradient(180deg, rgb(238 194 150 / .6) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(180deg, transparent 0 3px, rgb(238 194 150 / .35) 3px 4px, transparent 4px 11px);
+    clip-path: polygon(42% 0, 58% 0, 88% 100%, 12% 100%);
+    mask-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.06 .45' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.2 -1.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"),
+      linear-gradient(90deg, transparent, #000 40%, #000 60%, transparent),
+      linear-gradient(180deg, #000, rgb(0 0 0 / .3) 50%, transparent);
+    mask-composite: intersect;
+  }
+  /* Clear of the search card that overlaps the hero's bottom edge. */
+  .img-slot.tone-horizon > .slot-label { top: 6.5rem; bottom: auto; left: auto; right: 24px; }
+  @media (min-width: 1024px) { .img-slot.tone-horizon > .slot-label { right: 40px; } }
+
+  /* Caption for an empty slot: its name in Newsreader italic, then the ratio. */
+  .img-slot > .slot-label {
+    position: absolute; left: 16px; bottom: 14px; z-index: 1;
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-display); font-style: italic; font-size: 17px; line-height: 1; color: var(--slot-ink);
+  }
+  .img-slot > .slot-label > span { font: 600 11px/1 var(--font-sans); letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+  .img-slot > .slot-label > span::before { content: ''; display: inline-block; width: 14px; height: 1px; margin-right: 8px; vertical-align: middle; background: currentColor; opacity: .5; }
+  .img-slot.has-img > .slot-label { display: none; }
+  .img-slot .slot-mark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--slot-ink); opacity: .35; }
+
   .img-slot > img {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
     transition: transform .5s cubic-bezier(.2,.6,.2,1), filter .4s ease;
   }
-  .img-slot > .slot-label {
-    position: absolute; left: 12px; bottom: 11px; z-index: 1;
-    font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--color-teal);
-    background: rgba(255,255,255,.72); backdrop-filter: blur(3px); padding: 3px 8px; border-radius: var(--radius-pill);
-  }
-  .img-slot.has-img > .slot-label { display: none; }
-  .img-slot .slot-mark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(46,74,71,.32); }
   .zoom-on-hover:hover .img-slot > img { transform: scale(1.04); filter: brightness(1.03); }
 
   /* ---- Layout helpers ---- */
   .container-rsv { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
   @media (min-width: 1024px) { .container-rsv { padding-inline: 40px; } }
   .reading { max-width: 680px; }
-  .section { padding-block: 56px; }
-  @media (min-width: 1024px) { .section { padding-block: 104px; } }
-  .section-sm { padding-block: 48px; }
-  @media (min-width: 1024px) { .section-sm { padding-block: 72px; } }
+  /* Section rhythm is inlined in the block partials: shell sections use margins
+     (mt-16 mb-20 lg:mt-24 lg:mb-32) so neighbours collapse to one gap; tinted
+     bands use padding (py-16 lg:py-24). */
 
   /* ---- Navigation states (header partial mirrors these on #siteNav) ---- */
   #siteNav.is-solid { background: rgba(243,238,230,.88); backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--color-line); }
@@ -207,17 +301,23 @@
   #siteNav.is-transparent.scrolled .brand svg { filter: none; }
   .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .25s ease; opacity: .85; }
   .nav-link:hover::after { transform: scaleX(1); }
-  .nav-link.is-active { color: var(--color-terracotta) !important; }
-  .nav-link.is-active::after { transform: scaleX(1); background: var(--color-terracotta); }
+  /* Current page: clay on the solid bar. Over the hero it stays white and the underline marks it. */
+  .nav-link.is-active::after { transform: scaleX(1); }
+  #siteNav.is-solid .nav-link.is-active { color: var(--color-terracotta-dark); }
+  #siteNav.is-transparent .nav-link.is-active { color: #fff; }
+  #siteNav.is-transparent.scrolled .nav-link.is-active { color: var(--color-terracotta-dark); }
 
   /* ---- Guests stepper ---- */
   .step-btn {
-    width: 34px; height: 34px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; color: var(--color-ink);
+    width: 34px; height: 34px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line-strong); background: #fff; color: var(--color-ink);
     display: grid; place-items: center; cursor: pointer; transition: border-color .2s ease, background .2s ease;
   }
   .step-btn:hover { border-color: var(--color-ink); }
   .step-btn svg { width: 16px; height: 16px; }
-  .is-disabled { opacity: .35; pointer-events: none; }
+  /* Dim the icon, not the button: fading the whole control also faded its focus ring. */
+  .is-disabled { pointer-events: none; }
+  .is-disabled svg { opacity: .35; }
+  .step-btn.is-disabled { border-color: var(--color-line); }
 
   /* ---- Search-widget field ---- */
   .sw-field {
@@ -234,7 +334,7 @@
 
   /* ---- Segmented control (checkout options / rate picker) ---- */
   .seg { display: inline-flex; flex-wrap: wrap; gap: 8px; }
-  .seg-btn { padding: 9px 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line); background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s ease; }
+  .seg-btn { padding: 9px 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line-strong); background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s ease; }
   .seg-btn:hover { border-color: var(--color-ink); }
   .seg-btn.is-on { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
   .seg-btn.is-on .text-muted { color: rgba(255,255,255,.7) !important; }
@@ -242,20 +342,47 @@
   /* ---- Payment-method picker (checkout) ---- */
   .pay-method { text-align: left; padding: 18px; border-radius: var(--radius-lg); border: 2px solid var(--color-line); background: #fff; cursor: pointer; transition: all .2s ease; }
   .pay-method:hover { border-color: var(--color-sage); }
-  .pay-method.is-on { border-color: var(--color-terracotta); background: rgba(201,138,94,.05); }
+  .pay-method.is-on { border-color: var(--color-terracotta-dark); background: rgb(201 138 94 / .06); }
   .pm-radio { width: 18px; height: 18px; border-radius: var(--radius-pill); border: 2px solid var(--color-muted); display: inline-grid; place-items: center; flex-shrink: 0; }
-  .pay-method.is-on .pm-radio { border-color: var(--color-terracotta); }
-  .pay-method.is-on .pm-radio::after { content: ''; width: 9px; height: 9px; border-radius: var(--radius-pill); background: var(--color-terracotta); }
+  .pay-method.is-on .pm-radio { border-color: var(--color-terracotta-dark); }
+  .pay-method.is-on .pm-radio::after { content: ''; width: 9px; height: 9px; border-radius: var(--radius-pill); background: var(--color-terracotta-dark); }
 }
 
 /* ============================================================
    MOTION — reveal-on-scroll (toggled by a small IntersectionObserver
    in site.js). Kept outside @layer components so the reduced-motion
-   reset reliably wins.
+   reset reliably wins. Hidden only under `.js` (set inline in the
+   layout's <head>), so with JavaScript off the sections still render.
    ============================================================ */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
-.reveal.in { opacity: 1; transform: none; }
+.reveal { transition: opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
+.js .reveal:not(.in) { opacity: 0; transform: translateY(18px); }
+
+/* First light on the photo-less home hero (.img-slot.tone-horizon): the sun rises
+   onto the horizon and the sky and glitter path warm up. Registered properties so
+   the gradients can interpolate; without @property support it simply renders lit. */
+@property --sun-rise { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --dawn { syntax: '<number>'; inherits: true; initial-value: 1; }
+@keyframes first-light { from { --sun-rise: calc(var(--sun-r) * 1.6); --dawn: 0; } }
+
+/* Calendar internals: classes the upstream alpine-calendar renders, which utilities
+   can't reach. Moved here from the availability-dates override (upstream inlines a
+   <style> per search instance). The overlay's z-index is set inline, hence !important. */
+@media (prefers-reduced-motion: no-preference) {
+  .rc-day__label, .rc-day__dot { animation: rc-fade-in .3s ease-out; }
+}
+@keyframes rc-fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+.rc-popup-overlay { z-index: 300 !important; }
+
+/* The paper boat on the 404 window rides the swell. */
+.arch-boat { transform-box: fill-box; transform-origin: 50% 100%; animation: arch-boat-bob 6s ease-in-out infinite alternate; }
+@keyframes arch-boat-bob { from { transform: translateY(0) rotate(-2.5deg); } to { transform: translateY(-1px) rotate(2.5deg); } }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .nav-link::after, .acc-icon { transition: none; }
+  /* Alpine's x-collapse animates height through an inline transition; this wins over it. */
+  [x-collapse] { transition: none !important; }
   .img-slot > img { transition: none; }
+  .img-slot:not(.has-img)::before { transition: none; }
+  .img-slot.tone-horizon, .arch-boat { animation: none; }
 }

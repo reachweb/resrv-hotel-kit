@@ -37,12 +37,12 @@
             <x-resrv::availability-quantity
                 :maxQuantity="$this->maxQuantity"
                 :errors="$errors"
-                class="flex flex-col justify-center px-[18px] py-2 flex-1 min-h-[62px]"
+                class="flex flex-col justify-center px-4.5 py-2 flex-1 min-h-15.5"
             />
             @endif
 
             @if ($live === false)
-            <div class="p-1.5 md:pl-2.5 flex md:items-stretch">
+            <div class="p-1.5 md:pl-2.5 flex md:items-center">
                 <x-resrv::availability-button class="w-full" />
             </div>
             @endif

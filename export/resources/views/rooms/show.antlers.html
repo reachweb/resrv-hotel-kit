@@ -1,73 +1,99 @@
 {{# Room detail — gallery, specs/amenities, extras tease, reviews, and the sticky
-    Resrv booking panel. Extras/options are only teased here; selection is at checkout. #}}
+    Resrv booking panel. Extras/options are only teased here; selection is at checkout.
+    Captions sit inside a JS string in an attribute, so they're `add_slashes | entities`
+    (an apostrophe in an asset's alt text would otherwise end the string). #}}
 <div x-data="lightbox([
-    {{ if hero_image }}{{ hero_image }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /hero_image }}{{ /if }}
-    {{ if gallery }}{{ gallery }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt }}' },{{ /gallery }}{{ /if }}
+    {{ if hero_image }}{{ hero_image }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt | add_slashes | entities }}' },{{ /hero_image }}{{ /if }}
+    {{ if gallery }}{{ gallery }}{ s: '{{ glide:url width='1800' }}', c: '{{ alt | add_slashes | entities }}' },{{ /gallery }}{{ /if }}
 ])">
 
     {{ partial:breadcrumb section_url="/rooms" section_label="Rooms" }}
 
-    {{# Gallery — hero + stacked thumbs (desktop), hero-only + "+N photos" (mobile);
-        each tile carries its own aspect-ratio + rounding so nothing collapses. #}}
+    {{# Gallery — hero + stacked thumbs (desktop), hero-only + "View all N photos" (mobile);
+        each tile carries its own aspect-ratio + rounding so nothing collapses. The hero
+        is the page's LCP image: eager, high fetch priority, sized per breakpoint. #}}
     <section class="container-rsv pt-5">
         <div class="relative grid gap-3 lg:grid-cols-[1.6fr_1fr]">
             {{ if hero_image }}
                 {{ hero_image }}
-                    <button type="button" class="img-slot has-img zoom-on-hover cursor-pointer block w-full rounded-xl aspect-[4/3] lg:aspect-[7/5]" @click="open('{{ glide:url width='1800' }}')">
-                        <img src="{{ glide:url width='1400' }}" alt="{{ alt ?? title }}">
+                    <button type="button" class="img-slot has-img zoom-on-hover cursor-pointer block w-full rounded-xl aspect-4/3 lg:aspect-7/5" @click="open('{{ glide:url width='1800' }}')">
+                        <img src="{{ glide:url width='1400' }}" srcset="{{ glide:url width='800' }} 800w, {{ glide:url width='1400' }} 1400w" sizes="(min-width: 1280px) 740px, (min-width: 1024px) 60vw, calc(100vw - 48px)" alt="{{ (alt ?? page:title) | entities }}" fetchpriority="high">
                     </button>
                 {{ /hero_image }}
             {{ else }}
-                <div class="img-slot rounded-xl aspect-[4/3] lg:aspect-[7/5]"><span class="slot-label">Room image · 3:2</span></div>
+                <div class="img-slot rounded-xl aspect-4/3 lg:aspect-7/5"><span class="slot-label" aria-hidden="true">Room image<span>3:2</span></span></div>
             {{ /if }}
             <div class="hidden gap-3 lg:grid lg:grid-rows-2">
                 {{ if gallery }}
                     {{ gallery limit="2" }}
                         <button type="button" class="img-slot has-img zoom-on-hover cursor-pointer block w-full rounded-xl" @click="open('{{ glide:url width='1800' }}')">
-                            <img src="{{ glide:url width='800' }}" alt="{{ alt ?? title }}" loading="lazy">
+                            <img src="{{ glide:url width='800' }}" alt="{{ if alt }}{{ alt | entities }}{{ else }}{{ page:title | entities }}, photo {{ count + 1 }}{{ /if }}" loading="lazy">
                         </button>
                     {{ /gallery }}
                 {{ else }}
-                    <div class="img-slot rounded-xl"><span class="slot-label">Room gallery image · 3:2</span></div>
-                    <div class="img-slot rounded-xl"><span class="slot-label">Room gallery image · 3:2</span></div>
+                    <div class="img-slot tone-clay slot-v2 rounded-xl"><span class="slot-label" aria-hidden="true">Room gallery image<span>3:2</span></span></div>
+                    <div class="img-slot tone-sage slot-v3 rounded-xl"><span class="slot-label" aria-hidden="true">Room gallery image<span>3:2</span></span></div>
                 {{ /if }}
             </div>
 
-            {{# "View all" notice — opens the lightbox. Centered on mobile (hero-only there) so it's obvious; bottom-right on desktop. #}}
-            <button type="button" x-show="imgs.length > 1" @click="i = 0; lb = true"
-                class="absolute bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:right-4 lg:translate-x-0 z-10 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2.5 text-sm font-semibold text-ink shadow-raised ring-1 ring-black/5 backdrop-blur hover:bg-white transition"
-                aria-label="View all photos">
-                <svg class="w-4 h-4 text-teal shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 20"/></svg>
-                <span x-text="'+' + imgs.length + ' photos'"></span>
+            {{# "View all" — opens the lightbox. Its visible text is its name, and N is the
+                whole set (the lightbox drops duplicates). x-cloak: no empty pill before
+                Alpine counts. Centered on mobile (hero-only there); bottom-right on desktop. #}}
+            <button type="button" x-show="imgs.length > 1" x-cloak @click="open(imgs[0].s)"
+                class="absolute bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:right-4 lg:translate-x-0 z-10 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2.5 text-sm font-semibold text-ink shadow-raised ring-1 ring-black/5 backdrop-blur hover:bg-white transition">
+                <svg class="w-4 h-4 text-teal shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 20"/></svg>
+                <span x-text="'View all ' + imgs.length + ' photos'"></span>
             </button>
         </div>
     </section>
 
-    <section class="container-rsv py-10 lg:py-14 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
+    {{# Two column regions + the booking panel. DOM order is lead → panel → details, so
+        on mobile the panel follows the specs instead of trailing the reviews; on desktop
+        the panel spans both rows of the right column and stays sticky. #}}
+    <section class="container-rsv py-10 lg:py-14 grid lg:grid-cols-[1fr_400px] gap-x-14 gap-y-10 items-start">
 
-        <div>
+        <div class="lg:col-start-1">
             {{ partial:detail-header }}
 
             {{ if intro }}
                 <div class="reading text-lg leading-relaxed text-ink/85 space-y-5 mb-10 reveal">{{ intro | markdown }}</div>
             {{ /if }}
 
-            {{# Spec line — size · sleeps · bed · view · floor, like the room card #}}
-            <ul class="flex flex-wrap gap-x-2.5 gap-y-1 text-base text-muted mb-10 reveal [&>li+li]:before:content-['·'] [&>li+li]:before:mr-2.5 [&>li+li]:before:text-sage">
+            {{# Spec line — size · sleeps · bed · view · floor, like the room card. The
+                separator trails each item, so a wrapped line never starts with a dot. #}}
+            <ul class="flex flex-wrap gap-x-2.5 gap-y-1 text-base text-muted reveal [&>li:not(:last-child)]:after:content-['·'] [&>li:not(:last-child)]:after:ml-2.5">
                 {{ if size_sqm }}<li>{{ size_sqm }} m²</li>{{ /if }}
                 {{ if max_occupancy }}<li>Sleeps {{ max_occupancy }}</li>{{ /if }}
                 {{ if bed_configuration }}<li>{{ bed_configuration }}</li>{{ /if }}
                 {{ if view_type }}<li>{{ view_type }} view</li>{{ /if }}
                 {{ if floor }}<li>{{ floor }}</li>{{ /if }}
             </ul>
-            <hr class="border-line mb-10" />
+        </div>
+
+        <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
+            <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
+                {{ partial:booking-price-header unit="/ night" note="Pick your dates for live rates &amp; availability." }}
+
+                {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
+
+                <div class="mt-4">
+                    {{ livewire:availability-results :entry="id" rates="true" }}
+                </div>
+
+                {{ partial:booking-cutoff word="tonight" }}
+            </div>
+            {{ partial:booking-trust :label="booking:room_panel_note" }}
+        </aside>
+
+        <div class="lg:col-start-1">
+            <hr class="border-line mb-10 max-lg:hidden" />
 
             <h2 class="t-h2 mb-6 reveal">In this room</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-12 reveal">
+            <ul class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-12 reveal">
                 {{ amenities }}
-                    <div class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-sage shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</div>
+                    <li class="flex items-center gap-3 text-base"><svg class="w-5 h-5 text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>{{ title }}</li>
                 {{ /amenities }}
-            </div>
+            </ul>
             <hr class="border-line mb-10" />
 
             {{# Extras tease — assigned Resrv extras; real selection is checkout step 1 #}}
@@ -77,7 +103,7 @@
                 <ul class="grid sm:grid-cols-2 gap-x-8 mb-12 reveal">
                     {{ extras | values | limit:4 }}
                         <li class="flex items-baseline justify-between gap-4 py-3 border-b border-line">
-                            <span class="font-medium text-[15px]">{{ name }}</span>
+                            <span class="font-medium text-ui">{{ name }}</span>
                             <span class="text-sm text-muted whitespace-nowrap tabular-nums">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if price_type == 'perday' }} / night{{ /if }}</span>
                         </li>
                     {{ /extras }}
@@ -92,21 +118,6 @@
                 {{ /collection:reviews }}
             </div>
         </div>
-
-        <aside class="lg:sticky lg:top-[100px]" id="book">
-            <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
-                {{ partial:booking-price-header unit="/ night" note="Pick your dates for live rates &amp; availability." }}
-
-                {{ livewire:availability-search calendar="range" view="availability-search-panel" }}
-
-                <div class="mt-4">
-                    {{ livewire:availability-results :entry="id" rates="true" }}
-                </div>
-
-                {{ partial:booking-cutoff word="tonight" }}
-            </div>
-            {{ partial:booking-trust label="No card needed to reserve flexible rates" }}
-        </aside>
     </section>
 
     {{ partial:related-section heading="You may also like" grid="gap-6 md:grid-cols-3" }}
@@ -115,12 +126,11 @@
         {{ /collection:rooms }}
     {{ /partial:related-section }}
 
-    <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line p-4 flex items-center justify-between gap-4 shadow-raised">
-        <div>
-            {{ if availability }}<span class="font-display text-[22px] text-terracotta-dark">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}</span><span class="text-sm text-muted"> / night</span>{{ /if }}
-        </div>
-        {{ partial:button href="#book" label="Check availability" class="inline-flex flex-1 max-w-[220px]" }}
-    </div>
+    {{# Below lg the booking panel sits in the flow, so the layout's bar points back to it
+        (and hides while it's on screen). #}}
+    {{ section:book_bar }}
+        {{ partial:book-bar href="#book" label="Check availability" :price="availability:cheapest" unit="/ night" until="lg" }}
+    {{ /section:book_bar }}
 
     {{ partial:lightbox }}
 </div>

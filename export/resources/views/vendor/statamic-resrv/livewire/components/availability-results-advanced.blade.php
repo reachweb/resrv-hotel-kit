@@ -4,67 +4,66 @@
 
 {{-- Restyled to the design's rate-comparison rows (room-detail booking panel).
      Markup/classes only — the wire:click="checkoutRate(...)" structure and the
-     $availability / $entryRates contract are preserved. --}}
+     $availability / $entryRates contract are preserved. The rows are divided, not boxed:
+     they sit inside the page's white booking panel, so a bordered white box per rate
+     read as a card inside a card. "Book now" keeps its visible text first in the
+     accessible name (WCAG 2.5.3) with the rate as an sr-only suffix. --}}
 <div {{ $attributes->merge(['class' => 'my-3']) }}>
     @if (count($availability) === 0)
-    <div class="rounded-lg border border-line bg-sand/60 p-5 text-center">
-        <span class="text-sm text-muted">{{ trans('statamic-resrv::frontend.pleaseSelectDates') }}</span>
+    <div class="rounded-lg bg-sand/60 p-5 text-center">
+        <p class="text-sm text-muted">{{ trans('statamic-resrv::frontend.pleaseSelectDates') }}</p>
     </div>
     @else
-    <div class="text-sm font-medium text-muted mb-3">
+    <p class="text-sm font-medium text-muted">
         {{ trans('statamic-resrv::frontend.pleaseSelectRateToBook') }}:
-    </div>
-    <div class="grid grid-cols-1 gap-2.5" role="list">
+    </p>
+    <ul class="divide-y divide-line" role="list">
         @foreach ($availability as $rateId => $data)
             @if (data_get($data, 'message.status') !== true)
-            <div class="rounded-lg border border-line bg-sand/60 p-4 text-center" role="listitem">
-                <div class="font-medium text-[15px]">{{ data_get($entryRates, $rateId) }}</div>
-                <div class="text-sm text-muted mt-1">{{ trans('statamic-resrv::frontend.noAvailability') }}</div>
-            </div>
+            <li class="flex items-baseline justify-between gap-3 py-4 last:pb-0">
+                <span class="font-medium text-ui">{{ data_get($entryRates, $rateId) }}</span>
+                <span class="text-sm text-muted text-right">{{ trans('statamic-resrv::frontend.noAvailability') }}</span>
+            </li>
             @else
             @php($cancellation = data_get($data, 'data.cancellation_policy'))
             @php($cancellationLabel = ($cancellation && $dateStart) ? CancellationPolicy::labelFor($cancellation['policy'], $cancellation['period'], Carbon::parse($dateStart)) : null)
-            @php($nonRefundable = data_get($cancellation, 'policy') === 'non_refundable')
+            @php($freeCancellationOpen = $cancellationLabel && data_get($cancellation, 'policy') !== 'non_refundable' && CancellationPolicy::freeCancellationOpen($cancellation['period'], Carbon::parse($dateStart)))
             @php($days = (int) data_get($data, 'request.days', 0))
             @php($perNight = $days > 0 ? round(((float) data_get($data, 'data.price')) / $days) : null)
-            <div class="rounded-lg border border-line bg-white p-4 transition-colors hover:border-sage" role="listitem">
+            <li class="py-4 last:pb-0">
                 <div class="flex items-start justify-between gap-3">
-                    <span class="font-medium text-[15px]">{{ data_get($entryRates, $rateId) }}</span>
+                    <span class="font-medium text-ui">{{ data_get($entryRates, $rateId) }}</span>
                     @if ($perNight)
                     <span class="text-right shrink-0">
-                        <span class="font-display text-[20px] text-terracotta-dark leading-none">{{ config('resrv-config.currency_symbol') }}{{ $perNight }}</span>
+                        <span class="font-display text-xl text-terracotta-dark leading-none tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ $perNight }}</span>
                         @if ($days > 1)<span class="text-sm text-muted">/night</span>@endif
                     </span>
                     @endif
                 </div>
-                <div class="flex items-end justify-between gap-3 mt-2">
-                    <div>
-                        @if ($cancellationLabel)
-                            @if ($nonRefundable)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-sand text-muted">{{ $cancellationLabel }}</span>
-                            @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-success/10 text-success">
-                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                                {{ $cancellationLabel }}
-                            </span>
-                            @endif
-                        @endif
-                        @if ($days > 1)
-                        <div class="text-sm text-muted mt-1.5 tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ data_get($data, 'data.price') }} total</div>
-                        @endif
-                    </div>
-                    <button
-                        type="button"
-                        class="inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg border-[1.5px] border-transparent text-sm font-semibold leading-none whitespace-nowrap transition bg-terracotta text-white hover:bg-terracotta-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta shrink-0"
-                        wire:click="checkoutRate('{{ $rateId }}')"
-                        aria-label="Book {{ data_get($entryRates, $rateId) }} now"
-                    >
-                        {{ trans('statamic-resrv::frontend.bookNow') }}
-                    </button>
+                {{-- The policy badge gets the full row: a dated label is long, and a pill squeezed
+                     beside the button wrapped into a lozenge. rounded-lg is a pill on one line and a
+                     soft block when it does wrap. --}}
+                @if ($cancellationLabel)
+                <div class="mt-2">
+                    @if ($freeCancellationOpen)
+                    <span class="inline-flex items-start gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold leading-tight bg-success/10 text-success">
+                        <svg class="size-3 shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                        {{ $cancellationLabel }}
+                    </span>
+                    @else
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold leading-tight bg-sand text-muted">{{ $cancellationLabel }}</span>
+                    @endif
                 </div>
-            </div>
+                @endif
+                <div class="flex items-center justify-between gap-3 mt-3">
+                    <div class="text-sm text-muted tabular-nums">
+                        @if ($days > 1){{ config('resrv-config.currency_symbol') }}{{ data_get($data, 'data.price') }} total @endif
+                    </div>
+                    <x-resrv::kit-cta size="sm" class="shrink-0" wire:click="checkoutRate('{{ $rateId }}')">{{ trans('statamic-resrv::frontend.bookNow') }}<span class="sr-only">: {{ data_get($entryRates, $rateId) }}</span></x-resrv::kit-cta>
+                </div>
+            </li>
             @endif
         @endforeach
-    </div>
+    </ul>
     @endif
 </div>

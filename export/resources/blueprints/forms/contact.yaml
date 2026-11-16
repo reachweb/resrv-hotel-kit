@@ -10,6 +10,7 @@ tabs:
               display: 'First name'
               type: text
               input_type: text
+              autocomplete: given-name
               validate: [required]
               width: 50
           -
@@ -18,6 +19,7 @@ tabs:
               display: 'Last name'
               type: text
               input_type: text
+              autocomplete: family-name
               validate: [required]
               width: 50
           -
@@ -26,6 +28,7 @@ tabs:
               display: Email
               type: text
               input_type: email
+              autocomplete: email
               validate: [required, email]
           -
             handle: subject

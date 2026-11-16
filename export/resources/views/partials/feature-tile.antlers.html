@@ -1,17 +1,51 @@
 {{# Feature tile — image with a gradient and the title + short text overlaid.
-    Expects a `feature_tiles` row in scope (image, title, text, link); renders as a
-    link only when `link` is set. The first tile spans wider (bento). #}}
-<{{ link ? 'a' : 'div' }}{{ if link }} href="{{ link }}"{{ /if }} class="block rounded-xl{{ if link }} zoom-on-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-terracotta{{ /if }}{{ if first }} md:col-span-2 lg:row-span-2{{ /if }}">
-    <div class="img-slot {{ if image }}has-img{{ /if }} rounded-xl h-full min-h-[260px]">
-        {{ if image }}
-            {{ image }}<img src="{{ glide:url width='1600' }}" alt="" loading="lazy">{{ /image }}
-        {{ else }}
-            <span class="slot-label top-3 bottom-auto">Tile image · 3:2</span>
-        {{ /if }}
-        <div class="absolute inset-0 bg-linear-to-b from-transparent from-40% to-ink/75"></div>
-        <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+    Expects a `feature_tiles` row in scope (image, title, text, link, bookable,
+    action_label); renders as a link only when `link` is set. In a bento row (3+ tiles)
+    the first tile spans wider; a lone tile spans the row. Empty tiles take the dark
+    slot tones in turn (terracotta, cypress, sea) so the white type still reads.
+
+    Bookable tiles: `bookable` holds Resrv-enabled entries (the venue, the treatments).
+    The tile shows the lowest of their live prices ({{ availability:cheapest }}, the
+    same augmented value the room and treatment cards use), so it can never drift
+    from what checkout charges. Entries with reservations off are skipped. Reading
+    each price loads that entry's year of availability, so the rendered price is
+    cached for 10 minutes per set of entries (partials/book-bar explains why that's safe).
+
+    The photo covers a fixed-height tile, so it renders wider than the tile is when
+    the tile is narrow: `sizes` gives that covered width for each row layout. #}}
+{{ unless image }}{{ tile_tone = {rotate between='terracotta|cypress|sea'} }}{{ /unless }}
+{{ tile_sizes = switch(
+    (total_results == 1) => '(min-width: 1280px) 1200px, max(510px, 100vw)',
+    (total_results == 2) => '(min-width: 1024px) 660px, (min-width: 768px) 510px, max(510px, 100vw)',
+    (first) => '(min-width: 1024px) 870px, max(420px, 100vw)',
+    () => '(min-width: 768px) 480px, max(420px, 100vw)'
+) }}
+<{{ link ? 'a' : 'div' }}{{ if link }} href="{{ link }}"{{ /if }} class="block rounded-xl{{ if link }} group zoom-on-hover focus-visible:outline-offset-4{{ /if }}{{ if first && total_results > 2 }} md:col-span-2 lg:row-span-2{{ elseif total_results == 1 }} md:col-span-2{{ /if }}">
+    <div class="relative isolate h-full min-h-65 rounded-xl overflow-hidden">
+        {{ partial:image-slot :asset="image" label="Tile image" :tone="tile_tone" fill="true" :sizes="tile_sizes" class="absolute inset-0 rounded-none [&>.slot-label]:top-4 [&>.slot-label]:bottom-auto" }}
+        <div class="absolute inset-0 bg-linear-to-b from-transparent {{ if image }}from-30% via-ink/40 via-60% to-ink/80{{ else }}from-40% to-ink/35{{ /if }}"></div>
+        <div class="absolute inset-x-0 bottom-0 p-6 lg:p-7 text-white">
             <h3 class="t-h3 text-white">{{ title }}</h3>
-            {{ if text }}<p class="text-sm text-white/85 mt-1 max-w-[38ch]">{{ text }}</p>{{ /if }}
+            {{ if text }}<p class="text-sm text-white/85 mt-1 max-w-[38ch] text-pretty">{{ text }}</p>{{ /if }}
+            {{ if bookable || (link && action_label) }}
+                <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 mt-5 pt-4 border-t border-white/25">
+                    {{ if bookable }}
+                        {{ cache key="kit:from-price:tile:{bookable | pluck('id') | join(',')}" for="10 minutes" }}
+                            {{ lowest_price = 0 }}
+                            {{ bookable }}{{ entry_from = availability:cheapest }}{{ if entry_from && (lowest_price == 0 || entry_from < lowest_price) }}{{ lowest_price = entry_from }}{{ /if }}{{ /bookable }}
+                            {{ if lowest_price }}
+                                <p class="text-sm text-white/85">From <span class="font-display text-2xl leading-none text-white">{{ config:resrv-config:currency_symbol }}{{ lowest_price | format_number:0 }}</span></p>
+                            {{ /if }}
+                        {{ /cache }}
+                    {{ /if }}
+                    {{ if link && action_label }}
+                        <span class="inline-flex items-center gap-1.5 text-sm font-semibold">
+                            {{ action_label }}
+                            <svg class="size-4 transition-transform duration-300 motion-safe:group-hover:translate-x-0.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                        </span>
+                    {{ /if }}
+                </div>
+            {{ /if }}
         </div>
     </div>
 </{{ link ? 'a' : 'div' }}>

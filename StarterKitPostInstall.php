@@ -140,6 +140,32 @@ PHP;
         } else {
             $console->warn("Could not update config/resrv-config.php automatically — set the [{$gateway}] gateway by hand (see STRIPE.md).");
         }
+
+        if ($gateway === 'stripe') {
+            $this->removeNoCardNote($console);
+        }
+    }
+
+    /**
+     * A Stripe-only checkout takes a card, so the booking global's room-panel note
+     * ("No card needed to reserve flexible rates") would be untrue. Drop it; the
+     * room page hides the note when the field is empty. 'both' keeps it, since
+     * guests can still choose the offline gateway.
+     */
+    private function removeNoCardNote($console): void
+    {
+        $path = base_path('content/globals/default/booking.yaml');
+
+        if (! file_exists($path)) {
+            return;
+        }
+
+        $updated = preg_replace('/^room_panel_note:.*\R/m', '', file_get_contents($path), 1, $count);
+
+        if ($count === 1) {
+            file_put_contents($path, $updated);
+            $console->info('Removed the "no card needed" room-panel note (Stripe takes a card at checkout).');
+        }
     }
 
     /**

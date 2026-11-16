@@ -5,7 +5,8 @@
      in the DOM like the hidden cards so Livewire morphs it back in when it applies.
      Category headings only show when more than one group is visible: categories
      are global in Resrv, so a single-group product (e.g. a table booking with one
-     cross-product extra) would otherwise inherit a heading written for another. --}}
+     cross-product extra) would otherwise inherit a heading written for another. Category
+     headings are h2s under the step's h1; errors are announced (role="alert"). --}}
 <div>
     @if ($this->frontendExtras->count() > 0)
         @php($visibleGroups = $this->frontendExtras->reject(
@@ -16,7 +17,7 @@
             <div @class(['hidden' => $category->extras->every(fn ($extra) => $this->hiddenExtras->contains($extra->id))])>
                 @if ($visibleGroups > 1)
                 <div class="mb-4">
-                    <h3 class="text-xl font-semibold">{{ $category->id ? $category->name : trans('statamic-resrv::frontend.extras') }}</h3>
+                    <h2 class="text-xl font-semibold">{{ $category->id ? $category->name : trans('statamic-resrv::frontend.extras') }}</h2>
                     @if ($category->id && $category->description)
                     <p class="text-sm text-muted mt-0.5">{{ $category->description }}</p>
                     @elseif (! $category->id)
@@ -33,7 +34,7 @@
             @endforeach
         </div>
         @if ($errors)
-        <div class="rounded-lg border border-error/30 bg-error/5 p-4 mt-6">
+        <div class="rounded-lg border border-error/30 bg-error/5 p-4 mt-6" role="alert">
             <div class="text-sm text-error">
                 @foreach ($errors as $index => $error)
                     <div wire:key="{{ $index }}">{{ $error }}</div>

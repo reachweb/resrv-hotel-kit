@@ -1,0 +1,17 @@
+{{# One tab of the hero booking card (partials/hero-booking). Params: name (stay |
+    treatment | table), label. Server classes render the Stay tab active before Alpine
+    boots; the :class object then owns the active/inactive classes. #}}
+<button
+    type="button"
+    role="tab"
+    id="book-tab-{{ name }}"
+    data-tab="{{ name }}"
+    aria-controls="book-panel-{{ name }}"
+    aria-selected="{{ name == 'stay' ? 'true' : 'false' }}"
+    tabindex="{{ name == 'stay' ? '0' : '-1' }}"
+    :aria-selected="(tab === '{{ name }}').toString()"
+    :tabindex="tab === '{{ name }}' ? 0 : -1"
+    @click="tab = '{{ name }}'"
+    class="flex-1 md:flex-none h-11 md:h-10 px-5 rounded-full text-sm font-semibold transition-colors duration-200 cursor-pointer focus-visible:-outline-offset-4 focus-visible:outline-white {{ name == 'stay' ? 'bg-teal text-white' : 'text-ink hover:bg-shell' }}"
+    :class="{ 'bg-teal text-white': tab === '{{ name }}', 'text-ink hover:bg-shell': tab !== '{{ name }}' }"
+>{{ label }}</button>

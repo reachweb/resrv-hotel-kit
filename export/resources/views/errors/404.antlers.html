@@ -1,4 +1,4 @@
-{{# 404 — the image degrades to a graceful named slot. #}}
+{{# 404 — the page that drifted out to sea, seen through an arched window (partials/sea-window). #}}
 <div class="min-h-[70vh] flex items-center">
     <div class="container-rsv grid lg:grid-cols-2 gap-12 items-center py-16">
         <div>
@@ -9,6 +9,6 @@
                 {{ partial:button href="/rooms" label="Browse rooms" variant="secondary" class="inline-flex" }}
             </div>
         </div>
-        <div class="img-slot rounded-xl" style="aspect-ratio: 4/3;"><span class="slot-label">404 illustration · 4:3</span></div>
+        <div class="img-slot rounded-xl aspect-4/3">{{ partial:sea-window }}</div>
     </div>
 </div>

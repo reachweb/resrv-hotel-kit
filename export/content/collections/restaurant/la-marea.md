@@ -9,12 +9,15 @@ hours:
     time: '8:00 – 11:00'
   - label: Lunch
     time: '13:00 – 16:00'
+    bookable: true
   - label: Dinner
     time: '19:30 – 22:30'
+    bookable: true
 highlights:
   - 'Whole grilled day-boat fish'
   - 'Tomatoes from the garden'
   - 'Natural local wines'
+booking_note: 'Pick your arrival time at checkout · breakfast needs no booking.'
 body:
   -
     type: paragraph

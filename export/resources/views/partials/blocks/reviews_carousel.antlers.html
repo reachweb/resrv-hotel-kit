@@ -1,19 +1,34 @@
-{{# Reviews — teal section with testimonial cards. #}}
-<section class="section-sm bg-teal text-white">
+{{# Reviews — teal band with testimonial cards. Below sm the cards become a swipe row
+    (the next card peeks in as the affordance) instead of a tall stack; from sm up they
+    sit in a 2-column grid. While the row actually scrolls it's a focusable region, so
+    keyboards can scroll it; once it doesn't (the grid), it drops out of the Tab order.
+    The aggregate is the average of every published review, so it can't claim more
+    than the collection holds; with no reviews it stays hidden. #}}
+<section class="py-16 lg:py-24 bg-teal text-white">
     <div class="container-rsv">
-        <div class="grid lg:grid-cols-[0.9fr_1.6fr] gap-12 lg:gap-16 items-center">
+        <div class="grid lg:grid-cols-[0.9fr_1.6fr] gap-10 lg:gap-16 items-center">
             <div class="reveal">
                 {{ if heading }}<h2 class="t-display text-white mb-5 text-balance">{{ heading | widont }}</h2>{{ /if }}
                 {{ if show_aggregate }}
-                    {{ partial:stars :rating="5" class="text-terracotta" }}
-                    <p class="text-sm text-sage-light/80 mt-3">Rated by guests who stayed with us.</p>
+                    {{ review_count = {collection:count from="reviews"} }}
+                    {{ if review_count }}
+                        {{ rating_sum = 0 }}
+                        {{ collection:reviews }}{{ rating_sum = rating_sum + rating }}{{ /collection:reviews }}
+                        {{ average_rating = rating_sum / review_count }}
+                        {{ star_rating = average_rating | round }}
+                        {{ partial:stars :rating="star_rating" class="text-terracotta" decorative="true" }}
+                        <p class="text-sm text-sage-light/80 mt-3"><span class="font-semibold text-white">{{ average_rating | format_number(1) }}</span> out of 5 from {{ review_count }} guest {{ review_count == 1 ? 'review' : 'reviews' }}</p>
+                    {{ /if }}
                 {{ /if }}
             </div>
-            <div class="grid sm:grid-cols-2 gap-5">
+            <div role="region" aria-label="Guest reviews" tabindex="0"
+                x-data="{ scrolls: true, measure() { this.scrolls = this.$el.scrollWidth > this.$el.clientWidth } }"
+                x-init="measure()" @resize.window.debounce.150ms="measure()" :tabindex="scrolls ? 0 : null"
+                class="-mx-6 px-6 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sage-light sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible">
                 {{ if reviews }}
-                    {{ reviews }}{{ partial:testimonial }}{{ /reviews }}
+                    {{ reviews }}<div class="w-5/6 shrink-0 snap-start sm:w-auto [&>figure]:h-full">{{ partial:testimonial }}</div>{{ /reviews }}
                 {{ else }}
-                    {{ collection:reviews limit="4" }}{{ partial:testimonial }}{{ /collection:reviews }}
+                    {{ collection:reviews limit="4" }}<div class="w-5/6 shrink-0 snap-start sm:w-auto [&>figure]:h-full">{{ partial:testimonial }}</div>{{ /collection:reviews }}
                 {{ /if }}
             </div>
         </div>

@@ -1,9 +1,10 @@
 @props(['gateways'])
 
 {{-- Restyled to the design's payment-method cards (.pay-method / .pm-radio).
-     The gateway-selected dispatch and loading states are stock. --}}
+     The gateway-selected dispatch and loading states are stock. The h1 takes focus
+     when the step opens (see checkout). --}}
 <div>
-    <h1 class="t-h1 mb-2">{{ trans('statamic-resrv::frontend.payment') }}</h1>
+    <h1 class="t-h1 mb-2 focus:outline-none" tabindex="-1" data-step-heading="3-gateway">{{ trans('statamic-resrv::frontend.payment') }}</h1>
     <p class="text-base leading-relaxed text-muted mb-8">{{ trans('statamic-resrv::frontend.selectPaymentMethod') }}</p>
     <div class="grid sm:grid-cols-2 gap-4">
         @foreach ($gateways as $gateway)
@@ -14,9 +15,9 @@
                 class="pay-method disabled:opacity-50 disabled:cursor-wait"
             >
                 <span class="flex items-center gap-3">
-                    <span class="pm-radio"></span>
+                    <span class="pm-radio" aria-hidden="true"></span>
                     <span class="font-medium">{{ $gateway['label'] }}</span>
-                    <svg wire:loading xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-4 h-4 animate-spin text-teal ml-auto">
+                    <svg wire:loading xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="size-4 animate-spin text-teal ml-auto" aria-hidden="true">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                     </svg>

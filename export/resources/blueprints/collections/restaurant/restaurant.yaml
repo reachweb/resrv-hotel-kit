@@ -55,10 +55,13 @@ tabs:
               fields:
                 -
                   handle: label
-                  field: { type: text, display: Service, width: 50 }
+                  field: { type: text, display: Service, width: 33 }
                 -
                   handle: time
-                  field: { type: text, display: Time, width: 50 }
+                  field: { type: text, display: Time, width: 33 }
+                -
+                  handle: bookable
+                  field: { type: toggle, display: Bookable, width: 33, instructions: 'Shown above the table booking. Turn on for services set up as Resrv sittings.' }
           -
             handle: highlights
             field:
@@ -66,6 +69,13 @@ tabs:
               display: Highlights
               instructions: 'Short bullet highlights.'
               add_button: 'Add highlight'
+          -
+            handle: booking_note
+            field:
+              type: text
+              display: 'Booking note'
+              localizable: true
+              instructions: 'One line under the table booking: what guests choose at checkout, and which services need no booking.'
   booking:
     display: Booking
     sections:

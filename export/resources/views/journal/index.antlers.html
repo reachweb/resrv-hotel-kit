@@ -3,6 +3,8 @@
 {{ partial:index-header title="Notes from the coast" description="Slow guides, kitchen stories and the occasional tide chart — written from the cliff." pad_bottom="pb-10" }}
 
 <div class="container-rsv pb-16 lg:pb-24">
+    {{# The cards' titles are h3s; this gives them an h2 to sit under. #}}
+    <h2 class="sr-only">All notes</h2>
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {{ collection:journal sort="date:desc" }}
             <div class="reveal h-full">{{ partial:journal-card }}</div>

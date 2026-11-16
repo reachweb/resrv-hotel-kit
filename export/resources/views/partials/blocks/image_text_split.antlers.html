@@ -1,13 +1,13 @@
 {{# Image + text split — alternating sides via image_position. #}}
-<section class="section">
+<section class="mt-16 mb-20 lg:mt-24 lg:mb-32">
     <div class="container-rsv grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div class="reveal{{ if image_position == 'right' }} lg:order-2{{ /if }}">
-            {{ partial:image-slot :asset="image" label="Section image · 4:3" ratio="4/3" class="rounded-xl" :alt="heading" }}
+            {{ partial:image-slot :asset="image" label="Section image" ratio="4/3" class="rounded-xl" sizes="(min-width: 1280px) 568px, (min-width: 1024px) 45vw, 100vw" }}
         </div>
         <div class="reveal{{ if image_position == 'right' }} lg:order-1{{ /if }}">
             {{ if heading }}<h2 class="t-h2 mb-6 text-balance">{{ heading | widont }}</h2>{{ /if }}
-            <div class="space-y-4 text-lg leading-relaxed text-ink/85 [&_a]:text-terracotta-dark [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">{{ text }}</div>
-            {{ if cta_label }}{{ partial:button :href="cta_url" :label="cta_label" variant="secondary" focus="true" class="inline-flex mt-8" }}{{ /if }}
+            <div class="space-y-4 text-lg leading-relaxed text-ink/85 text-pretty [&_a]:text-terracotta-dark [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">{{ text }}</div>
+            {{ if cta_label && cta_url }}{{ partial:button :href="cta_url" :label="cta_label" variant="secondary" class="inline-flex mt-8" }}{{ /if }}
         </div>
     </div>
 </section>

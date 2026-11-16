@@ -3,9 +3,11 @@
  *
  * Small, one-off stateful UI (mobile sheet, accordion) stays inline in the
  * templates — the Alpine that Livewire 4 bundles. Centralised here: the
- * reveal-on-scroll observer and the `lightbox` Alpine component shared by the
- * room gallery and the page-builder gallery grid (registered on `alpine:init`,
- * which is why site.js loads in <head>, before {{ livewire:scripts }}).
+ * reveal-on-scroll observer, the `bookBar` phone booking bar, the `lightbox`
+ * Alpine component shared by the room gallery and the page-builder gallery grid,
+ * and the `listbox` picker (the home hero's treatment field). The components
+ * register on `alpine:init`, which is why site.js loads in <head>, before
+ * {{ livewire:scripts }}.
  */
 
 function initReveal(root = document) {
@@ -43,10 +45,42 @@ if (document.readyState === 'loading') {
 
 document.addEventListener('alpine:init', () => {
     /**
+     * Mobile booking bar (partials/book-bar). Visible only while none of the page's
+     * `[data-hides-book-bar]` elements (the booking UI it would duplicate) is on
+     * screen. With nothing marked it simply shows.
+     */
+    Alpine.data('bookBar', () => ({
+        visible: false,
+        init() {
+            const blockers = document.querySelectorAll('[data-hides-book-bar]');
+            if (!blockers.length || !('IntersectionObserver' in window)) {
+                this.visible = true;
+                return;
+            }
+
+            const onScreen = new Set();
+            this.observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    entry.isIntersecting ? onScreen.add(entry.target) : onScreen.delete(entry.target);
+                });
+                this.visible = onScreen.size === 0;
+            });
+            blockers.forEach((el) => this.observer.observe(el));
+        },
+        destroy() {
+            this.observer?.disconnect();
+        },
+    }));
+
+    /**
      * Shared gallery lightbox. Callers render `{{ partial:lightbox }}` inside an
      * `x-data="lightbox([...])"` root and pass an array of `{ s: <full-size url>,
      * c: <caption> }`; clickable tiles in that root call `open(<full-size url>)`.
-     * Duplicate sources are collapsed so the same photo never shows twice.
+     * Duplicate sources are collapsed so the same photo never shows twice. The
+     * partial is the modal dialog: its `x-trap.inert.noscroll="lb"` moves focus in
+     * and hands it back to the opener when `lb` turns false, however it was set.
+     * Captions arrive inside a JS string in an attribute, so callers escape them
+     * with `| add_slashes | entities` (Statamic has no `addslashes` modifier).
      */
     Alpine.data('lightbox', (imgs = []) => ({
         lb: false,
@@ -58,6 +92,84 @@ document.addEventListener('alpine:init', () => {
         },
         go(d) {
             this.i = (this.i + d + this.imgs.length) % this.imgs.length;
+        },
+    }));
+
+    /**
+     * Select-only listbox (WAI-ARIA listbox pattern) for pickers whose rows need more
+     * than a native <select> can draw. Markup: a trigger `x-ref="button"` and a list
+     * `x-ref="list"` (role=listbox, tabindex=-1) of `[role=option]` rows carrying
+     * `data-value` + `data-label`. While open, focus sits on the list and
+     * aria-activedescendant follows the highlighted row: arrows / Home / End move,
+     * Enter / Space / click choose, Escape / click-outside close, a letter jumps to the
+     * next row starting with it. `value` and `label` are readable by the surrounding
+     * markup (e.g. a CTA's :href).
+     */
+    Alpine.data('listbox', (placeholder = '') => ({
+        open: false,
+        active: -1,
+        value: '',
+        label: placeholder,
+        options() {
+            return [...this.$refs.list.querySelectorAll('[role=option]')];
+        },
+        activeId() {
+            return this.open && this.active >= 0 ? this.options()[this.active]?.id : null;
+        },
+        show(index = null) {
+            const options = this.options();
+            const selected = options.findIndex((option) => option.dataset.value === this.value);
+            this.active = index === -1 ? options.length - 1 : (index ?? Math.max(selected, 0));
+            this.open = true;
+            this.$nextTick(() => {
+                this.$refs.list.focus({ preventScroll: true });
+                this.reveal();
+            });
+        },
+        hide(refocus = true) {
+            this.open = false;
+            if (refocus) this.$refs.button.focus();
+        },
+        toggle() {
+            this.open ? this.hide() : this.show();
+        },
+        move(step) {
+            this.active = Math.min(this.options().length - 1, Math.max(0, this.active + step));
+            this.reveal();
+        },
+        to(index) {
+            this.active = index === -1 ? this.options().length - 1 : index;
+            this.reveal();
+        },
+        /** Keep the highlighted row inside the list's own scroll area, never scrolling the page. */
+        reveal() {
+            const list = this.$refs.list;
+            const option = this.options()[this.active];
+            if (!option) return;
+            if (option.offsetTop < list.scrollTop) {
+                list.scrollTop = option.offsetTop;
+            } else if (option.offsetTop + option.offsetHeight > list.scrollTop + list.clientHeight) {
+                list.scrollTop = option.offsetTop + option.offsetHeight - list.clientHeight;
+            }
+        },
+        choose(index = this.active) {
+            const option = this.options()[index];
+            if (!option) return;
+            this.value = option.dataset.value;
+            this.label = option.dataset.label;
+            this.hide();
+        },
+        typeahead(key) {
+            if (key.length !== 1 || key === ' ') return;
+            const options = this.options();
+            const letter = key.toLowerCase();
+            for (let offset = 1; offset <= options.length; offset++) {
+                const index = (this.active + offset) % options.length;
+                if (options[index].dataset.label.toLowerCase().startsWith(letter)) {
+                    this.to(index);
+                    return;
+                }
+            }
         },
     }));
 });

@@ -3,7 +3,9 @@
 
 {{-- Restyled to the design's order-summary details (checkout.html): title, rate,
      check-in/out rows with the booking-global times, quantity + cancellation.
-     The mobile collapse Alpine behaviour is stock. --}}
+     The mobile collapse Alpine behaviour is stock; the toggle reports aria-expanded,
+     controls the panel and its text follows the state. The title is an h2 under the
+     step's h1. --}}
 @php($booking = Statamic\Facades\GlobalSet::findByHandle('booking')?->inDefaultSite())
 <div
     x-data="{
@@ -22,11 +24,11 @@
     }"
     x-on:resize.window.debounce="updateViewportWidth()"
 >
-    <h3 class="t-h3 mb-0.5">{{ $entry->title }}</h3>
+    <h2 class="t-h3 mb-0.5">{{ $entry->title }}</h2>
     @if ($reservation->rate_id)
     <p class="text-sm text-muted">{{ $reservation->getRateLabel() }}</p>
     @endif
-    <div wire:ignore x-show="open" x-bind="vw >= 1024 ? '' : { 'x-collapse': '' }">
+    <div wire:ignore id="resrv-reservation-details" x-show="open" x-bind="vw >= 1024 ? '' : { 'x-collapse': '' }">
         <div class="space-y-2 text-sm mt-4 pb-4 border-b border-line">
             @if ($entry->collection()->handle() === 'rooms')
             <div class="flex justify-between gap-3">
@@ -58,12 +60,18 @@
             @endif
         </div>
     </div>
-    <button class="mt-3 w-full inline-flex justify-center items-center lg:hidden cursor-pointer" x-on:click="toggle">
-        <span class="text-sm font-medium">
+    <button
+        type="button"
+        class="mt-3 w-full min-h-6 inline-flex justify-center items-center rounded-md lg:hidden cursor-pointer"
+        x-on:click="toggle"
+        aria-controls="resrv-reservation-details"
+        x-bind:aria-expanded="open.toString()"
+    >
+        <span class="text-sm font-medium" x-text="open ? @js(trans('Hide details')) : @js(trans('Show details'))">
             {{ trans('Show details') }}
         </span>
-        <span class="ml-2" x-bind:class="{'transform rotate-180': open}">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+        <span class="ml-2 motion-safe:transition-transform" x-bind:class="{ 'rotate-180': open }" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
         </span>

@@ -1,17 +1,42 @@
 title: Booking
-fields:
-  -
-    handle: check_in_time
-    field: { type: text, display: 'Check-in time', width: 50, default: '15:00' }
-  -
-    handle: check_out_time
-    field: { type: text, display: 'Check-out time', width: 50, default: '11:00' }
-  -
-    handle: max_adults
-    field: { type: integer, display: 'Max adults', width: 33, default: 5, instructions: 'Highest count the guests picker allows. Ages 13+.' }
-  -
-    handle: max_children
-    field: { type: integer, display: 'Max children', width: 33, default: 3, instructions: 'Ages 2–12.' }
-  -
-    handle: max_infants
-    field: { type: integer, display: 'Max infants', width: 33, default: 2, instructions: 'Under 2.' }
+tabs:
+  main:
+    display: Booking
+    sections:
+      -
+        display: Stay
+        fields:
+          -
+            handle: check_in_time
+            field: { type: text, display: 'Check-in time', width: 50, default: '15:00' }
+          -
+            handle: check_out_time
+            field: { type: text, display: 'Check-out time', width: 50, default: '11:00' }
+          -
+            handle: max_adults
+            field: { type: integer, display: 'Max adults', width: 33, default: 5, instructions: 'Highest count the guests picker allows. Ages 13+.' }
+          -
+            handle: max_children
+            field: { type: integer, display: 'Max children', width: 33, default: 3, instructions: 'Ages 2–12.' }
+          -
+            handle: max_infants
+            field: { type: integer, display: 'Max infants', width: 33, default: 2, instructions: 'Under 2.' }
+      -
+        display: 'Booking notes'
+        instructions: 'Your policies, as the short lines shown beside the booking panels. Keep them true to your Resrv rates and payment setup. Leave a field empty to hide it.'
+        fields:
+          -
+            handle: room_panel_note
+            field: { type: text, display: 'Room booking panel', instructions: 'Under the booking panel on each room page. Clear it if guests pay by card when they book.' }
+          -
+            handle: treatment_panel_note
+            field: { type: text, display: 'Treatment booking panel', instructions: 'Under the booking panel on each spa treatment page.' }
+          -
+            handle: treatment_notes
+            field: { type: list, display: 'Treatment “Good to know”', add_button: 'Add a line', instructions: 'Spa hours and house rules, one line each. Shown on every treatment page.' }
+          -
+            handle: offer_note
+            field: { type: text, display: 'Offer note', instructions: 'Under the button on each offer page.' }
+          -
+            handle: pending_payment_note
+            field: { type: textarea, display: 'Payment due note', instructions: 'On the booking-received page while payment is still due (offline payments). The bank details shown with it come from Resrv → Settings → Offline Payment Instructions.' }

@@ -1,17 +1,28 @@
 {{#
     Restaurant booking band — live Resrv single-date search bound to the venue
     entry: date + sitting rate, priced per table; party size and arrival time are
-    picked at checkout (free Resrv Options).
+    picked at checkout (free Resrv Options). With a band heading (h2) the venue
+    name below it is an h3; without one the venue name is the band's h2.
 #}}
-<section class="section-sm bg-sand" id="reserve">
+{{ venue_level = heading ? 3 : 2 }}
+<section class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="reserve" data-hides-book-bar>
     <div class="container-rsv">
         {{ partial:section-header :heading="heading" :intro="intro" align="center" class="mb-8 lg:mb-10" }}
-        <div class="max-w-[760px] mx-auto">
+        <div class="max-w-190 mx-auto">
             {{ if venue }}
-                {{ venue }}{{ partial:restaurant-booking-widget }}{{ /venue }}
+                {{ venue }}{{ partial:restaurant-booking-widget :level="venue_level" }}{{ /venue }}
             {{ else }}
-                {{ collection:restaurant limit="1" }}{{ partial:restaurant-booking-widget }}{{ /collection:restaurant }}
+                {{ collection:restaurant limit="1" }}{{ partial:restaurant-booking-widget :level="venue_level" }}{{ /collection:restaurant }}
             {{ /if }}
         </div>
     </div>
 </section>
+
+{{# On phones the layout's booking bar reserves a table here instead of a room. #}}
+{{ section:book_bar }}
+    {{ if venue }}
+        {{ venue }}{{ partial:book-bar href="#reserve" label="Reserve a table" :price="availability:cheapest" unit="/ table" until="lg" }}{{ /venue }}
+    {{ else }}
+        {{ collection:restaurant limit="1" }}{{ partial:book-bar href="#reserve" label="Reserve a table" :price="availability:cheapest" unit="/ table" until="lg" }}{{ /collection:restaurant }}
+    {{ /if }}
+{{ /section:book_bar }}

@@ -1,0 +1,15 @@
+---
+minimal_chrome: true
+---
+{{# Pay for your booking — Resrv's reservation-payment component, where guests pay a
+    reservation created in the Control Panel from the signed link in their payment
+    request email (no lookup form). Wired as the Payment Page Entry in
+    resources/addons/statamic-resrv.yaml. Card payments mount the same restyled
+    checkout-payment view as checkout, so the layout's Stripe.js include covers it.
+    `minimal_chrome` gives it checkout's header + footer: a payment step, not a page
+    to browse away from. #}}
+<section class="container-rsv py-10 lg:py-16">
+    <div class="max-w-2xl mx-auto">
+        {{ livewire:reservation-payment }}
+    </div>
+</section>

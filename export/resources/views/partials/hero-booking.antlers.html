@@ -1,0 +1,175 @@
+{{#
+    Home hero booking card: one card, three ways in, each a real Resrv path.
+      · Stay      — range search → /rooms (the listing opens on the chosen dates)
+      · Treatment — picker → that treatment's booking page, where its own calendar
+                    (duration tiers, closed days) lives. Every treatment is its own
+                    Resrv entry and a search bar's redirect is fixed, so the spa is
+                    chosen before the date.
+      · Table     — single-date search bound to the La Marea entry → /dining#reserve.
+                    No rate control: a rate in the shared session would lock the
+                    sittings panel there to one sitting; date only keeps Lunch and
+                    Dinner side by side.
+    Searches share the resrv-search session, which is how the receiving page opens on
+    the chosen date. A tab renders only when its collection has entries; with Stay
+    alone the card is the plain search, no tab row. All panels share one grid cell,
+    so the slot is always as tall as the tallest panel and switching tabs never moves
+    the headline above it (hidden panels are invisible + inert, so not focusable).
+    The Table search mounts the first time its tab is chosen: each Resrv calendar is
+    ~1,800 nodes on a phone, and most visits only search a stay. Stay stays the
+    tallest panel, so the slot keeps its height before and after.
+    The treatment prices are cached for 10 minutes per treatment (partials/book-bar
+    explains why that's safe); the searches themselves are never cached.
+    Link targets follow the demo page tree, like the Stay search's /rooms.
+#}}
+{{ spa_count = {collection:count from="spa_treatments"} }}
+{{ venue_count = {collection:count from="restaurant"} }}
+{{ if spa_count || venue_count }}
+<div x-data="{
+        tab: 'stay',
+        tableMounted: false,
+        init() { this.$watch('tab', (tab) => { if (tab === 'table') this.tableMounted = true }) },
+        tabs() { return [...this.$refs.tablist.querySelectorAll('[role=tab]')] },
+        current() { return this.tabs().findIndex(el => el.dataset.tab === this.tab) },
+        go(index) {
+            const tabs = this.tabs();
+            const el = tabs[(index + tabs.length) % tabs.length];
+            this.tab = el.dataset.tab;
+            el.focus();
+        },
+    }">
+    <div
+        x-ref="tablist"
+        role="tablist"
+        aria-label="What would you like to book?"
+        @keydown.right.prevent="go(current() + 1)"
+        @keydown.left.prevent="go(current() - 1)"
+        @keydown.home.prevent="go(0)"
+        @keydown.end.prevent="go(-1)"
+        class="flex md:inline-flex p-1 mb-2.5 rounded-full bg-white shadow-raised"
+    >
+        {{ partial:hero-booking-tab name="stay" label="Stay" }}
+        {{ if spa_count }}{{ partial:hero-booking-tab name="treatment" label="Treatment" }}{{ /if }}
+        {{ if venue_count }}{{ partial:hero-booking-tab name="table" label="Table" }}{{ /if }}
+    </div>
+
+    <div class="grid">
+        <div role="tabpanel" id="book-panel-stay" aria-labelledby="book-tab-stay" class="col-start-1 row-start-1" :class="{ 'invisible': tab !== 'stay' }" :inert="tab !== 'stay'">
+            {{ livewire:availability-search calendar="range" live="false" redirectTo="/rooms" }}
+        </div>
+
+        {{ if spa_count }}
+        <div role="tabpanel" id="book-panel-treatment" aria-labelledby="book-tab-treatment" class="col-start-1 row-start-1 invisible" inert :class="{ 'invisible': tab !== 'treatment' }" :inert="tab !== 'treatment'">
+            <div x-data="listbox('Choose a treatment')" class="bg-white rounded-xl shadow-raised p-2.5 text-ink">
+                <div class="flex flex-col md:flex-row md:items-stretch gap-1.5 md:gap-0">
+                    {{# Treatment field: an Alpine listbox (site.js) so each row can carry the
+                        duration and the live "from" price; the panel matches the guests
+                        popover (white, hairline border, raised shadow, 200ms rise).
+                        x-anchor flips it above the field when there is no room below,
+                        as a native select would, so opening it never scrolls the page. #}}
+                    <div class="relative flex-1 md:flex-[2.4]" @click.outside="open && hide(false)">
+                        <span id="treatment-label" class="sr-only">Treatment</span>
+                        <button
+                            type="button"
+                            x-ref="button"
+                            id="treatment-button"
+                            aria-haspopup="listbox"
+                            aria-controls="treatment-listbox"
+                            :aria-expanded="open.toString()"
+                            @click="toggle()"
+                            @keydown.arrow-down.prevent="show()"
+                            @keydown.arrow-up.prevent="show(-1)"
+                            class="sw-field relative w-full h-full pr-11 cursor-pointer focus-visible:-outline-offset-2"
+                            :class="open && 'bg-shell'"
+                        >
+                            <span class="text-xs font-semibold uppercase tracking-widest text-muted">Treatment</span>
+                            <span class="block truncate text-ui font-medium" :class="value || 'text-muted'" x-text="label">Choose a treatment</span>
+                            <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 size-4 text-muted transition-transform duration-200" :class="open && 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+
+                        <ul
+                            x-ref="list"
+                            x-show="open"
+                            x-cloak
+                            x-anchor.bottom-start.offset.8="$refs.button"
+                            x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none"
+                            x-transition:enter-start="opacity-0 translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-1"
+                            id="treatment-listbox"
+                            role="listbox"
+                            tabindex="-1"
+                            aria-labelledby="treatment-label"
+                            :aria-activedescendant="activeId()"
+                            @keydown.arrow-down.prevent="move(1)"
+                            @keydown.arrow-up.prevent="move(-1)"
+                            @keydown.home.prevent="to(0)"
+                            @keydown.end.prevent="to(-1)"
+                            @keydown.enter.prevent="choose()"
+                            @keydown.space.prevent="choose()"
+                            @keydown.escape.prevent.stop="hide()"
+                            @keydown.tab="hide(false)"
+                            @keydown="typeahead($event.key)"
+                            class="group/list absolute z-30 w-full md:w-104 max-h-96 overflow-y-auto overscroll-contain p-1.5 bg-white rounded-lg border border-line shadow-raised focus:outline-none"
+                        >
+                            {{# The list keeps focus and aria-activedescendant names the highlighted
+                                row, so that row's inset ring is the keyboard focus indicator (the
+                                Sand fill alone is 1.2:1 on white). A pointer gets the fill only. #}}
+                            {{ collection:spa_treatments sort="title" }}
+                                <li
+                                    role="option"
+                                    id="treatment-option-{{ index }}"
+                                    data-value="{{ url }}"
+                                    data-label="{{ title }}"
+                                    aria-selected="false"
+                                    :aria-selected="(value === '{{ url }}').toString()"
+                                    @mousemove="active = {{ index }}"
+                                    @click="choose({{ index }})"
+                                    class="flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-colors duration-150"
+                                    :class="active === {{ index }} && 'bg-sand/70 group-focus-visible/list:ring-2 group-focus-visible/list:ring-inset group-focus-visible/list:ring-terracotta-dark'"
+                                >
+                                    <svg class="size-4 shrink-0 text-terracotta-dark" :class="value === '{{ url }}' || 'invisible'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block text-ui font-medium leading-snug" :class="value === '{{ url }}' && 'font-semibold'">{{ title }}</span>
+                                        {{ if duration_options }}<span class="block text-sm text-muted">{{ duration_options }}</span>{{ /if }}
+                                    </span>
+                                    {{ cache key="kit:from-price:treatment-option:{id}" for="10 minutes" }}
+                                        {{ treatment_from = availability:cheapest }}
+                                        {{ if treatment_from }}
+                                            <span class="shrink-0 text-sm text-muted whitespace-nowrap">from <span class="font-display text-lg text-terracotta-dark">{{ config:resrv-config:currency_symbol }}{{ treatment_from | format_number:0 }}</span></span>
+                                        {{ /if }}
+                                    {{ /cache }}
+                                </li>
+                            {{ /collection:spa_treatments }}
+                        </ul>
+                    </div>
+                    <div class="p-1.5 md:pl-2.5 flex md:items-stretch">
+                        {{ partial:button href="/spa#treatments" attrs=':href="value || `/spa#treatments`"' class="flex w-full md:min-w-56 md:h-full" }}
+                            <span x-text="value ? 'Find a time' : 'View treatments'">View treatments</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="size-4.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        {{ /partial:button }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{ /if }}
+
+        {{ if venue_count }}
+        <div role="tabpanel" id="book-panel-table" aria-labelledby="book-tab-table" class="col-start-1 row-start-1 invisible" inert :class="{ 'invisible': tab !== 'table' }" :inert="tab !== 'table'">
+            {{# Server-rendered inside a <template>, so it costs nothing until x-if adds it;
+                Livewire then boots the component from its snapshot (no extra request). #}}
+            <template x-if="tableMounted">
+                <div>
+                    {{ collection:restaurant limit="1" }}
+                        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" live="false" redirectTo="/dining#reserve" }}
+                    {{ /collection:restaurant }}
+                </div>
+            </template>
+        </div>
+        {{ /if }}
+    </div>
+</div>
+{{ else }}
+    {{ livewire:availability-search calendar="range" live="false" redirectTo="/rooms" }}
+{{ /if }}

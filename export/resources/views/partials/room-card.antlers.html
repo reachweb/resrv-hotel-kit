@@ -1,24 +1,30 @@
 {{# Room card — expects a `rooms` entry in scope. The "from" price is Resrv's own
-    lowest available price ({{ availability:cheapest }}), so nothing can drift. #}}
+    lowest available price ({{ availability:cheapest }}), so nothing can drift.
+    Reading it loads the room's whole year of availability, so the rendered price is
+    cached per room for 10 minutes (partials/book-bar explains why that's safe).
+    Param: sizes — the photo's layout width (default: the 3-up card grid). #}}
 <a href="{{ url }}" class="group block h-full zoom-on-hover">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
-        {{ partial:image-slot :asset="hero_image" label="Room image · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
+        {{ partial:image-slot :asset="hero_image" label="Room image" ratio="3/2" class="rounded-none" :sizes="sizes ?? '(min-width: 1280px) 384px, (min-width: 1024px) 31vw, (min-width: 768px) 47vw, 100vw'" }}
         <div class="p-5 lg:p-6 flex flex-col flex-1">
             <h3 class="t-h3 mb-1.5">{{ title }}</h3>
-            {{ if intro }}<p class="text-sm text-muted mb-4">{{ intro | strip_tags | safe_truncate(100, '…') }}</p>{{ /if }}
+            {{ if intro }}<p class="text-sm text-muted mb-4 line-clamp-2">{{ intro | strip_tags | safe_truncate(140, '…') }}</p>{{ /if }}
             <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted mb-5">
                 {{ if size_sqm }}<span>{{ size_sqm }} m²</span>{{ /if }}
                 {{ if max_occupancy }}<span>{{ max_occupancy }} guests</span>{{ /if }}
                 {{ if bed_configuration }}<span>{{ bed_configuration }}</span>{{ /if }}
             </div>
             <div class="mt-auto flex items-end justify-between pt-4 border-t border-line">
-                {{ if availability }}
-                    <div>
-                        <span class="text-sm text-muted">from</span>
-                        <div class="font-display text-2xl text-terracotta-dark leading-none">{{ config:resrv-config:currency_symbol }}{{ availability:cheapest | format_number:0 }}<span class="text-sm text-muted font-sans"> / night</span></div>
-                    </div>
-                {{ /if }}
-                <span class="inline-flex items-center justify-center gap-2 h-10 px-4.5 rounded-lg border-[1.5px] border-teal text-sm font-semibold leading-none whitespace-nowrap transition bg-transparent text-teal pointer-events-none">View</span>
+                {{ cache key="kit:from-price:room-card:{id}" for="10 minutes" }}
+                    {{ room_from = availability:cheapest }}
+                    {{ if room_from }}
+                        <div>
+                            <span class="text-sm text-muted">from</span>
+                            <div class="font-display text-2xl text-terracotta-dark leading-none">{{ config:resrv-config:currency_symbol }}{{ room_from | format_number:0 }}<span class="text-sm text-muted font-sans"> / night</span></div>
+                        </div>
+                    {{ /if }}
+                {{ /cache }}
+                {{ partial:button tag="span" label="View room" variant="secondary" size="sm" class="inline-flex pointer-events-none" }}
             </div>
         </div>
     </article>

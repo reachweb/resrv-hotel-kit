@@ -27,3 +27,7 @@ tree:
     entry: checkout
   -
     entry: checkout-complete
+  -
+    entry: manage-booking
+  -
+    entry: pay

@@ -1,25 +1,25 @@
 {{#
     FAQ block — accordion. If specific `faqs` are chosen, render a flat list;
-    otherwise group by category (the fixed select options).
+    otherwise group by category: each group puts its heading in a left column and its
+    questions in a hairline-divided list on the right. Group headings are the
+    category labels from the FAQ blueprint; the list below only sets their order
+    (booking questions first), since Antlers can't read the blueprint's option order.
+    Without a block heading the group headings step up to h2.
 #}}
-<section class="section-sm">
+<section class="mt-16 mb-20 lg:mt-24 lg:mb-32">
     <div class="container-rsv">
-        <div class="max-w-[680px]">
-            {{ partial:section-header :heading="heading" :intro="intro" }}
+        {{ partial:section-header :heading="heading" :intro="intro" }}
 
-            {{ if faqs }}
-                <div class="space-y-3" x-data="{ open: null }">
-                    {{ faqs }}{{ partial:faq-item }}{{ /faqs }}
-                </div>
-            {{ else }}
-                <div class="space-y-10">
-                    {{ partial:blocks/faq-group category="booking" label="Booking" }}
-                    {{ partial:blocks/faq-group category="payment" label="Payment" }}
-                    {{ partial:blocks/faq-group category="cancellation" label="Cancellation" }}
-                    {{ partial:blocks/faq-group category="amenities" label="Amenities" }}
-                    {{ partial:blocks/faq-group category="getting_here" label="Getting here" }}
-                </div>
-            {{ /if }}
-        </div>
+        {{ if faqs }}
+            <div class="max-w-190 border-y border-line divide-y divide-line" x-data="{ open: null }">
+                {{ faqs }}{{ partial:faq-item }}{{ /faqs }}
+            </div>
+        {{ else }}
+            {{ group_level = heading ? 'h3' : 'h2' }}
+            {{ category_order = 'booking|payment|cancellation|amenities|getting_here' | explode('|') }}
+            <div class="border-b border-line">
+                {{ category_order }}{{ partial:blocks/faq-group :category="value" :level="group_level" }}{{ /category_order }}
+            </div>
+        {{ /if }}
     </div>
 </section>

@@ -19,25 +19,39 @@
         <div class="container-rsv flex items-center justify-between h-18 lg:h-21">
             <a href="/" class="brand shrink-0">{{ partial:logo class="block h-6 lg:h-7 w-auto" }}</a>
 
-            <nav class="hidden lg:flex items-center gap-7">
+            <nav aria-label="Main" class="hidden lg:flex items-center gap-7">
                 {{ nav:main }}
-                    <a href="{{ url }}" class="nav-link relative px-1 py-1 text-sm font-medium transition-colors {{ if is_current || is_parent }}is-active{{ /if }}">{{ title }}</a>
+                    <a href="{{ url }}" class="nav-link relative px-1 py-1 text-sm font-medium transition-colors {{ if is_current || is_parent }}is-active{{ /if }}"{{ if is_current }} aria-current="page"{{ elseif is_parent }} aria-current="true"{{ /if }}>{{ title }}</a>
                 {{ /nav:main }}
             </nav>
 
             <div class="flex items-center gap-3">
-                {{ partial:button href="/rooms" label="Book Now" size="sm" focus="true" class="hidden sm:inline-flex" }}
-                <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" @click="sheet = true">
+                {{# Phones get the layout's bottom booking bar (partials/book-bar) instead. #}}
+                {{ partial:button href="/rooms" label="Book Now" size="sm" class="hidden sm:inline-flex" }}
+                <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" aria-controls="navSheet" aria-haspopup="dialog" :aria-expanded="sheet.toString()" @click="sheet = true">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
                 </button>
             </div>
         </div>
     </header>
 
-    <div id="navSheet" class="fixed inset-0 z-[60] lg:hidden" x-show="sheet" x-transition.opacity x-cloak>
+    {{# A modal dialog while open: x-trap moves focus in, keeps Tab inside, makes the page
+        behind inert and hands focus back to the burger on close (Escape, ×, the backdrop,
+        or a link). #}}
+    <div
+        id="navSheet"
+        class="fixed inset-0 z-60 lg:hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        x-show="sheet"
+        x-trap.inert.noscroll="sheet"
+        x-transition.opacity
+        x-cloak
+    >
         <div class="absolute inset-0 bg-ink/40 backdrop-blur-sm" @click="sheet = false"></div>
         <div
-            class="absolute inset-y-0 right-0 w-[86%] max-w-sm bg-shell flex flex-col p-7 transition-transform duration-300 ease-out"
+            class="absolute inset-y-0 right-0 w-6/7 max-w-sm bg-shell flex flex-col p-7 overflow-y-auto overscroll-contain transition-transform duration-300 ease-out motion-reduce:transition-none"
             :class="sheet ? 'translate-x-0' : 'translate-x-full'"
         >
             <div class="flex items-center justify-between mb-8">
@@ -46,16 +60,18 @@
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
             </div>
-            <nav class="flex flex-col gap-1">
+            <nav aria-label="Menu" class="flex flex-col gap-1">
                 {{ nav:main }}
-                    <a href="{{ url }}" class="t-h3 font-display py-2.5 border-b border-line/70 {{ if is_current || is_parent }}text-terracotta{{ /if }}" @click="sheet = false">{{ title }}</a>
+                    <a href="{{ url }}" class="t-h3 font-display py-2.5 border-b border-line/70 {{ if is_current || is_parent }}text-terracotta-dark{{ /if }}"{{ if is_current }} aria-current="page"{{ elseif is_parent }} aria-current="true"{{ /if }} @click="sheet = false">{{ title }}</a>
                 {{ /nav:main }}
             </nav>
-            {{ partial:button href="/rooms" label="Book Now" focus="true" class="inline-flex w-full mt-8" attrs='@click="sheet = false"' }}
+            {{ partial:button href="/rooms" label="Book Now" class="inline-flex w-full mt-8" attrs='@click="sheet = false"' }}
+            {{ if site:phone || site:email }}
             <div class="mt-auto pt-8 text-muted text-sm space-y-1">
-                <p>{{ site:phone }}</p>
-                <p>{{ site:email }}</p>
+                {{ if site:phone }}<p><a href="tel:{{ site:phone | replace(' ', '') }}" class="hover:text-ink underline-offset-4 hover:underline">{{ site:phone }}</a></p>{{ /if }}
+                {{ if site:email }}<p><a href="mailto:{{ site:email }}" class="break-all hover:text-ink underline-offset-4 hover:underline">{{ site:email }}</a></p>{{ /if }}
             </div>
+            {{ /if }}
         </div>
     </div>
 </div>

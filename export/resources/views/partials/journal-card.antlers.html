@@ -1,15 +1,15 @@
 {{# Journal card — expects a `journal` entry in scope. #}}
 <a href="{{ url }}" class="group block h-full zoom-on-hover">
     <article class="bg-white rounded-lg shadow-card overflow-hidden h-full flex flex-col transition-shadow duration-300 group-hover:shadow-raised">
-        {{ partial:image-slot :asset="hero_image" label="Article image · 3:2" ratio="3/2" class="rounded-none" :alt="title" }}
+        {{ partial:image-slot :asset="hero_image" label="Article image" ratio="3/2" class="rounded-none" sizes="(min-width: 1280px) 384px, (min-width: 768px) 31vw, 100vw" }}
         <div class="p-5 lg:p-6 flex flex-col flex-1">
             <h3 class="t-h3 mb-1.5 group-hover:text-terracotta-dark transition-colors">{{ title | widont }}</h3>
             <p class="flex items-center gap-2.5 text-sm text-muted mb-3">
-                {{ journal_categories limit="1" }}<span class="text-terracotta-dark">{{ title }}</span><span aria-hidden="true" class="text-sage">·</span>{{ /journal_categories }}
+                {{ journal_categories limit="1" }}<span class="text-terracotta-dark">{{ title }}</span><span aria-hidden="true">·</span>{{ /journal_categories }}
                 <time datetime="{{ date | format('Y-m-d') }}">{{ date | format('j M Y') }}</time>
             </p>
             {{ if excerpt }}<p class="text-sm text-muted leading-relaxed flex-1">{{ excerpt | truncate:140 }}</p>{{ /if }}
-            <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-teal mt-4">Read on <svg class="w-4 h-4 transition-transform group-hover:translate-x-[3px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 18 6-6-6-6"/></svg></span>
+            <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-teal mt-4">Read on <svg class="size-4 transition-transform motion-safe:group-hover:translate-x-0.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
         </div>
     </article>
 </a>

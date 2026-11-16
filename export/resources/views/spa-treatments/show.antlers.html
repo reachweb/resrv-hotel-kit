@@ -1,34 +1,25 @@
 {{# Treatment detail — editorial body + the sticky single-date Resrv booking panel.
-    Appointment time is picked at checkout (a free Resrv Option), like extras. #}}
+    Appointment time is picked at checkout (a free Resrv Option), like extras. The
+    trust line and "Good to know" are the spa's policies, from the booking global. #}}
 
 {{ partial:breadcrumb section_url="/spa" section_label="Spa" }}
 
-<section class="container-rsv py-8 lg:py-12 grid lg:grid-cols-[1fr_400px] gap-10 lg:gap-14 items-start">
+{{# Lead → panel → details in the DOM, so on mobile the booking panel follows the
+    summary; on desktop it spans both rows of the right column and stays sticky. #}}
+<section class="container-rsv py-8 lg:py-12 grid lg:grid-cols-[1fr_400px] gap-x-14 gap-y-10 lg:gap-y-6 items-start">
 
-    <div>
+    <div class="lg:col-start-1">
         {{ partial:detail-header }}{{ duration_options }}{{ /partial:detail-header }}
 
-        {{ partial:image-slot :asset="image" label="Treatment image · 3:2" ratio="3/2" class="rounded-xl mb-8 reveal" :alt="title" }}
+        {{# The LCP image: loads eagerly at high priority and never waits on the reveal. #}}
+        {{ partial:image-slot :asset="image" label="Treatment image" ratio="3/2" tone="sage" class="rounded-xl" priority="true" sizes="(min-width: 1280px) 744px, (min-width: 1024px) calc(100vw - 536px), calc(100vw - 48px)" }}
 
         {{ if summary }}
-            <p class="text-lg leading-relaxed text-ink/85 mb-6 reveal">{{ summary | widont }}</p>
+            <p class="text-lg leading-relaxed text-ink/85 mt-8 reveal">{{ summary | widont }}</p>
         {{ /if }}
-
-        {{ if body }}
-            <div class="reading prose prose-lg prose-p:text-ink/85 max-w-none mb-10 reveal">{{ body }}</div>
-        {{ /if }}
-
-        <div class="bg-white rounded-lg border border-line p-5 lg:p-6 reveal">
-            <h2 class="text-xl font-semibold mb-4">Good to know</h2>
-            <ul class="space-y-2.5 text-[15px] text-ink/85">
-                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>Pick your appointment time at checkout — morning to early evening.</li>
-                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>The spa is adults-only and closed on Tuesdays.</li>
-                <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>Every treatment ends with herbal tea on the quiet sun deck.</li>
-            </ul>
-        </div>
     </div>
 
-    <aside class="lg:sticky lg:top-[100px]" id="book">
+    <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
         <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
             {{ partial:booking-price-header note="Pick a day for live prices &amp; availability." }}
 
@@ -41,8 +32,25 @@
             {{ partial:booking-cutoff word="today" }}
         </div>
 
-        {{ partial:booking-trust label="Free cancellation up to a day before" }}
+        {{ partial:booking-trust :label="booking:treatment_panel_note" }}
     </aside>
+
+    <div class="lg:col-start-1">
+        {{ if body }}
+            <div class="reading prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:text-ink prose-p:text-ink/85 prose-li:text-ink/85 prose-a:text-terracotta-dark prose-strong:text-ink mb-10 reveal">{{ body }}</div>
+        {{ /if }}
+
+        {{ if booking:treatment_notes }}
+            <div class="bg-white rounded-lg border border-line p-5 lg:p-6 reveal">
+                <h2 class="text-xl font-semibold mb-4">Good to know</h2>
+                <ul class="space-y-2.5 text-ui text-ink/85">
+                    {{ booking:treatment_notes }}
+                        <li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-success mt-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>{{ value }}</li>
+                    {{ /booking:treatment_notes }}
+                </ul>
+            </div>
+        {{ /if }}
+    </div>
 </section>
 
 {{ partial:related-section heading="More from the menu" grid="gap-5 md:grid-cols-2 lg:grid-cols-3" }}
@@ -50,3 +58,8 @@
         <div class="reveal h-full">{{ partial:treatment-card }}</div>
     {{ /collection:spa_treatments }}
 {{ /partial:related-section }}
+
+{{# Below lg the booking panel sits in the flow, so the layout's bar points back to it. #}}
+{{ section:book_bar }}
+    {{ partial:book-bar href="#book" label="Find a time" :price="availability:cheapest" until="lg" }}
+{{ /section:book_bar }}

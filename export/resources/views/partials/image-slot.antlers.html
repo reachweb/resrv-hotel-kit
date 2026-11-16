@@ -1,17 +1,50 @@
 {{#
-    Graceful image slot. Renders the asset if present, else a
-    labelled placeholder that degrades gracefully. Params:
-      asset  — an assets-field value (single file)
-      label  — slot hint shown when empty, e.g. "Room image · 3:2"
-      ratio  — aspect-ratio (default 3/2; ignored when fill is set)
-      class  — extra wrapper classes (default rounded-xl)
-      fill   — skip the ratio so the slot fills an absolutely-positioned parent (full-bleed hero)
-      alt    — img alt text
+    Graceful image slot. Renders the asset if present, else a named, textured
+    placeholder drawn as a surface from the hotel (see .img-slot in site.css). Params:
+      asset    — an assets-field value (single file)
+      label    — slot name shown when empty, e.g. "Room image"
+      ratio    — aspect ratio, e.g. "3/2" (default); shown as "3:2" in the empty caption
+      tone     — empty surface: limewash (default) · clay · sage · sea · terracotta ·
+                 cypress (dark tones carry white type) · horizon (the home hero)
+      class    — extra wrapper classes (default rounded-xl)
+      fill     — skip the ratio so the slot fills an absolutely-positioned parent (full-bleed hero)
+      alt      — fallback alt text, used only when the asset has none of its own (the
+                 asset's Alt Text field wins). Leave it off when a heading beside the
+                 image already names it: the image is then decorative (alt="").
+      sizes    — how wide the image renders, as an HTML `sizes` value (default 100vw).
+                 The browser picks the smallest WebP from the srcset that covers it
+                 (480–2400w, never wider than the original), so pass the layout width,
+                 e.g. "(min-width: 1280px) 384px, 100vw".
+      priority — truthy for the page's largest above-the-fold image (the hero): loads
+                 eagerly at high fetch priority. Everything else loads lazily.
 #}}
-<div class="img-slot {{ if asset }}has-img{{ /if }} {{ class ?? 'rounded-xl' }}"{{ unless fill }} style="aspect-ratio: {{ ratio ?? '3/2' }};"{{ /unless }}>
+{{ fallback_alt = alt ?? '' }}
+{{ slot_ratio = ratio ?? '3/2' }}
+{{# Common ratios use aspect utilities; any other ratio falls back to an inline style. #}}
+{{ ratio_class = switch(
+    (slot_ratio == '3/2') => 'aspect-3/2',
+    (slot_ratio == '4/3') => 'aspect-4/3',
+    (slot_ratio == '16/9') => 'aspect-video',
+    (slot_ratio == '1/1') => 'aspect-square',
+    (slot_ratio == '4/5') => 'aspect-4/5',
+    (slot_ratio == '3/4') => 'aspect-3/4',
+    (slot_ratio == '7/5') => 'aspect-7/5',
+    (slot_ratio == '21/9') => 'aspect-21/9',
+    () => ''
+) }}
+<div class="img-slot {{ if asset }}has-img{{ else }}tone-{{ tone ?? 'limewash' }} slot-v{{ rotate between='1|2|3' }}{{ /if }}{{ unless fill }} {{ ratio_class }}{{ /unless }} {{ class ?? 'rounded-xl' }}"{{ unless fill || ratio_class }} style="aspect-ratio: {{ slot_ratio }};"{{ /unless }}>
     {{ if asset }}
-        {{ asset }}<img src="{{ glide:url width='1600' }}" alt="{{ alt ?? title }}" loading="lazy">{{ /asset }}
+        {{ asset }}
+            {{ original_width = width ?? 2400 }}
+            <img
+                src="{{ glide:url width='1200' fit='max' format='webp' }}"
+                srcset="{{ glide:url width='480' fit='max' format='webp' }} 480w{{ if original_width >= 800 }}, {{ glide:url width='800' fit='max' format='webp' }} 800w{{ /if }}{{ if original_width >= 1200 }}, {{ glide:url width='1200' fit='max' format='webp' }} 1200w{{ /if }}{{ if original_width >= 1600 }}, {{ glide:url width='1600' fit='max' format='webp' }} 1600w{{ /if }}{{ if original_width >= 2400 }}, {{ glide:url width='2400' fit='max' format='webp' }} 2400w{{ /if }}"
+                sizes="{{ sizes ?? '100vw' }}"
+                alt="{{ alt ?? fallback_alt }}"
+                {{ if priority }}loading="eager" fetchpriority="high"{{ else }}loading="lazy" decoding="async"{{ /if }}
+            >
+        {{ /asset }}
     {{ else }}
-        <span class="slot-label">{{ label ?? 'image' }}</span>
+        <span class="slot-label" aria-hidden="true">{{ label ?? 'Image' }}<span>{{ slot_ratio | replace('/', ':') }}</span></span>
     {{ /if }}
 </div>

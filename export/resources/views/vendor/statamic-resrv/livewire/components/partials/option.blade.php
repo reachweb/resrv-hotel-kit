@@ -1,18 +1,22 @@
 {{-- Restyled to the design's segmented option control (.seg / .seg-btn pills; the
      selected state is driven by the hidden radio via has-[:checked]). The
      selectOption() wiring and required/description logic are stock — a stray
-     </span> in the stock view (option name) was also removed. --}}
-<div wire:key="option-{{ $option->id }}">
-    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <span class="font-medium">{{ $option->name }}</span>
-        @if ($option->required)
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-sand text-muted uppercase tracking-wide">
-            {{ trans('statamic-resrv::frontend.required') }}
+     </span> in the stock view (option name) was also removed. The pills sit in a
+     <fieldset> whose <legend> is the option name (and Required badge), and the pill
+     draws the focus ring for its sr-only radio. --}}
+<fieldset wire:key="option-{{ $option->id }}" class="min-w-0" @if ($option->description) aria-describedby="resrv-option-{{ $option->id }}-desc" @endif>
+    <legend class="w-full mb-3">
+        <span class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-medium">{{ $option->name }}</span>
+            @if ($option->required)
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold leading-none bg-sand text-muted uppercase tracking-wide">
+                {{ trans('statamic-resrv::frontend.required') }}
+            </span>
+            @endif
         </span>
-        @endif
-    </div>
+    </legend>
     @if ($option->description)
-    <p class="text-sm text-muted -mt-2 mb-3">{{ $option->description }}</p>
+    <p class="text-sm text-muted -mt-2 mb-3" id="resrv-option-{{ $option->id }}-desc">{{ $option->description }}</p>
     @endif
 
     <div class="seg">
@@ -21,7 +25,7 @@
             wire:key="{{ $value->id }}"
             wire:loading.class="opacity-50 pointer-events-none"
             for="{{ $option->slug }}-{{ $value->id }}"
-            class="seg-btn cursor-pointer transition-opacity duration-150 has-[:checked]:bg-teal has-[:checked]:border-teal has-[:checked]:text-white"
+            class="seg-btn cursor-pointer transition-opacity duration-150 has-[:checked]:bg-teal has-[:checked]:border-teal has-[:checked]:text-white has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-terracotta-dark"
         >
             <input
                 type="radio"
@@ -42,4 +46,4 @@
         </label>
         @endforeach
     </div>
-</div>
+</fieldset>

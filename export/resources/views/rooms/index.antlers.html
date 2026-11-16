@@ -1,5 +1,9 @@
+---
+hide_book_bar: true
+---
 {{# Rooms index — backed by the `rooms` pages entry (route /rooms): compact sticky
-    availability-search + the live availability-collection. #}}
+    availability-search + the live availability-collection. The sticky search is the
+    booking action here, so the layout's mobile booking bar is off (front matter). #}}
 {{ partial:index-header title="Choose where you'll wake up" description="Pick your dates to see live availability and the best rate for each room." }}
 
 {{# Compact sticky search bar — sticks below the fixed header #}}
@@ -10,5 +14,7 @@
 </div>
 
 <div class="container-rsv pt-8 pb-16 lg:pb-24">
-    {{ livewire:availability-collection collection="rooms" show_unavailable="true" sort="price" }}
+    {{# The room cards are h3s; this gives them an h2 to sit under. #}}
+    <h2 class="sr-only">Rooms and suites</h2>
+    {{ livewire:availability-collection collection="rooms" showUnavailable="true" sort="price" }}
 </div>

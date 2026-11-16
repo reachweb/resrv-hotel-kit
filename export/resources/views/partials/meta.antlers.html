@@ -19,16 +19,17 @@
 {{ /if }}
 <meta name="twitter:card" content="summary_large_image">
 
-{{# JSON-LD — Hotel #}}
+{{# JSON-LD — Hotel. to_json writes each value as a JSON string (quotes, escapes and
+    `<\/` included), so the block stays valid JSON with no HTML entities. #}}
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "Hotel",
-    "name": "{{ site:brand_name | sanitize }}",
-    "description": "{{ seo:meta_description | sanitize }}",
-    "url": "{{ config:app:url }}",
-    "address": "{{ site:address | sanitize }}",
-    "telephone": "{{ site:phone | sanitize }}",
-    "email": "{{ site:email | sanitize }}"
+    "name": {{ site:brand_name | to_json }},
+    "description": {{ seo:meta_description | to_json }},
+    "url": {{ config:app:url | to_json }},
+    "address": {{ site:address | to_json }},
+    "telephone": {{ site:phone | to_json }},
+    "email": {{ site:email | to_json }}
 }
 </script>
