@@ -12,13 +12,18 @@
      · Messages use <p> (stock had bare dt/dd outside a dl).
      · Rooms search a date range; spa treatments and La Marea tables search one day. The
        summary and the empty prompt follow that (`$isStay`), so a one-day search never
-       asks for "dates". --}}
-@php($isStay = $this->entry?->collection()?->handle() === 'rooms')
+       asks for "dates".
+     · A spa treatment's rates are its durations, so its rate list asks for a duration
+       (`pleaseSelectDuration`); rooms and tables keep "Choose a rate".
+     · The one-day summary shows the day unpadded ("Thu 3 Dec 2026"), like the fields. --}}
+@php($collectionHandle = $this->entry?->collection()?->handle())
+@php($isStay = $collectionHandle === 'rooms')
 @php($selectDatesPrompt = trans($isStay ? 'statamic-resrv::frontend.pleaseSelectDates' : 'statamic-resrv::frontend.pleaseSelectDay'))
+@php($rateListLabel = trans($collectionHandle === 'spa_treatments' ? 'statamic-resrv::frontend.pleaseSelectDuration' : 'statamic-resrv::frontend.pleaseSelectRateToBook'))
 <div class="relative">
     <div wire:loading.delay.long.attr="aria-busy">
     @if ($rates == true && (! $data->rate || $data->rate === 'any'))
-    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" :emptyMessage="$selectDatesPrompt" />
+    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" :emptyMessage="$selectDatesPrompt" :label="$rateListLabel" />
     @else
         @if (data_get($availability, 'message.status') === true)
             @if ($this->showOptions)
@@ -62,7 +67,7 @@
                     {{-- Single-date products (spa, restaurant): one date, no checkout range --}}
                     <div class="flex flex-wrap gap-x-1.5">
                         <dt class="text-muted">{{ ucfirst(trans('statamic-resrv::frontend.date')) }}:</dt>
-                        <dd class="font-medium">{{ Carbon::parse($data->dates['date_start'])->format('D d M Y') }}</dd>
+                        <dd class="font-medium">{{ Carbon::parse($data->dates['date_start'])->format('D j M Y') }}</dd>
                     </div>
                     @if ($data->quantity > 1)
                     <div class="flex flex-wrap gap-x-1.5">

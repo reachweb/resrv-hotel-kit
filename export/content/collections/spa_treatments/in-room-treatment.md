@@ -2,7 +2,7 @@
 id: spa-in-room-treatment
 blueprint: spa_treatment
 title: 'In-Room Treatment'
-duration_options: '60 min'
+duration_options: '60 minutes'
 availability: spa-in-room-treatment
 summary: 'Our therapist comes to your suite.'
 body:

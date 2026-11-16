@@ -1,6 +1,13 @@
 {{# Treatment detail — editorial body + the sticky single-date Resrv booking panel.
     Appointment time is picked at checkout (a free Resrv Option), like extras. The
-    trust line and "Good to know" are the spa's policies, from the booking global. #}}
+    trust line and "Good to know" are the spa's policies, from the booking global.
+
+    The search quantity counts appointments, labelled Guests: two guests book two
+    appointments at twice the price. A `for_two` treatment (the Couples Ritual) is one
+    appointment for two guests, priced for the pair, so its panel has no Guests
+    control and its prices say "for two". #}}
+{{ guests_control = for_two ? false : true }}
+{{ price_unit = for_two ? 'for two' : '' }}
 
 {{ partial:breadcrumb section_url="/spa" section_label="Spa" }}
 
@@ -9,7 +16,7 @@
 <section class="container-rsv py-8 lg:py-12 grid lg:grid-cols-[1fr_400px] gap-x-14 gap-y-10 lg:gap-y-6 items-start">
 
     <div class="lg:col-start-1">
-        {{ partial:detail-header }}{{ duration_options }}{{ /partial:detail-header }}
+        {{ partial:detail-header }}{{ duration_options }}{{ if for_two }}{{ if duration_options }}&nbsp;· {{ /if }}for two guests{{ /if }}{{ /partial:detail-header }}
 
         {{# The LCP image: loads eagerly at high priority and never waits on the reveal. #}}
         {{ partial:image-slot :asset="image" label="Treatment image" ratio="3/2" tone="sage" class="rounded-xl" priority="true" sizes="(min-width: 1280px) 744px, (min-width: 1024px) calc(100vw - 536px), calc(100vw - 48px)" }}
@@ -20,12 +27,34 @@
     </div>
 
     <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
-        <div class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking">
-            {{ partial:booking-price-header }}
+        {{# A for_two panel has no Guests control, so its search books one appointment.
+            The quantity lives in Resrv's shared `resrv-search` session, though: two guests
+            chosen on another treatment's page would carry over and ask this once-a-day
+            treatment for two appointments, which reads "No availability". So once the
+            search has loaded, a quantity above one is set back to one. That is a live
+            update, so the results search again; until they report back (Resrv's
+            availability-results-updated event) they stay invisible rather than show the
+            carried search's answer. With no date chosen nothing searches, and nothing hides. #}}
+        <div
+            class="bg-white rounded-lg shadow-raised p-5 lg:p-6 group/booking"
+            {{ if for_two }}
+            x-data="{ carriedQuantity: false }"
+            x-init="$nextTick(() => Livewire.getByName('availability-search').filter((search) => $el.contains(search.$el) && search.data.quantity > 1).forEach((search) => { carriedQuantity = Boolean(search.data.dates?.date_start); search.$set('data.quantity', 1); }))"
+            x-on:availability-results-updated.window="carriedQuantity = false"
+            {{ /if }}
+        >
+            {{ partial:booking-price-header :unit="price_unit" }}
 
-            {{ livewire:availability-search calendar="single" enableQuantity="true" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
+            {{ livewire:availability-search calendar="single" :enableQuantity="guests_control" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" }}
 
-            <div class="mt-4">
+            {{ if for_two }}
+                <p class="flex items-start gap-2 mt-3 text-sm text-ink/85">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="size-4 mt-0.5 shrink-0 text-sage" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v1"/><path d="M15.5 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18.5 14.2a5 5 0 0 1 3 4.8v1"/></svg>
+                    <span class="text-pretty">One appointment for&nbsp;two, priced for&nbsp;both.</span>
+                </p>
+            {{ /if }}
+
+            <div class="mt-4"{{ if for_two }} x-bind:class="carriedQuantity && 'invisible'"{{ /if }}>
                 {{ livewire:availability-results :entry="id" rates="true" }}
             </div>
 
@@ -59,7 +88,9 @@
     {{ /collection:spa_treatments }}
 {{ /partial:related-section }}
 
-{{# Below lg the booking panel sits in the flow, so the layout's bar points back to it. #}}
+{{# Below lg the booking panel sits in the flow, so the layout's bar points back to it.
+    "Check availability", as on a room page: the panel picks the day and the duration,
+    and the time is picked at checkout. #}}
 {{ section:book_bar }}
-    {{ partial:book-bar href="#book" label="Find a time" :price="availability:cheapest" until="lg" }}
+    {{ partial:book-bar href="#book" label="Check availability" :price="availability:cheapest" :unit="price_unit" until="lg" }}
 {{ /section:book_bar }}

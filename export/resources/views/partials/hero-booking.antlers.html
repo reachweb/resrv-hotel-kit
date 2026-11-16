@@ -3,7 +3,7 @@
       · Stay      — range search → /rooms (the listing opens on the chosen dates)
       · Treatment — date, then a treatment → that treatment's booking page, or
                     "Any treatment" → the spa's live listing (/spa#treatments: every
-                    treatment free that day, with its durations and times). A search
+                    treatment available that day, with its durations and times). A search
                     bar's redirect is fixed and every treatment is its own Resrv entry,
                     so the date is a field-only search (live off) and "Find a time"
                     opens the target on that day with Resrv's ?date= deep link
@@ -158,7 +158,7 @@
                                 <svg class="size-4 shrink-0 text-terracotta-dark" :class="value === '' || 'invisible'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
                                 <span class="flex-1 min-w-0">
                                     <span class="block text-ui font-medium leading-snug" :class="value === '' && 'font-semibold'">Any treatment</span>
-                                    <span class="block text-sm text-muted">Everything free on your day</span>
+                                    <span class="block text-sm text-muted">Available on your day</span>
                                 </span>
                                 {{# The lowest live treatment price, as on the spa page's booking bar. #}}
                                 {{ cache key="kit:from-price:treatment-option:any" for="10 minutes" }}
@@ -185,7 +185,8 @@
                                     <svg class="size-4 shrink-0 text-terracotta-dark" :class="value === '{{ url }}' || 'invisible'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
                                     <span class="flex-1 min-w-0">
                                         <span class="block text-ui font-medium leading-snug" :class="value === '{{ url }}' && 'font-semibold'">{{ title }}</span>
-                                        {{ if duration_options }}<span class="block text-sm text-muted">{{ duration_options }}</span>{{ /if }}
+                                        {{# A for-two treatment says so, like the "for two" by its price on its page, so the pair's price isn't read as each guest's. #}}
+                                        {{ if duration_options || for_two }}<span class="block text-sm text-muted">{{ duration_options }}{{ if for_two }}{{ if duration_options }}&nbsp;· {{ /if }}for two{{ /if }}</span>{{ /if }}
                                     </span>
                                     {{ cache key="kit:from-price:treatment-option:{id}" for="10 minutes" }}
                                         {{ treatment_from = availability:cheapest }}

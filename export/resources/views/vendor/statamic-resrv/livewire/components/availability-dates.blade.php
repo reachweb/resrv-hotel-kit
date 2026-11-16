@@ -18,7 +18,7 @@
      · Narrow fields (compact bar, booking panel at 320px): the value is a short range
        (`rangeLabel()`: "16–20 Nov", "28 Nov – 2 Dec") that truncates rather than running
        under the clear button, which has room reserved (compact) or sits on the label
-       row (panel).
+       row (panel). A single date adds its year when it isn't this year ("5 Jan 2027").
      · An empty one-day field reads "Add date"; only the range fields say "Add dates".
        Chosen dates show without a leading zero ("3 Dec"), like the compact and panel
        fields, the day list and the checkout summary. --}}
@@ -242,11 +242,14 @@ Alpine.data('datepicker', ($wire, disabledDays = false) => ({
     },
 
     // The compact and panel fields' value: "16–20 Nov" within a month, "28 Nov – 2 Dec"
-    // across months, "16 Nov" for a single date. Short enough for a 320px phone.
+    // across months, "16 Nov" for a single date. Short enough for a 320px phone. A single
+    // date in another year names it ("5 Jan 2027"); a one-day field has the room.
     rangeLabel() {
         if (this.isDatesEmpty) return '';
         const start = dayjs(this.dates.date_start);
-        if (this.mode !== 'range' || !this.dates.date_end) return start.format('D MMM');
+        if (this.mode !== 'range' || !this.dates.date_end) {
+            return start.format(start.isSame(dayjs(), 'year') ? 'D MMM' : 'D MMM YYYY');
+        }
         const end = dayjs(this.dates.date_end);
         return start.isSame(end, 'month')
             ? start.format('D') + '–' + end.format('D MMM')

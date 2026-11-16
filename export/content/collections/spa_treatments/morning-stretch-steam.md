@@ -2,7 +2,7 @@
 id: spa-morning-stretch-steam
 blueprint: spa_treatment
 title: 'Morning Stretch & Steam'
-duration_options: '45 min'
+duration_options: '45 minutes'
 availability: spa-morning-stretch-steam
 summary: 'Guided stretch, steam room, herbal tea.'
 body:

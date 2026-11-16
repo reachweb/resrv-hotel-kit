@@ -95,7 +95,7 @@
                 @php($image = $this->entry->augmentedValue($this->entry->get('hero_image') ? 'hero_image' : 'image')->value())
                 @php($image = $image instanceof \Illuminate\Support\Collection ? $image->first() : $image)
                 @if ($image)
-                <div class="img-slot has-img aspect-video">
+                <div class="img-slot has-img aspect-video rounded-none">
                     <img src="{{ $image->manipulate(['w' => 800]) }}" alt="">
                 </div>
                 @endif

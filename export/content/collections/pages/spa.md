@@ -11,11 +11,16 @@ builder:
   -
     id: spa_treatments
     type: treatments_grid
+    heading: 'The treatment menu'
+    closed_days:
+      - Tuesday
   -
     id: spa_intro
     type: image_text_split
     heading: 'Treatments that taste of the coast'
     image_position: left
+    cta_label: 'Back to the treatment menu'
+    cta_url: '#treatments'
     text:
       -
         type: paragraph

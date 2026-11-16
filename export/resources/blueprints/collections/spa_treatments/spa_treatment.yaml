@@ -25,7 +25,14 @@ tabs:
             field:
               type: text
               display: 'Duration label'
-              instructions: 'Display-only (e.g. "60 / 90 min"). The bookable duration tiers are Resrv rates scoped to this collection.'
+              instructions: 'Display-only, worded like the duration rates (e.g. "60 or 90 minutes"). The bookable duration tiers are Resrv rates scoped to this collection.'
+              width: 50
+          -
+            handle: for_two
+            field:
+              type: toggle
+              display: 'One appointment for two'
+              instructions: 'For a treatment two guests share, like a couples massage. One booking is one appointment for both guests and its Resrv price is for the pair, so the treatment page hides the Guests control and says the price is for two.'
               width: 50
           -
             handle: summary

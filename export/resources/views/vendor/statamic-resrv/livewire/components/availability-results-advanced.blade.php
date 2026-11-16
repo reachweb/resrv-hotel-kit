@@ -1,13 +1,14 @@
 @use(Carbon\Carbon)
 @use(Reach\StatamicResrv\Enums\CancellationPolicy)
-@props(['availability', 'entryRates', 'dateStart' => null, 'emptyMessage' => null])
+@props(['availability', 'entryRates', 'dateStart' => null, 'emptyMessage' => null, 'label' => null])
 
 {{-- Restyled to the design's rate-comparison rows (room-detail booking panel).
      Markup/classes only — the wire:click="checkoutRate(...)" structure and the
      $availability / $entryRates contract are preserved. The rows are divided, not boxed:
      they sit inside the page's white booking panel, so a bordered white box per rate
      read as a card inside a card. "Book now" keeps its visible text first in the
-     accessible name (WCAG 2.5.3) with the rate as an sr-only suffix. --}}
+     accessible name (WCAG 2.5.3) with the rate as an sr-only suffix. `label` heads the
+     list (availability-results passes "Choose a duration" for a spa treatment). --}}
 <div {{ $attributes->merge(['class' => 'my-3']) }}>
     @if (count($availability) === 0)
     <div class="rounded-lg bg-sand/60 p-5 text-center">
@@ -15,7 +16,7 @@
     </div>
     @else
     <p class="text-sm font-medium text-muted">
-        {{ trans('statamic-resrv::frontend.pleaseSelectRateToBook') }}:
+        {{ $label ?? trans('statamic-resrv::frontend.pleaseSelectRateToBook') }}:
     </p>
     <ul class="divide-y divide-line" role="list">
         @foreach ($availability as $rateId => $data)

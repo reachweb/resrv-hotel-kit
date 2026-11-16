@@ -1,28 +1,61 @@
 {{# Treatments grid — the spa menu with live availability. A one-day Resrv search
-    (the rooms index's compact bar, live) drives Resrv's availability-collection through
-    the kit's treatments view: before a day is picked every treatment is a card with its
-    "from" price; after, the treatments free that day show each duration's live price
-    and the appointment times (availability-collection-treatments explains the rest).
+    (availability-search-spa: the rooms index's compact pill, live) drives Resrv's
+    availability-collection through the kit's treatments view: before a day is picked
+    every treatment is a card with its "from" price; after, the treatments available
+    that day show each duration's live price and the appointment times
+    (availability-collection-treatments explains the rest).
     The page opens on a day when the session already has one, or from a ?date= link
     (the home card's Treatment tab with "Any treatment"). Chosen treatments, or the
     whole menu. Without a heading an sr-only one keeps the outline (h1 → h2 → the
     cards' h3).
+    Layout: from lg the heading sits left and the date field right, on the heading's
+    bottom line (a two-column grid on the container), with the listing's summary line
+    and cards below. Below lg they stack and the date field sticks under the fixed
+    header (top-18) for the whole section, on a Sand band with a short Sand fade under
+    it, so a guest halfway down the grid can still change the day (the layout's
+    booking bar stays hidden here). The fade is invisible until cards scroll beneath
+    it. The field stays a direct child of the container so its sticky range is the
+    whole menu; the calendar opens in a popup Resrv moves to <body>, so the band's
+    z-index can't trap it.
+    A day changed from the stuck field updates the listing far above, so once the
+    listing reports back (Resrv's availability-results-updated) the page scrolls its
+    summary line, the count or the closed-day notice, to just under the band. Only when
+    the guest has used the field (focus inside the band arms it; the calendar popup
+    and the clear button both start there) and only when the line is hidden above the
+    band: a pick with the line in view never moves the page, and neither does a page
+    load, whose ?date= seeds a search of its own (a reload mid-grid stays put). html's
+    scroll-padding-top (6rem) plus scroll-mt-20 clears the header and the band; reduced
+    motion jumps.
+    Closed days: the set's "Closed days" (English weekday names) go to both components
+    as closed-days="Tuesday". It isn't a component property, so Livewire forwards it to
+    their views as an HTML attribute: the search disables those weekdays in its calendar
+    and the listing names them and, on such a day, says the spa is closed. They must
+    match the treatments' Resrv availability (the demo seeder closes Tuesdays).
     Rates stay on for the listing so each duration has its label. A rate left in the
     shared session can't narrow it: this search has no rate control, so it clears the
     rate when it mounts, before the listing below reads the session. #}}
-<section class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="treatments" data-hides-book-bar>
-    <div class="container-rsv">
-        {{ partial:section-header :heading="heading" :intro="intro" class="mb-10" }}
+<section
+    class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="treatments" data-hides-book-bar
+    x-data="{ usedField: false }"
+    x-on:availability-results-updated.window="if (usedField) { usedField = false; $nextTick(() => $refs.results.getBoundingClientRect().top < $refs.dateBand.getBoundingClientRect().bottom && $refs.results.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })) }"
+>
+    <div class="container-rsv lg:grid lg:grid-cols-[minmax(0,1fr)_--spacing(80)] lg:items-end lg:gap-x-12">
+        {{ partial:section-header :heading="heading" :intro="intro" class="mb-2 lg:mb-0 lg:col-start-1 lg:row-start-1" }}
         {{ unless heading }}<h2 class="sr-only">Treatments</h2>{{ /unless }}
-        <div class="max-w-xs mb-5">
-            {{ livewire:availability-search calendar="single" view="availability-search-compact" }}
+        {{ closed_days_list = closed_days | pluck('value') | join(',') }}
+        <div x-ref="dateBand" x-on:focusin="usedField = true" class="sticky top-18 z-30 -mx-6 px-6 py-3 bg-sand after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-linear-to-b after:from-sand after:to-sand/0 lg:static lg:z-auto lg:m-0 lg:p-0 lg:after:hidden lg:row-start-1 {{ heading || intro ? 'lg:col-start-2' : 'lg:col-start-1' }}">
+            <div class="sm:max-w-xs lg:max-w-none">
+                {{ livewire:availability-search calendar="single" view="availability-search-spa" :closed-days="closed_days_list" }}
+            </div>
         </div>
-        {{ if treatments }}
-            {{ treatment_ids = treatments | raw }}
-            {{ livewire:availability-collection collection="spa_treatments" :entries="treatment_ids" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" }}
-        {{ else }}
-            {{ livewire:availability-collection collection="spa_treatments" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" }}
-        {{ /if }}
+        <div x-ref="results" class="mt-3 lg:mt-6 lg:col-span-2 lg:row-start-2 scroll-mt-20">
+            {{ if treatments }}
+                {{ treatment_ids = treatments | raw }}
+                {{ livewire:availability-collection collection="spa_treatments" :entries="treatment_ids" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" :closed-days="closed_days_list" }}
+            {{ else }}
+                {{ livewire:availability-collection collection="spa_treatments" sort="title" rates="true" showRates="true" showUnavailable="true" view="availability-collection-treatments" :closed-days="closed_days_list" }}
+            {{ /if }}
+        </div>
     </div>
 </section>
 
