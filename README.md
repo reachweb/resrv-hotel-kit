@@ -24,7 +24,7 @@ checkout**, demo data included.
 ## Requirements
 
 - PHP 8.4+ · Composer
-- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.2+**
+- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.4+**
 - Node 20+ (Tailwind v4 via Vite)
 - A [Resrv license](https://statamic.com/addons/reach-web/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your

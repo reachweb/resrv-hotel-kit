@@ -73,12 +73,11 @@
                     {{# Date first. A Resrv single-date search with no card or button of its
                         own (view="availability-search-field", live off), mounted on first
                         use like the Table search; the field's height is held until then.
-                        It never submits ("Find a time" navigates), but it needs a redirectTo:
-                        Resrv reloads the page when a non-live search without one is cleared. #}}
+                        It never submits: "Find a time" navigates. #}}
                     <div x-ref="date" class="flex-1 md:flex-[1.1] min-h-15.5">
                         <template x-if="treatmentMounted">
                             <div class="h-full">
-                                {{ livewire:availability-search calendar="single" live="false" redirectTo="/spa#treatments" view="availability-search-field" }}
+                                {{ livewire:availability-search calendar="single" live="false" view="availability-search-field" }}
                             </div>
                         </template>
                     </div>
