@@ -10,7 +10,10 @@
 
     Props:
       variant — 'primary' (default) · 'secondary' (teal outline)
-      size    — 'md' (48px, default) · 'sm' (40px)
+      size    — 'md' (48px, default) · 'sm' (40px drawn, with a 44px tap target: an
+                invisible ::after reaches past the top and bottom border, so a phone
+                thumb lands without the button looking heavier; it sits inside the
+                1.5px border, hence 4px)
       full    — true for a full-width button
       href    — renders a link instead (a way forward that isn't an action)
 --}}
@@ -20,7 +23,7 @@
     'relative inline-flex items-center justify-center gap-2 rounded-lg border-[1.5px] font-semibold leading-none whitespace-nowrap transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-70',
     'border-teal bg-transparent text-teal hover:bg-teal hover:text-white' => $variant === 'secondary',
     'border-transparent bg-terracotta-dark text-white hover:bg-terracotta-deep' => $variant !== 'secondary',
-    'h-10 px-4.5 text-sm' => $size === 'sm',
+    'h-10 px-4.5 text-sm after:absolute after:inset-x-0 after:-inset-y-1' => $size === 'sm',
     'h-12 px-6 text-ui' => $size !== 'sm',
     'w-full' => $full,
 ]) }}>{{ $slot }}</{{ $tag }}>

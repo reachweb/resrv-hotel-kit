@@ -1,6 +1,6 @@
 @use(Carbon\Carbon)
 @use(Reach\StatamicResrv\Enums\CancellationPolicy)
-@props(['availability', 'entryRates', 'dateStart' => null, 'emptyMessage' => null, 'label' => null])
+@props(['availability', 'entryRates', 'dateStart' => null, 'emptyMessage' => null, 'label' => null, 'unit' => null])
 
 {{-- Restyled to the design's rate-comparison rows (room-detail booking panel).
      Markup/classes only — the wire:click="checkoutRate(...)" structure and the
@@ -8,12 +8,18 @@
      they sit inside the page's white booking panel, so a bordered white box per rate
      read as a card inside a card. "Book now" keeps its visible text first in the
      accessible name (WCAG 2.5.3) with the rate as an sr-only suffix. `label` heads the
-     list (availability-results passes "Choose a duration" for a spa treatment). --}}
+     list (availability-results passes "Choose a duration" for a spa treatment and
+     "Choose a sitting" for a table). A stay of more than one night is priced
+     "/ night"; otherwise `unit` follows the price when given ("/ table" for a table).
+     Before a search the prompt is one plain line with a calendar icon, under the date
+     field. A tinted box here nested a box in the panel. In the wide dining card (an @2xl
+     size container) the line sits beside the field, padded to its height. --}}
 <div {{ $attributes->merge(['class' => 'my-3']) }}>
     @if (count($availability) === 0)
-    <div class="rounded-lg bg-sand/60 p-5 text-center">
-        <p class="text-sm text-muted">{{ $emptyMessage ?? trans('statamic-resrv::frontend.pleaseSelectDates') }}</p>
-    </div>
+    <p class="py-1 @2xl:py-3 text-sm text-muted text-pretty">
+        <svg class="inline-block size-4 align-[-0.2em] me-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
+        {{ $emptyMessage ?? trans('statamic-resrv::frontend.pleaseSelectDates') }}
+    </p>
     @else
     <p class="text-sm font-medium text-muted">
         {{ $label ?? trans('statamic-resrv::frontend.pleaseSelectRateToBook') }}:
@@ -37,7 +43,7 @@
                     @if ($perNight)
                     <span class="text-right shrink-0">
                         <span class="font-display text-xl text-terracotta-dark leading-none tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ $perNight }}</span>
-                        @if ($days > 1)<span class="text-sm text-muted">/ night</span>@endif
+                        @if ($days > 1)<span class="text-sm text-muted">/ night</span>@elseif ($unit)<span class="text-sm text-muted">{{ $unit }}</span>@endif
                     </span>
                     @endif
                 </div>

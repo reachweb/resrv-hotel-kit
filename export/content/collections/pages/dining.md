@@ -6,7 +6,7 @@ builder:
   -
     id: dining_hero
     type: hero
-    heading: 'Sea-to-table, every day'
+    heading: 'Long lunches and slow dinners by the sea'
     lead: 'At La Marea the menu follows the catch and the garden, served on a long terrace above the water. Pick a day, then choose a lunch or dinner sitting.'
   -
     id: dining_reserve
@@ -32,14 +32,14 @@ builder:
   -
     id: dining_gallery
     type: gallery_grid
-    heading: 'From the kitchen'
+    heading: 'Tables inside and out'
     columns: '4'
   -
     id: dining_cta
     type: cta_band
-    heading: 'Stay for dinner'
+    heading: 'Stay the night'
     text: 'Book a room and wake up a few steps from breakfast on the terrace.'
-    cta_label: 'Check availability'
+    cta_label: 'Find a room'
     cta_url: '/rooms'
     background: terracotta
 ---

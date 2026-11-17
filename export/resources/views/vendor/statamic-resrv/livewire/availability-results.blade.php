@@ -13,17 +13,61 @@
      · Rooms search a date range; spa treatments and La Marea tables search one day. The
        summary and the empty prompt follow that (`$isStay`), so a one-day search never
        asks for "dates".
-     · A spa treatment's rates are its durations, so its rate list asks for a duration
-       (`pleaseSelectDuration`); rooms and tables keep "Choose a rate".
-     · The one-day summary shows the day unpadded ("Thu 3 Dec 2026"), like the fields. --}}
+     · The rate list names the product's rates the way a guest would: a spa treatment's
+       are durations (`pleaseSelectDuration`), La Marea's are sittings
+       (`pleaseSelectSitting`), and rooms keep "Choose a rate". A table's price is per
+       table (`perTable`, after each sitting's price); rooms show "/ night" for a stay of
+       more than one night, and treatments need no unit.
+     · The one-day summary shows the day unpadded ("Thu 3 Dec 2026"), like the fields.
+     · The prompt before a search is a plain line, not a tinted box inside the white panel.
+     · Optional closed weekdays: a venue's "Closed days" arrive on the tag as
+       closed-days="Monday" (La Marea's band; comma-separated English day names). It
+       isn't a property, so Livewire forwards it to this view as an HTML attribute. When
+       the searched day falls on one (a ?date= link or a session date; the calendar can't
+       pick it), the panel says the venue is closed that day and when it opens again,
+       instead of every sitting reading "No availability", like the spa's closed day.
+       The day list under the band stays the way on. Without the attribute (rooms,
+       treatments) nothing changes. --}}
+@php
+    $closedDays = array_values(array_filter(array_map('trim', explode(',', (string) $attributes->get('closed-days')))));
+    $searchDay = $data->hasDates() ? Carbon::parse($data->dates['date_start']) : null;
+    $isClosedDay = $searchDay && in_array($searchDay->format('l'), $closedDays, true);
+    if ($isClosedDay) {
+        $dayLabel = fn (Carbon $date) => $date->format($date->isCurrentYear() ? 'l j F' : 'l j F Y');
+        $closedDaysLabel = collect($closedDays)->map(fn ($weekday) => $weekday.'s')->join(', ', ' and ');
+        $reopensOn = null;
+        if (count($closedDays) < 7) {
+            $reopens = $searchDay->copy()->addDay();
+            while (in_array($reopens->format('l'), $closedDays, true)) {
+                $reopens->addDay();
+            }
+            $reopensOn = $dayLabel($reopens);
+        }
+    }
+@endphp
 @php($collectionHandle = $this->entry?->collection()?->handle())
 @php($isStay = $collectionHandle === 'rooms')
 @php($selectDatesPrompt = trans($isStay ? 'statamic-resrv::frontend.pleaseSelectDates' : 'statamic-resrv::frontend.pleaseSelectDay'))
-@php($rateListLabel = trans($collectionHandle === 'spa_treatments' ? 'statamic-resrv::frontend.pleaseSelectDuration' : 'statamic-resrv::frontend.pleaseSelectRateToBook'))
+@php($rateListLabel = trans(match ($collectionHandle) {
+    'spa_treatments' => 'statamic-resrv::frontend.pleaseSelectDuration',
+    'restaurant' => 'statamic-resrv::frontend.pleaseSelectSitting',
+    default => 'statamic-resrv::frontend.pleaseSelectRateToBook',
+}))
+@php($priceUnit = $collectionHandle === 'restaurant' ? trans('statamic-resrv::frontend.perTable') : null)
 <div class="relative">
     <div wire:loading.delay.long.attr="aria-busy">
-    @if ($rates == true && (! $data->rate || $data->rate === 'any'))
-    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" :emptyMessage="$selectDatesPrompt" :label="$rateListLabel" />
+    @if ($isClosedDay)
+    <div class="flex items-start gap-3 my-3">
+        <span class="grid place-items-center size-10 shrink-0 rounded-full bg-sand text-terracotta-dark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="m9.5 13.5 5 5M14.5 13.5l-5 5"/></svg>
+        </span>
+        <div class="min-w-0 pt-1.5">
+            <p class="t-h3 mb-1.5 text-balance">{{ trans('statamic-resrv::frontend.closedOnDay', ['day' => $dayLabel($searchDay)]) }}</p>
+            <p class="text-sm text-muted text-pretty">{{ trans('statamic-resrv::frontend.venueClosedOn', ['venue' => $this->entry?->get('title'), 'days' => $closedDaysLabel]) }}@if ($reopensOn) {{ trans('statamic-resrv::frontend.venueOpensAgainOn', ['day' => $reopensOn]) }}@endif</p>
+        </div>
+    </div>
+    @elseif ($rates == true && (! $data->rate || $data->rate === 'any'))
+    <x-resrv::availability-results-advanced :$availability :entryRates="$this->entryRates" :dateStart="$data->dates['date_start'] ?? null" :emptyMessage="$selectDatesPrompt" :label="$rateListLabel" :unit="$priceUnit" />
     @else
         @if (data_get($availability, 'message.status') === true)
             @if ($this->showOptions)
@@ -91,9 +135,11 @@
             <p class="text-sm text-muted">{{ trans('statamic-resrv::frontend.tryAdjustingYourSearch') }}</p>
         </div>
         @elseif (! $data->hasDates())
-        <div class="rounded-lg bg-sand/60 p-5 text-center">
-            <p class="text-sm text-muted">{{ $selectDatesPrompt }}</p>
-        </div>
+        {{-- Same plain prompt as the rate list's (components/availability-results-advanced). --}}
+        <p class="my-3 py-1 @2xl:py-3 text-sm text-muted text-pretty">
+            <svg class="inline-block size-4 align-[-0.2em] me-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
+            {{ $selectDatesPrompt }}
+        </p>
         @endif
     @endif
     @if ($errors->has('availability') && $data->hasDates())

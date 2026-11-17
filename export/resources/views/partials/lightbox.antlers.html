@@ -33,9 +33,11 @@
     </button>
     <figure @click.stop>
         <img :src="lb ? imgs[i]?.s : ''" :alt="imgs[i]?.c || ('Photo ' + (i + 1) + ' of ' + imgs.length)" class="max-h-[85vh] max-w-[90vw] rounded-xl">
-        {{# A polite live region: each ← / → announces the new caption and position. #}}
+        {{# A polite live region: each ← / → announces the new caption and position
+            ("Lunch on the terrace, photo 2 of 4"; "Photo 2 of 4" without a caption, as
+            the image's own fallback alt and the gallery tiles name it). #}}
         <figcaption class="text-sage-light/90 text-sm text-center mt-3" aria-live="polite" aria-atomic="true">
-            <span x-text="imgs[i]?.c"></span><span x-show="imgs.length > 1" class="text-sage-light/80" aria-hidden="true" x-text="(imgs[i]?.c ? '  ·  ' : '') + (i + 1) + ' / ' + imgs.length"></span><span x-show="imgs.length > 1" class="sr-only" x-text="(imgs[i]?.c ? ', ' : '') + 'photo ' + (i + 1) + ' of ' + imgs.length"></span>
+            <span x-text="imgs[i]?.c"></span><span x-show="imgs.length > 1" class="text-sage-light/80" aria-hidden="true" x-text="(imgs[i]?.c ? '  ·  ' : '') + (i + 1) + ' / ' + imgs.length"></span><span x-show="imgs.length > 1" class="sr-only" x-text="(imgs[i]?.c ? ', photo ' : 'Photo ') + (i + 1) + ' of ' + imgs.length"></span>
         </figcaption>
     </figure>
 </div>

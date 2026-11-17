@@ -63,12 +63,20 @@ tabs:
                   handle: bookable
                   field: { type: toggle, display: Bookable, width: 33, instructions: 'Shown above the table booking. Turn on for services set up as Resrv sittings.' }
           -
-            handle: highlights
+            handle: closed_days
             field:
-              type: list
-              display: Highlights
-              instructions: 'Short bullet highlights.'
-              add_button: 'Add highlight'
+              type: checkboxes
+              display: 'Closed days'
+              inline: true
+              options:
+                Monday: Monday
+                Tuesday: Tuesday
+                Wednesday: Wednesday
+                Thursday: Thursday
+                Friday: Friday
+                Saturday: Saturday
+                Sunday: Sunday
+              instructions: 'Weekdays the restaurant takes no bookings. They must match the venue''s Resrv availability (no sittings on those days). They can''t be picked in the date field, the hours line names them, and a closed day says so instead of looking fully booked.'
           -
             handle: booking_note
             field:

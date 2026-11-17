@@ -26,7 +26,7 @@
         {{ /if }}
     </div>
 
-    <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24" id="book" data-hides-book-bar>
+    <aside class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-25 scroll-mt-24 focus:outline-none" id="book" data-hides-book-bar tabindex="-1">
         {{# A for_two panel has no Guests control, so its search books one appointment.
             The quantity lives in Resrv's shared `resrv-search` session, though: two guests
             chosen on another treatment's page would carry over and ask this once-a-day

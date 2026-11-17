@@ -13,11 +13,9 @@ hours:
   - label: Dinner
     time: '19:30 – 22:30'
     bookable: true
-highlights:
-  - 'Whole grilled day-boat fish'
-  - 'Tomatoes from the garden'
-  - 'Natural local wines'
-booking_note: 'Pick your arrival time at checkout · breakfast needs no booking.'
+closed_days:
+  - Monday
+booking_note: 'Choose early, standard or late seating at checkout · breakfast is 8:00 – 11:00, no booking needed.'
 body:
   -
     type: paragraph

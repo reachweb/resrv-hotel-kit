@@ -21,7 +21,10 @@
        row (panel). A single date adds its year when it isn't this year ("5 Jan 2027").
      · An empty one-day field reads "Add date"; only the range fields say "Add dates".
        Chosen dates show without a leading zero ("3 Dec"), like the compact and panel
-       fields, the day list and the checkout summary. --}}
+       fields, the day list and the checkout summary.
+     · "Clear selection" draws a 26px circle but takes a 44px tap target.
+     · `disabledDays` (a venue's closed weekdays) comes from the search views that read a
+       closed-days attribute: availability-search-spa, -panel and the default view. --}}
 @php
     $emptyValue = $calendar === 'range' ? 'Add dates' : 'Add date';
 @endphp
@@ -127,10 +130,11 @@
                         'inset-y-0 end-1.5' => $variant === 'card',
                         'inset-y-0 end-2' => $variant === 'compact',
                     ])>
+                        {{-- A 26px circle with a 44px tap target (the invisible ::after). --}}
                         <button
                             type="button"
                             x-on:click.stop="clearSelection()"
-                            class="cursor-pointer p-1 rounded-full text-muted hover:text-ink hover:bg-sand transition-colors"
+                            class="relative cursor-pointer p-1 rounded-full text-muted hover:text-ink hover:bg-sand transition-colors after:absolute after:-inset-2.25"
                             aria-label="Clear selection"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4.5" aria-hidden="true">

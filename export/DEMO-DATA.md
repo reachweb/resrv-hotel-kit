@@ -47,7 +47,14 @@ bookable on any search outside the blackout nights.
   (no availability rows — the engine refuses the day regardless of UI).
 - **La Marea** restaurant: **Lunch (€35/table, 12 tables)** and **Dinner (€55/table,
   16 tables)** sittings as independent rate pools — priced **per table**, so headcount
-  never scales the price (the reservation books one table). **Closed Mondays.**
+  never scales the price (the reservation books one table). **Closed Mondays** (no
+  availability rows either).
+- The engine only knows a closed day as one with no availability. The front end names
+  it from two content fields: **Closed days** on the `treatments_grid` set (/spa,
+  Tuesday) and on the La Marea entry (Monday). They disable those weekdays in the
+  calendars, add "Closed Mondays" to the hours line and the day list, and turn a
+  closed day into "Closed on …" instead of "No availability". Keep each field in step
+  with the availability you seed: change one and change the other.
 - Free required **Options** carry the time-of-day choice and headcount (appointment
   time per treatment; seating time + party size on the venue — sitting-agnostic, since
   options are not rate-scoped) — Resrv has no time-of-day primitive, options are the pattern.

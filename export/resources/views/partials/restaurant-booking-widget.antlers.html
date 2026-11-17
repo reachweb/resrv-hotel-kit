@@ -6,39 +6,90 @@
     selecting a rate there would lock the shared session and collapse the panel). Party
     size and arrival time are picked at checkout (free Resrv Options), so the price shown
     is per table and never multiplied by headcount.
-    The venue name is the widget's heading, so the day list's "Available dates"
+    The venue name is the widget's heading, so the day list's "The days ahead"
     heading sits under it. Param: level (default 2; 3 when the band has its own h2).
-    The hours line lists the Hours rows marked Bookable; the line under the widget is
-    the venue's Booking note (a " · " in it stays with the word before, so a wrapped
-    line never starts with the dot).
+    The hours line lists the Hours rows marked Bookable; the clock line in the card is
+    the venue's Booking note. Each " · " clause is an inline-block: the clauses share a
+    line when they fit, otherwise each starts its own, balanced, so a wrap never leaves
+    "booking needed." alone or starts a line with the dot (it trails its clause). A
+    spaced range ("8:00 – 11:00") never breaks.
+
+    Layout: the venue, then its booking, as one spread built from the entry. Its photo
+    (the `image` field; an empty slot draws the sea), then its name as a title like a
+    room's or a treatment's, its tagline and the bookable hours, then the booking
+    card. From lg the photo takes the left five columns and stays in view beside the
+    card while the day list scrolls; from md it sits beside the name; on phones it all
+    stacks, photo first. An empty tagline or hours line leaves no gap.
+
+    The booking card is one white card, like the room and treatment panels (the search
+    uses their bordered panel field). It is a size container, so it lays itself out by
+    its own width rather than the viewport: from 42rem of content (@2xl) the date field
+    and the note take two fifths beside the sittings (the card's full-width row at md);
+    narrower (a phone, or the seven columns beside the photo from lg) they stack. The
+    day list follows under a hairline. The card holds `#reserve`, so every link that
+    lands here (the phone bar, the home Table tab and tile, checkout complete) opens on
+    the booking rather than on the photo above it: the root's scroll-padding clears the
+    header, and from lg a little more lines the card up with the sticky photo (top-28).
+    Only the photo and the name fade in;
+    the booking never waits on the reveal.
+    The photo's `sizes` is the width it renders at: a 3:2 photo covering the 4:5 box
+    from lg is 1.875 times the box's width (about 885px beside a 472px box).
+
+    Closed days: the venue's "Closed days" (English weekday names) go to all three
+    components as closed-days="Monday", the spa's pattern. It isn't a component
+    property, so Livewire forwards it to their views as an HTML attribute: the search
+    disables those weekdays in its calendar, the sittings say the venue is closed on
+    such a day (a ?date= link or a session date can still land on one), and the day
+    list shows it as a "Closed" row. The hours line names them too, after the hours.
+    They must match the venue's Resrv availability (the demo seeder closes Mondays).
+    `tabindex="-1"` on the card lets the phone bar move focus to it (site.js bookBar);
+    a card is not a control, so it takes no ring.
 #}}
-<div class="reveal">
-    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-sm text-muted mb-6">
-        <h{{ level ?? 2 }} class="font-sans font-medium text-ink">{{ title }}</h{{ level ?? 2 }}>
-        {{ if tagline }}<span>{{ tagline }}</span>{{ /if }}
-        {{ hours }}{{ if bookable }}<span>{{ label }} {{ time }}</span>{{ /if }}{{ /hours }}
+{{ closed_days_list = closed_days | pluck('value') | join(',') }}
+{{# From lg the photo spans both rows; when it's the taller side (before a date is
+    picked) the second row takes the difference, so the card stays under the name. #}}
+<div class="grid gap-x-10 gap-y-8 md:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:gap-x-12">
+    <div class="reveal lg:col-span-5 lg:row-span-2 lg:self-start lg:sticky lg:top-28">
+        {{ partial:image-slot :asset="image" label="Restaurant image" ratio="3/2" tone="sea" class="rounded-xl lg:aspect-4/5" sizes="(min-width: 1280px) 885px, (min-width: 1024px) calc(78vw - 114px), (min-width: 768px) calc(50vw - 44px), calc(100vw - 48px)" }}
     </div>
 
-    {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
-        scroll-mt clears the fixed header (h-18/lg:h-21). #}}
-    <div data-resrv-booking-top class="scroll-mt-28">
-        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" }}
+    <div class="reveal md:self-center lg:col-span-7 lg:self-start">
+        <h{{ level ?? 2 }} class="{{ level == 3 ? 't-h3' : 't-h1' }} text-balance">{{ title }}</h{{ level ?? 2 }}>
+        {{ if tagline }}<p class="text-lg text-muted mt-2">{{ tagline }}</p>{{ /if }}
+
+        {{# "Closed Mondays", "Closed Mondays and Tuesdays", "Closed Mondays, Tuesdays and Sundays". #}}
+        {{ if hours || closed_days }}
+            <p class="mt-6 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted tabular-nums">{{ hours }}{{ if bookable }}<span>{{ label }} {{ time }}</span>{{ /if }}{{ /hours }}{{ if closed_days }}<span>Closed {{ closed_days }}{{ unless first }}{{ if last }} and {{ else }}, {{ /if }}{{ /unless }}{{ value }}s{{ /closed_days }}</span>{{ /if }}</p>
+        {{ /if }}
     </div>
 
-    <div class="mt-5 bg-white rounded-lg shadow-card p-5 lg:p-6">
-        {{ livewire:availability-results :entry="id" rates="true" }}
-    </div>
+    <div id="reserve" tabindex="-1" class="@container bg-white rounded-lg shadow-raised p-5 lg:p-6 lg:scroll-mt-4 md:col-span-2 lg:col-span-7 lg:col-start-6 lg:self-start focus:outline-none">
+        {{# Side by side, the sittings span both rows and the booking note sits under the
+            field; the second row takes the sittings' extra height, so the note stays
+            close to the field. Stacked, the note follows the sittings. #}}
+        <div class="grid gap-x-8 gap-y-4 @2xl:grid-cols-5 @2xl:grid-rows-[auto_1fr]">
+            {{# data-resrv-booking-top = scroll anchor the day-browser list scrolls back to;
+                scroll-mt clears the fixed header (h-18/lg:h-21). #}}
+            <div data-resrv-booking-top class="scroll-mt-28 @2xl:col-span-2">
+                {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" view="availability-search-panel" :closed-days="closed_days_list" }}
+            </div>
 
-    {{# Browse other days — clicking a day reloads the sittings panel above. Hidden
-        until a date is picked (the list then renders only a data-awaiting-date marker). #}}
-    <div class="bg-white rounded-lg shadow-card p-5 lg:p-6 mt-5 has-[[data-awaiting-date]]:hidden">
-        {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" }}
-    </div>
+            <div class="@2xl:col-span-3 @2xl:row-span-2">
+                {{ livewire:availability-results :entry="id" rates="true" :closed-days="closed_days_list" }}
+            </div>
 
-    {{ if booking_note }}
-        <p class="text-sm text-muted text-center text-balance mt-4">
-            <svg class="inline-block size-4 align-[-0.2em] me-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            {{ booking_note | replace(' · ', '&nbsp;· ') }}
-        </p>
-    {{ /if }}
+            {{ if booking_note }}
+                <p class="@2xl:col-span-2 flex items-start gap-2 text-sm text-muted">
+                    <svg class="size-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    <span>{{ note_clauses = booking_note | explode(' · ') }}{{ note_clauses }}<span class="inline-block text-balance">{{ value | replace(' – ', '&nbsp;–&nbsp;') }}{{ unless last }}&nbsp;·{{ /unless }}</span> {{ /note_clauses }}</span>
+                </p>
+            {{ /if }}
+        </div>
+
+        {{# Browse other days — clicking a day reloads the sittings above. Hidden until a
+            date is picked (the list then renders only a data-awaiting-date marker). #}}
+        <div class="mt-5 pt-6 border-t border-line has-[[data-awaiting-date]]:hidden">
+            {{ livewire:availability-list :entry="id" rates="true" groupByDate="true" view="availability-list-by-date" :closed-days="closed_days_list" }}
+        </div>
+    </div>
 </div>

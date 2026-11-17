@@ -212,11 +212,14 @@
         {{ if venue_count }}
         <div role="tabpanel" id="book-panel-table" aria-labelledby="book-tab-table" class="col-start-1 row-start-1 invisible" inert :class="{ 'invisible': tab !== 'table' }" :inert="tab !== 'table'">
             {{# Server-rendered inside a <template>, so it costs nothing until x-if adds it;
-                Livewire then boots the component from its snapshot (no extra request). #}}
+                Livewire then boots the component from its snapshot (no extra request).
+                The venue's "Closed days" can't be picked in its calendar (closed-days, as
+                on /dining). #}}
             <template x-if="tableMounted">
                 <div>
                     {{ collection:restaurant limit="1" }}
-                        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" live="false" redirectTo="/dining#reserve" }}
+                        {{ table_closed_days = closed_days | pluck('value') | join(',') }}
+                        {{ livewire:availability-search calendar="single" :entry="id" showAvailabilityOnCalendar="true" live="false" redirectTo="/dining#reserve" :closed-days="table_closed_days" }}
                     {{ /collection:restaurant }}
                 </div>
             </template>

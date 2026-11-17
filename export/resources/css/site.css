@@ -91,8 +91,13 @@
    BASE — global resets/defaults 
    ============================================================ */
 @layer base {
-  /* scroll-padding keeps anchor targets (the skip link, #book) clear of the fixed header. */
-  html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+  /* scroll-padding keeps anchor targets (the skip link, #book) clear of the fixed header.
+     scrollbar-gutter keeps the scrollbar's space while the page can't scroll (the
+     booking calendar, the nav sheet and the lightbox all lock it): their locks see it
+     and skip the padding they would add to the root, which the fixed header ignored,
+     so it no longer jumps sideways. Overlay scrollbars (phones, default macOS) have no
+     gutter to keep. */
+  html { scroll-behavior: smooth; scroll-padding-top: 6rem; scrollbar-gutter: stable; }
 
   /* One focus ring everywhere: 2px Terracotta Dark, offset 2px. Dark surfaces and the
      transparent header over the hero switch it to Sage Light. A control that needs a
@@ -377,6 +382,13 @@
 }
 @keyframes rc-fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
 .rc-popup-overlay { z-index: 300 !important; }
+/* resrv-frontend.css loads after this file, so these take one more class to win.
+   The per-day price is 11px, not upstream's 9px: "€35" or "€420" still fits a 36px
+   desktop cell and a 45px phone cell without the ellipsis. */
+.rc-day .rc-day__label { font-size: .6875rem; line-height: 1.1; }
+/* "Close calendar" keeps its 28px circle but takes a 44px tap target. */
+.rc-popup-header .rc-popup-header__close { position: relative; }
+.rc-popup-header .rc-popup-header__close::after { content: ""; position: absolute; inset: -.5rem; }
 
 /* The paper boat on the 404 window rides the swell. */
 .arch-boat { transform-box: fill-box; transform-origin: 50% 100%; animation: arch-boat-bob 6s ease-in-out infinite alternate; }

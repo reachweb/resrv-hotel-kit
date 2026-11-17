@@ -56,7 +56,8 @@ Room slugs: `garden-view-double`, `sea-view-suite`, `terracotta-villa`,
 | --- | --- | --- |
 | `spa/<treatment-slug>.jpg` | 3:2 | Treatment page editorial image |
 | `spa/<treatment-slug>.jpg` | 16:9 | Checkout order summary (same file, cropped; hidden when empty) |
-| `dining/la-marea.jpg` | 16:9 | Checkout summary for table reservations (hidden when empty) |
+| `dining/la-marea.jpg` | 3:2 | Dining booking band, beside the table booking (cropped to 4:5 on desktop; the venue entry's Image field) |
+| `dining/la-marea.jpg` | 16:9 | Checkout summary for table reservations (same file, cropped; hidden when empty) |
 
 Treatment slugs: `mediterranean-massage`, `sea-salt-body-polish`,
 `garden-botanicals-facial`, `couples-ritual`, `morning-stretch-steam`,
@@ -74,7 +75,9 @@ Treatment slugs: `mediterranean-massage`, `sea-salt-body-polish`,
 
 The gallery block (used on Dining) renders attached assets as an even grid of 4:5
 tiles (photos crop to fill the tile; the lightbox shows them whole); until populated
-it shows four 4:5 placeholder slots. Attach any number of images in the CP.
+it shows four 4:5 placeholder slots. Attach any number of images in the CP. Give
+each one an **Alt Text** in the asset editor: it names the tile and captions the
+lightbox. Without one, a photo is announced as "Photo 2 of 4".
 
 ## Brand
 

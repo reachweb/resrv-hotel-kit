@@ -35,7 +35,7 @@
     shared session can't narrow it: this search has no rate control, so it clears the
     rate when it mounts, before the listing below reads the session. #}}
 <section
-    class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21" id="treatments" data-hides-book-bar
+    class="py-16 lg:py-24 bg-sand scroll-mt-18 lg:scroll-mt-21 focus:outline-none" id="treatments" data-hides-book-bar tabindex="-1"
     x-data="{ usedField: false }"
     x-on:availability-results-updated.window="if (usedField) { usedField = false; $nextTick(() => $refs.results.getBoundingClientRect().top < $refs.dateBand.getBoundingClientRect().bottom && $refs.results.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })) }"
 >

@@ -151,6 +151,21 @@ document.addEventListener('alpine:init', () => {
         destroy() {
             this.observer?.disconnect();
         },
+        /**
+         * A same-page link (#book, #reserve, #treatments) scrolls to the booking
+         * natively: smooth, or instant under reduced motion (html's scroll-behavior).
+         * Focus follows it there, so the next Tab starts in the booking, not at the top
+         * of the page. The target is a container with tabindex="-1" (set here if the
+         * markup didn't) and focus:outline-none; preventScroll leaves the scrolling to
+         * the browser. Any other link (the site-wide bar's /rooms) is left alone.
+         */
+        follow(event) {
+            const hash = event.currentTarget.hash;
+            const target = hash && hash.length > 1 ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
+            if (!target) return;
+            if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+            requestAnimationFrame(() => target.focus({ preventScroll: true }));
+        },
     }));
 
     /**

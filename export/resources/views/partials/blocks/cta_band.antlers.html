@@ -1,9 +1,12 @@
 {{# CTA band — teal / terracotta / sand background variants. The button renders only
     with both a label and a URL. On the dark bands it's white, and `on-dark` turns the
-    focus ring Sage Light (bg-teal already does). #}}
+    focus ring Sage Light (bg-teal already does).
+    A band with a button is the screen's call to action, so the phone booking bar
+    (partials/book-bar) steps aside while it's in view: two buttons on one screen,
+    perhaps for different things (a table above, a room here), would compete. #}}
 <section class="mt-16 mb-20 lg:mt-24 lg:mb-32">
     <div class="container-rsv">
-        <div class="rounded-xl px-7 py-12 lg:px-16 lg:py-16 text-center reveal {{ if background == 'sand' }}bg-sand{{ elseif background == 'terracotta' }}bg-terracotta-dark text-white on-dark{{ else }}bg-teal text-white{{ /if }}">
+        <div class="rounded-xl px-7 py-12 lg:px-16 lg:py-16 text-center reveal {{ if background == 'sand' }}bg-sand{{ elseif background == 'terracotta' }}bg-terracotta-dark text-white on-dark{{ else }}bg-teal text-white{{ /if }}"{{ if cta_label && cta_url }} data-hides-book-bar{{ /if }}>
             {{ if heading }}<h2 class="t-h2 max-w-[22ch] mx-auto text-balance">{{ heading | widont }}</h2>{{ /if }}
             {{ if text }}<p class="text-base leading-relaxed mt-4 max-w-[52ch] mx-auto text-pretty {{ if background == 'sand' }}text-muted{{ else }}text-white/85{{ /if }}">{{ text }}</p>{{ /if }}
             {{ if cta_label && cta_url }}{{ partial:button :href="cta_url" :label="cta_label" :variant="background == 'sand' ? 'primary' : 'white'" class="inline-flex mt-8" }}{{ /if }}

@@ -7,7 +7,8 @@
      waited for until the morph renders it, so the outgoing heading is never the
      target; picking or changing a payment method does the same); a polite sr-only
      region announces the running total; the hold timer stays silent except for one
-     status at a minute left and one at 00:00. --}}
+     status at a minute left and one at 00:00. The same checkout takes rooms,
+     treatments and tables, so the timer holds "this booking", never "this rate". --}}
 @php($totals = $this->calculateReservationTotals())
 <div
     x-ref="checkout"
@@ -122,13 +123,13 @@
                     x-init="setInterval(() => {
                         if (s > 0) {
                             s--;
-                            if (s === 60) holdNote = @js(__('1 minute left to complete your booking at this rate.'));
-                            if (s === 0) holdNote = @js(__('The hold on this rate has ended. You may need to start your booking again.'));
+                            if (s === 60) holdNote = @js(__('1 minute left to complete your booking.'));
+                            if (s === 0) holdNote = @js(__('The hold on this booking has ended. You may need to start again.'));
                         }
                     }, 1000)"
                 >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-5 text-warning shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                    <p class="text-sm text-muted">We'll hold this rate for <span class="font-semibold text-ink tabular-nums" x-text="`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`"></span></p>
+                    <p class="text-sm text-muted">We'll hold this booking for <span class="font-semibold text-ink tabular-nums" x-text="`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`"></span></p>
                     <p class="sr-only" role="status" x-text="holdNote"></p>
                 </div>
                 @endif

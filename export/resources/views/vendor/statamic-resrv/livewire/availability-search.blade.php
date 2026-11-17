@@ -1,7 +1,14 @@
 {{-- Default search view, restyled to the design's hero search card (home.html):
      white raised card · Check-in/Check-out · Guests · Search. Sub-component wiring
      and the Livewire structure are stock — markup/classes only.
-     Page-specific variants live in availability-search-compact / -panel (view="…"). --}}
+     Page-specific variants live in availability-search-compact / -panel (view="…").
+     Optional closed weekdays (the home card's Table tab passes La Marea's
+     closed-days="Monday"): Livewire forwards the attribute to this view and the calendar
+     disables those weekdays (`disabledDays`), as in availability-search-panel. Without
+     it nothing changes. --}}
+@php
+    $closedDays = array_values(array_filter(array_map('trim', explode(',', (string) $attributes->get('closed-days')))));
+@endphp
 <div class="relative">
     <div class="bg-white rounded-xl shadow-raised p-2.5 text-ink">
         <div class="flex flex-col md:flex-row md:items-stretch gap-1.5 md:gap-0">
@@ -9,6 +16,7 @@
             <x-resrv::availability-dates
                 :$calendar
                 :$calendarRules
+                :disabledDays="$closedDays ?: false"
                 :errors="$errors"
                 variant="card"
                 class="flex-1 {{ $calendar === 'range' ? 'md:flex-[2.4]' : 'md:flex-[1.6]' }}"

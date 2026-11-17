@@ -51,6 +51,7 @@ export_paths:
   - config/session.php
   - resources/addons/statamic-resrv.yaml
   - lang/vendor/statamic-resrv
+  - lang/en.json
   - routes/console.php
   - STRIPE.md
   - IMAGES.md

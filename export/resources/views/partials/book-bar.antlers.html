@@ -7,14 +7,19 @@
     With no `href` it's the site-wide bar: Book Now → /rooms, priced from the lowest
     live room rate (Resrv's availability:cheapest, like the cards). It hides while any
     booking UI marked `data-hides-book-bar` is on screen (the home search card, a detail
-    page's panel, the rooms sticky search), so it never doubles what's already in
-    view — the `bookBar` component in site.js. The footer grows by the bar's height
+    page's panel, the rooms sticky search, a CTA band's button), so it never doubles
+    or competes with what's already in view — the `bookBar` component in site.js. The footer grows by the bar's height
     wherever the bar can show, so the bar never covers its last line.
     Params: href, label, price, price_label (default "from"), unit,
             until — sm (default: the header shows Book Now from sm up) | lg (pages whose
             booking panel only becomes sticky from lg).
     Short viewports (a phone on its side) skip it: with the header it would take a
     third of the screen.
+    A same-page link (#book, #reserve, #treatments) also moves focus to its target
+    (`follow` in the bookBar component), so a keyboard or screen-reader user carries on
+    from the booking rather than from the top of the page. Give the target
+    tabindex="-1" and focus:outline-none: it is a container, not a control, so it
+    takes no ring.
 #}}
 {{ if href }}
 <div
@@ -37,7 +42,7 @@
             <span class="block whitespace-nowrap font-display text-2xl leading-none text-terracotta-dark mt-0.5">{{ config:resrv-config:currency_symbol }}{{ price | format_number:0 }}{{ if unit }} <span class="font-sans text-sm text-muted max-[359px]:hidden">{{ unit }}</span>{{ /if }}</span>
         {{ /if }}
     </p>
-    {{ partial:button :href="href" :label="label ?? 'Check availability'" class="inline-flex flex-1 max-w-55" }}
+    {{ partial:button :href="href" :label="label ?? 'Check availability'" class="inline-flex flex-1 max-w-55" attrs='x-on:click="follow($event)"' }}
 </div>
 {{ else }}
     {{#

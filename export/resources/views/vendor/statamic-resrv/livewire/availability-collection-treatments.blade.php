@@ -26,6 +26,8 @@
      the treatments_grid set's "Closed days"; Livewire forwards it to this view as an
      HTML attribute). They name the closed days once in the summary line and tell a
      closed day from a fully booked one. Without them, an empty day reads as fully booked.
+     The closed-day lines are the kit lang keys La Marea's sittings panel uses
+     (`closedOnDay`, `venueClosedOn`, `venueOpensAgainOn`), with "The spa" as the venue.
      The summary line (intro, count or notice) is one role="status" region that stays in
      place across searches, so a screen reader hears the result after a day is picked.
      Its two sentences are inline-blocks: side by side when they fit, otherwise each
@@ -35,6 +37,7 @@
 @php
     $closedDays = array_values(array_filter(array_map('trim', explode(',', (string) $attributes->get('closed-days')))));
     $closedDaysLabel = collect($closedDays)->map(fn ($weekday) => $weekday.'s')->join(', ', ' and ');
+    $closedNote = $closedDaysLabel ? trans('statamic-resrv::frontend.venueClosedOn', ['venue' => __('The spa'), 'days' => $closedDaysLabel]) : null;
     $dayLabel = fn (Carbon $date) => $date->format($date->isCurrentYear() ? 'l j F' : 'l j F Y');
 
     $available = collect();
@@ -64,9 +67,9 @@
     <div wire:loading.delay.long.attr="aria-busy">
     <div role="status">
         @if (! $data->hasDates())
-            <p class="text-ui text-ink/80 text-pretty max-w-2xl mb-6 lg:mb-8"><span class="inline-block">Add a date to see which treatments are available, with that day's prices.</span>@if ($closedDaysLabel) <span class="inline-block">The spa is closed on {{ $closedDaysLabel }}.</span>@endif</p>
+            <p class="text-ui text-ink/80 text-pretty max-w-2xl mb-6 lg:mb-8"><span class="inline-block">Add a date to see which treatments are available, with that day's prices.</span>@if ($closedDaysLabel) <span class="inline-block">{{ $closedNote }}</span>@endif</p>
         @elseif ($available->isNotEmpty())
-            <p class="text-ui text-ink/80 text-pretty mb-6 lg:mb-8"><span class="inline-block">{{ trans_choice(':count treatment|:count treatments', $available->count()) }} available on <span class="font-semibold text-ink whitespace-nowrap">{{ $day }}</span>.</span>@if ($closedDaysLabel) <span class="inline-block">The spa is closed on {{ $closedDaysLabel }}.</span>@endif</p>
+            <p class="text-ui text-ink/80 text-pretty mb-6 lg:mb-8"><span class="inline-block">{{ trans_choice(':count treatment|:count treatments', $available->count()) }} available on <span class="font-semibold text-ink whitespace-nowrap">{{ $day }}</span>.</span>@if ($closedDaysLabel) <span class="inline-block">{{ $closedNote }}</span>@endif</p>
         @elseif (! $errors->has('availability'))
             <div class="flex items-start gap-4 max-w-2xl mb-8 lg:mb-10">
                 <span class="grid place-items-center size-10 shrink-0 rounded-full bg-white text-terracotta-dark" aria-hidden="true">
@@ -74,8 +77,8 @@
                 </span>
                 <div class="min-w-0 pt-1.5">
                     @if ($isClosedDay)
-                        <p class="t-h3 mb-1.5 text-balance">Closed on {{ $day }}</p>
-                        <p class="text-ui text-ink/80 text-pretty">The spa is closed on {{ $closedDaysLabel }}.@if ($reopensOn) It opens again on {{ $reopensOn }}.@endif</p>
+                        <p class="t-h3 mb-1.5 text-balance">{{ trans('statamic-resrv::frontend.closedOnDay', ['day' => $day]) }}</p>
+                        <p class="text-ui text-ink/80 text-pretty">{{ $closedNote }}@if ($reopensOn) {{ trans('statamic-resrv::frontend.venueOpensAgainOn', ['day' => $reopensOn]) }}@endif</p>
                     @else
                         <p class="t-h3 mb-1.5 text-balance">Nothing available on {{ $day }}</p>
                         <p class="text-ui text-ink/80 text-pretty">The spa is fully booked that day. Try another date.</p>
