@@ -1,7 +1,7 @@
 # Resrv Hotel
 
 A coastal-luxury hotel starter kit for [Statamic 6](https://statamic.dev) showcasing the
-[Resrv](https://statamic.com/addons/reach-web/resrv) reservations addon — one Mediterranean
+[Resrv](https://statamic.com/addons/reach/resrv) reservations addon — one Mediterranean
 property with **rooms, spa treatments and restaurant sittings all bookable through a single
 checkout**, demo data included.
 
@@ -26,7 +26,7 @@ checkout**, demo data included.
 - PHP 8.4+ · Composer
 - Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.4+**
 - Node 20+ (Tailwind v4 via Vite)
-- A [Resrv license](https://statamic.com/addons/reach-web/resrv) for production use —
+- A [Resrv license](https://statamic.com/addons/reach/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your
   vendor account; this kit does not bundle or relicense it.
 
