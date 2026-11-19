@@ -5,6 +5,10 @@ A coastal-luxury hotel starter kit for [Statamic 6](https://statamic.dev) showca
 property with **rooms, spa treatments and restaurant sittings all bookable through a single
 checkout**, demo data included.
 
+**Live demo:** [demo.resrv.dev](https://demo.resrv.dev). The demo is dressed with photography;
+the kit ships labelled image slots in its place, so a new site starts with placeholders
+until you add your own photos (see `IMAGES.md`).
+
 ## What's inside
 
 - **Three bookable products** on one Resrv install: nightly room stays (range calendar),
@@ -24,11 +28,19 @@ checkout**, demo data included.
 ## Requirements
 
 - PHP 8.4+ · Composer
-- Statamic **6** (Pro recommended) · Laravel 13 · Resrv **6.5.4+**
+- Statamic **6** · Laravel 13 · Resrv **6.5.4+**
 - Node 20+ (Tailwind v4 via Vite)
 - A [Resrv license](https://statamic.com/addons/reach/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your
   vendor account; this kit does not bundle or relicense it.
+
+### Statamic Core or Pro
+
+Statamic Core includes one form, and Resrv's checkout uses it. The kit's contact form is
+a second form, so it needs [Statamic Pro](https://statamic.com/pricing), a per-site
+license. On Core, answer no to `contact_form` at install: the Contact page then shows
+your address, phone and email without a form. Nothing else in the kit needs Pro (it uses
+one Control Panel user and no roles, revisions, multi-site or API).
 
 ## Install
 
@@ -46,12 +58,17 @@ The installer asks a question per module. A non-interactive install
 | ↳ `restaurant` | yes | La Marea and the `/dining` page |
 | ↳ `resrv_data` | yes | Fills Resrv with the demo data: rates, extras, options, pricing campaigns, coupon, affiliate and 12-month availability. Say no to start with Resrv empty |
 | `payments` | offline | `offline` (keyless, instant demo) · `stripe` (single gateway) · `both` (gateway picker at checkout) |
-| `reviews` | yes | Demo guest reviews/testimonials entries |
+| `reviews` | yes | Demo guest reviews/testimonials entries. Without them, the home page's reviews band stays hidden until you add a review |
+| `contact_form` | yes | The contact form on the Contact page. **Needs Statamic Pro** (see above): answer no on Core |
 | `journal` | no | Journal/blog collection, taxonomies, templates and a demo article or two (add `/journal` to a nav yourself) |
 
 The post-install hook runs the migrations, seeds the demo data (when chosen) and applies
 your payment choice — `stripe`/`both` rewrite `config/resrv-config.php` and add
 `RESRV_STRIPE_*` placeholders to `.env` (see `STRIPE.md`).
+
+The booking pages Resrv's settings point to (`/checkout`, `/checkout-complete`,
+`/manage-booking` and `/pay`) install every time. Without the demo content, the hook adds
+a blank home page and the page tree, so you start clean with booking already wired up.
 
 Leaving out the spa or the restaurant: their collections, blueprints and templates
 still install, empty, so you can add your own later. The hook removes the demo
@@ -114,6 +131,11 @@ renders a graceful labelled placeholder until you drop the real file in.
   `public/apple-touch-icon.png`.
 - The demo CP user is **not** created by the kit — make one with
   `php please make:user --super`.
+
+## Support
+
+Questions and bug reports about the kit: [GitHub issues](https://github.com/reachweb/resrv-hotel-kit/issues).
+For Resrv itself, see the [Resrv docs](https://resrv.dev).
 
 ## License
 

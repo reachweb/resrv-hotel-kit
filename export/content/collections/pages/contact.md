@@ -12,7 +12,7 @@ builder:
     id: contact_map
     type: map_contact
     show_map: true
-    show_form: true
+    contact_form: contact
   -
     id: contact_directions
     type: rich_text

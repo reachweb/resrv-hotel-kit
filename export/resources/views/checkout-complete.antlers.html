@@ -102,8 +102,12 @@ hide_book_bar: true
 
             <div class="flex flex-wrap items-center justify-center gap-3">
                 {{ if status == 'failed' }}
-                    {{ partial:button href="/rooms" label="Try booking again" class="inline-flex" }}
-                    {{ partial:button href="/contact" label="Contact us" variant="secondary" class="inline-flex" }}
+                    {{# The Rooms and Contact pages ship with the demo content: without them,
+                        try again from the home page and leave out the contact link. #}}
+                    {{ rooms_url = {link id="entry::rooms"} }}
+                    {{ contact_url = {link id="entry::contact"} }}
+                    {{ partial:button :href="rooms_url ?? '/'" label="Try booking again" class="inline-flex" }}
+                    {{ if contact_url }}{{ partial:button :href="contact_url" label="Contact us" variant="secondary" class="inline-flex" }}{{ /if }}
                 {{ else }}
                     {{ partial:button href="/" label="Back to the hotel" variant="secondary" class="inline-flex" }}
                     {{# The next booking on offer: the spa, else La Marea, else none (both are optional at install) #}}

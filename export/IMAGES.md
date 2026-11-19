@@ -81,5 +81,6 @@ lightbox. Without one, a photo is announced as "Photo 2 of 4".
 
 ## Brand
 
-`public/assets/brand/` is reserved for a logo / favicon should you replace the text
-wordmark in `partials/header`.
+The "resrv." wordmark is inline SVG in `resources/views/partials/logo.antlers.html`, and
+the favicons are `public/favicon.ico`, `public/favicon.svg` and `public/apple-touch-icon.png`.
+To rebrand, replace that partial and those three files.

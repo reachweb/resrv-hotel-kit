@@ -4,8 +4,8 @@
 
         {{ section:book_bar }}{{ partial:book-bar href="#book" label="Check availability" :price="availability:cheapest" unit="/ night" until="lg" }}{{ /section:book_bar }}
 
-    With no `href` it's the site-wide bar: Book Now → /rooms, priced from the lowest
-    live room rate (Resrv's availability:cheapest, like the cards). It hides while any
+    With no `href` it's the site-wide bar: Book Now → the Rooms page (no bar when it
+    isn't installed), priced from the lowest live room rate (Resrv's availability:cheapest, like the cards). It hides while any
     booking UI marked `data-hides-book-bar` is on screen (the home search card, a detail
     page's panel, the rooms sticky search, a CTA band's button), so it never doubles
     or competes with what's already in view — the `bookBar` component in site.js. The footer grows by the bar's height
@@ -58,6 +58,10 @@
     {{ cache key="kit:from-price:book-bar" for="10 minutes" }}
         {{ rooms_from = 0 }}
         {{ collection:rooms }}{{ room_from = availability:cheapest }}{{ if room_from && (rooms_from == 0 || room_from < rooms_from) }}{{ rooms_from = room_from }}{{ /if }}{{ /collection:rooms }}
-        {{ partial:book-bar href="/rooms" label="Book Now" :price="rooms_from" price_label="Rooms from" unit="/ night" }}
+        {{# Only with a Rooms page: an empty href would land back in this branch and recurse forever. #}}
+        {{ rooms_url = {link id="entry::rooms"} }}
+        {{ if rooms_url }}
+            {{ partial:book-bar :href="rooms_url" label="Book Now" :price="rooms_from" price_label="Rooms from" unit="/ night" }}
+        {{ /if }}
     {{ /cache }}
 {{ /if }}

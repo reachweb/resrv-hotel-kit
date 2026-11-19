@@ -11,6 +11,10 @@ export_paths:
   - content/navigation
   - content/trees/navigation
   - content/assets
+  - content/collections/pages/checkout.md
+  - content/collections/pages/checkout-complete.md
+  - content/collections/pages/manage-booking.md
+  - content/collections/pages/pay.md
   - resources/fieldsets
   - resources/blueprints/assets
   - resources/blueprints/collections/faqs
@@ -20,10 +24,10 @@ export_paths:
   - resources/blueprints/collections/reviews
   - resources/blueprints/collections/rooms
   - resources/blueprints/collections/spa_treatments
-  - resources/blueprints/forms
+  - resources/blueprints/forms/checkout.yaml
   - resources/blueprints/globals
   - resources/blueprints/taxonomies/amenities
-  - resources/forms
+  - resources/forms/checkout.yaml
   - resources/views/layout.antlers.html
   - resources/views/home.antlers.html
   - resources/views/default.antlers.html
@@ -73,10 +77,6 @@ modules:
       - content/collections/pages/privacy.md
       - content/collections/pages/terms.md
       - content/collections/pages/cancellation-policy.md
-      - content/collections/pages/checkout.md
-      - content/collections/pages/checkout-complete.md
-      - content/collections/pages/manage-booking.md
-      - content/collections/pages/pay.md
       - content/trees/collections/pages.yaml
       - content/collections/rooms
       - content/collections/offers
@@ -132,6 +132,12 @@ modules:
     default: true
     export_paths:
       - content/collections/reviews
+  contact_form:
+    prompt: 'Include the contact form? (needs Statamic Pro)'
+    default: true
+    export_paths:
+      - resources/forms/contact.yaml
+      - resources/blueprints/forms/contact.yaml
   journal:
     prompt: 'Include a journal / blog?'
     default: false

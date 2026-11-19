@@ -3,22 +3,22 @@
     sit in a 2-column grid. While the row actually scrolls it's a focusable region, so
     keyboards can scroll it; once it doesn't (the grid), it drops out of the Tab order.
     The aggregate is the average of every published review, so it can't claim more
-    than the collection holds; with no reviews it stays hidden. #}}
+    than the collection holds. With no reviews (the reviews module declined) the whole
+    band stays hidden. #}}
+{{ review_count = {collection:count from="reviews"} }}
+{{ if review_count }}
 <section class="py-16 lg:py-24 bg-teal text-white">
     <div class="container-rsv">
         <div class="grid lg:grid-cols-[0.9fr_1.6fr] gap-10 lg:gap-16 items-center">
             <div class="reveal">
                 {{ if heading }}<h2 class="t-display text-white mb-5 text-balance">{{ heading | widont }}</h2>{{ /if }}
                 {{ if show_aggregate }}
-                    {{ review_count = {collection:count from="reviews"} }}
-                    {{ if review_count }}
-                        {{ rating_sum = 0 }}
-                        {{ collection:reviews }}{{ rating_sum = rating_sum + rating }}{{ /collection:reviews }}
-                        {{ average_rating = rating_sum / review_count }}
-                        {{ star_rating = average_rating | round }}
-                        {{ partial:stars :rating="star_rating" class="text-terracotta" decorative="true" }}
-                        <p class="text-sm text-sage-light/80 mt-3"><span class="font-semibold text-white">{{ average_rating | format_number(1) }}</span> out of 5 from {{ review_count }} guest {{ review_count == 1 ? 'review' : 'reviews' }}</p>
-                    {{ /if }}
+                    {{ rating_sum = 0 }}
+                    {{ collection:reviews }}{{ rating_sum = rating_sum + rating }}{{ /collection:reviews }}
+                    {{ average_rating = rating_sum / review_count }}
+                    {{ star_rating = average_rating | round }}
+                    {{ partial:stars :rating="star_rating" class="text-terracotta" decorative="true" }}
+                    <p class="text-sm text-sage-light/80 mt-3"><span class="font-semibold text-white">{{ average_rating | format_number(1) }}</span> out of 5 from {{ review_count }} guest {{ review_count == 1 ? 'review' : 'reviews' }}</p>
                 {{ /if }}
             </div>
             <div role="region" aria-label="Guest reviews" tabindex="0"
@@ -34,3 +34,4 @@
         </div>
     </div>
 </section>
+{{ /if }}

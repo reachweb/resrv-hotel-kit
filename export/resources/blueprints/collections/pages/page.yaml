@@ -332,8 +332,8 @@ tabs:
                           handle: show_map
                           field: { type: toggle, display: 'Show map', default: true, width: 50 }
                         -
-                          handle: show_form
-                          field: { type: toggle, display: 'Show contact form', default: true, width: 50 }
+                          handle: contact_form
+                          field: { type: form, display: 'Contact form', max_items: 1, width: 50, instructions: 'Leave empty to show the contact details only.' }
   sidebar:
     display: SEO
     sections:

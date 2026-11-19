@@ -5,7 +5,12 @@
     Pages with a full-bleed hero set `transparent_nav: true` in the cascade.
     The sheet sits OUTSIDE <header>: the bar's backdrop-filter makes it the
     containing block for `fixed` descendants, which would clip the sheet to it.
+    Book Now goes to the Rooms page (entry `rooms`) and hides when it isn't
+    installed, as on an install without the demo content. The `entry::` prefix
+    matters: a bare `link id="rooms"` falls back to the rooms COLLECTION when the
+    entry is missing, and the link tag then 500s on it.
 #}}
+{{ rooms_url = {link id="entry::rooms"} }}
 <div
     x-data="{ transparent: {{ if transparent_nav }}true{{ else }}false{{ /if }}, scrolled: false, sheet: false }"
     @scroll.window.passive="scrolled = (window.pageYOffset || document.documentElement.scrollTop) > 40"
@@ -27,7 +32,7 @@
 
             <div class="flex items-center gap-3">
                 {{# Phones get the layout's bottom booking bar (partials/book-bar) instead. #}}
-                {{ partial:button href="/rooms" label="Book Now" size="sm" class="hidden sm:inline-flex" }}
+                {{ if rooms_url }}{{ partial:button :href="rooms_url" label="Book Now" size="sm" class="hidden sm:inline-flex" }}{{ /if }}
                 <button id="navBurger" type="button" class="lg:hidden grid place-items-center w-11 h-11 rounded-full" aria-label="Open menu" aria-controls="navSheet" aria-haspopup="dialog" :aria-expanded="sheet.toString()" @click="sheet = true">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
                 </button>
@@ -65,7 +70,7 @@
                     <a href="{{ url }}" class="t-h3 font-display py-2.5 border-b border-line/70 {{ if is_current || is_parent }}text-terracotta-dark{{ /if }}"{{ if is_current }} aria-current="page"{{ elseif is_parent }} aria-current="true"{{ /if }} @click="sheet = false">{{ title }}</a>
                 {{ /nav:main }}
             </nav>
-            {{ partial:button href="/rooms" label="Book Now" class="inline-flex w-full mt-8" attrs='@click="sheet = false"' }}
+            {{ if rooms_url }}{{ partial:button :href="rooms_url" label="Book Now" class="inline-flex w-full mt-8" attrs='@click="sheet = false"' }}{{ /if }}
             {{ if site:phone || site:email }}
             <div class="mt-auto pt-8 text-muted text-sm space-y-1">
                 {{ if site:phone }}<p><a href="tel:{{ site:phone | replace(' ', '') }}" class="hover:text-ink underline-offset-4 hover:underline">{{ site:phone }}</a></p>{{ /if }}

@@ -14,8 +14,9 @@ use Statamic\Facades\YAML;
  * live on the Installer's protected $modules), so choices are read from the
  * files they installed instead: the demo seeder file means demo content, a
  * resources/starter-kit/demo-data.yaml marker means "fill Resrv with demo
- * data", the spa and dining page files mean those venues, and the payments
- * option exports a marker under resources/starter-kit/payments/.
+ * data", the spa and dining page files mean those venues, the contact form
+ * file means the contact_form module, and the payments option exports a marker
+ * under resources/starter-kit/payments/.
  */
 class StarterKitPostInstall
 {
@@ -46,6 +47,10 @@ class StarterKitPostInstall
     public function handle($console)
     {
         // Content edits first, so nothing below indexes the content before them.
+        if ($this->addBlankHomePage(base_path())) {
+            $console->info('No demo content: added a blank home page, so checkout and the other booking pages keep their own URLs.');
+        }
+
         if ($trimmed = $this->trimMissingVenues(base_path())) {
             $console->info('Removed the links to the spa or restaurant pages you left out from: '.implode(', ', $trimmed).'.');
         }
@@ -85,6 +90,10 @@ class StarterKitPostInstall
             $console->line("  → Payments: you chose [{$gateway}] — add your RESRV_STRIPE_* keys and follow STRIPE.md to finish gateway setup.");
         } else {
             $console->line('  → Payments: offline gateway is active (no keys needed). To take card payments later, see STRIPE.md.');
+        }
+
+        if (! $this->contactFormSelected()) {
+            $console->line('  → No contact form (Statamic Core includes one form, and Resrv\'s checkout uses it). On Pro, add a form any time and pick it in the Map + contact block.');
         }
 
         if ($seeded) {
@@ -130,6 +139,54 @@ class StarterKitPostInstall
     private function demoDataSelected(): bool
     {
         return file_exists(base_path('resources/starter-kit/demo-data.yaml'));
+    }
+
+    /**
+     * The contact_form module exports the contact form's config.
+     */
+    private function contactFormSelected(): bool
+    {
+        return file_exists(base_path('resources/forms/contact.yaml'));
+    }
+
+    /**
+     * Without the demo content, the install has the booking pages (checkout,
+     * checkout-complete, manage-booking, pay) but no home page and no page tree.
+     * The pages collection expects a root, and Statamic puts pages missing from
+     * the tree at its end, so the first booking page would take "/". This adds
+     * a blank home page and a tree that starts with it. Returns true when it did.
+     */
+    public function addBlankHomePage(string $root): bool
+    {
+        $pagesDir = "{$root}/content/collections/pages";
+        $treePath = "{$root}/content/trees/collections/pages.yaml";
+
+        if (! is_dir($pagesDir) || file_exists("{$pagesDir}/home.md") || file_exists($treePath)) {
+            return false;
+        }
+
+        $pageIds = array_map(
+            fn (string $path) => YAML::file($path)->parse()['id'] ?? basename($path, '.md'),
+            glob("{$pagesDir}/*.md") ?: [],
+        );
+        sort($pageIds);
+
+        file_put_contents("{$pagesDir}/home.md", YAML::dumpFrontMatter([
+            'id' => 'home',
+            'blueprint' => 'page',
+            'title' => 'Home',
+            'template' => 'home',
+        ]));
+
+        if (! is_dir(dirname($treePath))) {
+            mkdir(dirname($treePath), 0755, true);
+        }
+
+        file_put_contents($treePath, YAML::dump([
+            'tree' => array_map(fn (string $id) => ['entry' => $id], ['home', ...$pageIds]),
+        ]));
+
+        return true;
     }
 
     /**

@@ -1,7 +1,7 @@
 tree:
   -
+    entry: rooms
     title: Rooms
-    url: /rooms
   -
     entry: offers
   -
