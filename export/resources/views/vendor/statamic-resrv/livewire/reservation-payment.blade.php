@@ -33,11 +33,9 @@
             'unavailable' => ['neutral', 'paymentUnavailable'],
             default => [null, null],
         })
-        {{-- Paid online through a gateway: not confirmed by hand, not booked through a partner. --}}
-        @php($paidOnline = $state === 'paid'
-            && $reservation->status === Reach\StatamicResrv\Enums\ReservationStatus::CONFIRMED->value
-            && $reservation->hasGatewayPayment()
-            && ! $reservation->paymentGatewaySupportsManualConfirmation())
+        {{-- Paid online through a gateway: Resrv 6.6.0's payment_settlement says so, so a booking
+             marked as paid by hand or booked through a partner claims no amount. --}}
+        @php($paidOnline = $state === 'paid' && ! $reservation->amountPaid()->isZero())
 
         @if ($outcomeTone)
             <x-resrv::kit-outcome :tone="$outcomeTone" :heading="$this->heading">

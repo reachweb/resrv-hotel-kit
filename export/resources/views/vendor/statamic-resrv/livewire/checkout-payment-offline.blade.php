@@ -1,5 +1,6 @@
 {{-- Restyled to the design's offline-payment panel (checkout.html step 3): icon
-     circle, copy, amount strip, confirm + change-method actions. The offlinePayment
+     circle, copy, amount strip, Resrv's Offline Payment Instructions (since 6.6.0),
+     confirm + change-method actions. The offlinePayment
      Alpine component and all wire: calls are stock. Confirm is the kit's shared
      <x-resrv::kit-cta>, the h1 takes focus when the step opens (see checkout), the
      panel heading is an h2, and errors are announced (role="alert") as plain text. --}}
@@ -20,6 +21,13 @@
                         <span class="text-sm text-muted">{{ trans('statamic-resrv::frontend.offlinePaymentAmount') }}</span>
                         <span class="font-display text-2xl tabular-nums">{{ config('resrv-config.currency_symbol') }}{{ number_format((float) $amount, 2) }}</span>
                     </div>
+                    @php($offlineInstructions = \Reach\StatamicResrv\Helpers\ResrvHelper::offlineInstructions())
+                    @if ($offlineInstructions)
+                    <div class="rounded-md border border-line p-4 mt-3">
+                        <p class="text-sm text-muted mb-1">{{ trans('statamic-resrv::frontend.paymentHeadingInstructions') }}</p>
+                        <p class="text-base leading-relaxed text-ink font-medium tabular-nums break-words">{!! nl2br(e($offlineInstructions)) !!}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -32,8 +32,9 @@ return [
      * provider's dashboard (e.g., /resrv/api/webhook/stripe, /resrv/api/webhook/paypal).
      *
      * A built-in OfflinePaymentGateway is included for bank transfers or
-     * pay-at-premises scenarios. It confirms reservations without an external
-     * payment provider and sends the confirmation email immediately.
+     * pay-at-premises scenarios. Since Resrv 6.6.0 it places the booking in
+     * Awaiting payment, holds its dates and emails the customer the payment
+     * details; an admin confirms it with Mark as paid in the CP.
      *
      * 'payment_gateways' => [
      *     'stripe' => [

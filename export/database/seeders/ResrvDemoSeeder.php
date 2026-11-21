@@ -940,9 +940,12 @@ class ResrvDemoSeeder extends Seeder
                     'price' => $r['amount'],
                     'payment' => $r['amount'],
                     'payment_surcharge' => 0,
-                    // payment_id is NOT NULL in the schema — unpaid rows store ''.
-                    'payment_id' => $r['status'] === 'confirmed' ? 'offline_demo_'.strtolower($reference) : '',
+                    // payment_id is NOT NULL in the schema. Confirmed rows were paid at the
+                    // property: offline bookings have no intent, and Mark as paid settles them
+                    // out of band (Resrv 6.6.0's payment_settlement), so the CP shows them paid.
+                    'payment_id' => '',
                     'payment_gateway' => $r['status'] === 'confirmed' ? 'offline' : null,
+                    'payment_settlement' => $r['status'] === 'confirmed' ? 'out_of_band' : 'none',
                     'total' => $r['status'] === 'confirmed' ? $r['amount'] : null,
                     'customer_id' => $r['customer']->id,
                     'abandoned_email_sent_at' => null,

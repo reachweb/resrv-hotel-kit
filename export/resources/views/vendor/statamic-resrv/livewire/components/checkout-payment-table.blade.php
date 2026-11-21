@@ -45,7 +45,7 @@
             @foreach ($enabledExtras->extras as $extra)
             <div class="flex justify-between gap-3" wire:key="{{ $extra['id'] }}">
                 <span class="text-muted">{{ $extra['name'] }}@if ($extra['quantity'] > 1) ×{{ $extra['quantity'] }}@endif</span>
-                <span class="tabular-nums">{{ $currency }}{{ Price::create($extra['price'])->multiply($extra['quantity'])->format() }}</span>
+                <span class="tabular-nums">{{ $currency }}{{ $enabledExtras->lineTotal($extra)->format() }}</span>
             </div>
             @endforeach
         </div>
