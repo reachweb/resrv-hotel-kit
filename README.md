@@ -28,7 +28,7 @@ until you add your own photos (see `IMAGES.md`).
 ## Requirements
 
 - PHP 8.4+ · Composer
-- Statamic **6** · Laravel 13 · Resrv **6.5.4+**
+- Statamic **6** · Laravel 13 · Resrv **6.6.0+**
 - Node 20+ (Tailwind v4 via Vite)
 - A [Resrv license](https://statamic.com/addons/reach/resrv) for production use —
   the addon is a paid composer dependency declared by this kit and installed from your
